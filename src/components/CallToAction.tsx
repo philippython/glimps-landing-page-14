@@ -7,10 +7,10 @@ const CallToAction = () => {
       <div className="container mx-auto py-16 md:py-24">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            Ready to Transform Your Bar Experience?
+            Ready to Transform Your Venue Experience?
           </h2>
           <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join hundreds of bar owners who have increased customer satisfaction and revenue with Glimps photobooths.
+            Join hundreds of venue owners who have increased customer satisfaction and revenue with Glimps photobooths.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <NavLink

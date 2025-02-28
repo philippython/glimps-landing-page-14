@@ -8,7 +8,7 @@ const About = () => {
     {
       name: "Alex Rivera",
       role: "Founder & CEO",
-      bio: "Former bar owner turned tech entrepreneur. Alex created Glimps after noticing the need for better social experiences in hospitality venues.",
+      bio: "Former venue manager turned tech entrepreneur. Alex created Glimps after noticing the need for better social experiences in hospitality and entertainment venues.",
       image: "/placeholder.svg",
     },
     {
@@ -20,7 +20,7 @@ const About = () => {
     {
       name: "Morgan Williams",
       role: "Customer Success Manager",
-      bio: "Morgan works directly with bar owners to ensure they get maximum value from their Glimps investment.",
+      bio: "Morgan works directly with venue owners to ensure they get maximum value from their Glimps investment.",
       image: "/placeholder.svg",
     },
   ];
@@ -54,7 +54,7 @@ const About = () => {
               About Glimps
             </h1>
             <p className="text-xl text-glimps-600 mb-10 max-w-2xl mx-auto">
-              We're revolutionizing the bar experience through innovative photo technology that creates memories and drives business growth.
+              We're revolutionizing the venue experience through innovative photo technology that creates memories and drives business growth.
             </p>
           </div>
           
@@ -78,19 +78,19 @@ const About = () => {
             
             <div className="prose prose-lg max-w-none text-glimps-700">
               <p>
-                Glimps was born in 2018 when our founder, Alex Rivera, noticed a problem at his downtown cocktail bar. Customers were constantly asking staff to take photos of them, disrupting service and often resulting in poor-quality images that didn't capture the premium experience of the venue.
+                Glimps was born in 2018 when our founder, Alex Rivera, noticed a problem at his downtown entertainment venue. Customers were constantly asking staff to take photos of them, disrupting service and often resulting in poor-quality images that didn't capture the premium experience of the venue.
               </p>
               
               <p>
-                Working with a team of photography and software experts, Alex developed a prototype photo booth specifically designed for upscale bars. The results were immediate: customers loved the experience, spent more time in the venue, and enthusiastically shared their photos on social media, driving new business.
+                Working with a team of photography and software experts, Alex developed a prototype photo booth specifically designed for upscale venues. The results were immediate: customers loved the experience, spent more time in the venue, and enthusiastically shared their photos on social media, driving new business.
               </p>
               
               <p>
-                Since then, Glimps has expanded to serve hundreds of venues across the country, from intimate speakeasies to large nightclubs. Our mission remains the same: to create memorable experiences for bar patrons while driving measurable business results for venue owners.
+                Since then, Glimps has expanded to serve hundreds of venues across the country, from intimate lounges to large nightclubs, restaurants, event spaces, and more. Our mission remains the same: to create memorable experiences for guests while driving measurable business results for venue owners.
               </p>
               
               <p>
-                Today, our team of 35 passionate individuals continues to innovate at the intersection of hospitality, photography, and technology. We're proud to be trusted by some of the most respected establishments in the industry and are constantly evolving our product based on partner feedback and emerging trends.
+                Today, our team of 35 passionate individuals continues to innovate at the intersection of hospitality, entertainment, photography, and technology. We're proud to be trusted by some of the most respected establishments in the industry and are constantly evolving our product based on partner feedback and emerging trends.
               </p>
             </div>
           </div>

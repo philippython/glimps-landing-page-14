@@ -43,11 +43,11 @@ const Index = () => {
       quote:
         "The team at Glimps made setup incredibly easy. Their responsive support and regular updates keep the system running smoothly.",
       author: "Michael Chen",
-      position: "Manager, Urban Spirit Bar",
+      position: "Manager, Urban Spirit Venue",
     },
     {
       quote:
-        "Our customers spend an average of 40 minutes longer in our bar when using the Glimps booth. It's been a game-changer for our business.",
+        "Our customers spend an average of 40 minutes longer in our venue when using the Glimps booth. It's been a game-changer for our business.",
       author: "Jessica Williams",
       position: "Owner, Crafted & Co.",
     },
@@ -62,14 +62,14 @@ const Index = () => {
             <div className="space-y-6">
               <div className="inline-block">
                 <span className="bg-glimps-100 text-glimps-800 px-4 py-1.5 rounded-full text-sm font-medium tracking-wide">
-                  For Bar Owners
+                  For Venue Owners
                 </span>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
                 Turn Moments Into <span className="text-glimps-accent">Memories</span> Your Customers Will Share
               </h1>
               <p className="text-lg md:text-xl text-glimps-600 max-w-xl">
-                Elevate your bar with Glimps photo booths—a premium amenity that increases customer engagement, dwell time, and generates social media exposure.
+                Elevate your venue with Glimps photo booths—a premium amenity that increases customer engagement, dwell time, and generates social media exposure.
               </p>
               <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <NavLink
@@ -87,14 +87,14 @@ const Index = () => {
               </div>
               <div className="pt-6">
                 <p className="text-glimps-500 font-medium text-sm">
-                  Trusted by 200+ bars and entertainment venues nationwide
+                  Trusted by 200+ venues and entertainment spots nationwide
                 </p>
               </div>
             </div>
             <div className="lg:pl-10 glimps-shadow rounded-xl overflow-hidden">
               <ImageWithFallback
                 src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81"
-                alt="People enjoying a Glimps photo booth at a bar"
+                alt="People enjoying a Glimps photo booth at a venue"
                 className="w-full h-auto rounded-xl object-cover"
               />
             </div>
@@ -107,10 +107,10 @@ const Index = () => {
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold">
-              Why Bar Owners Love Glimps
+              Why Venue Owners Love Glimps
             </h2>
             <p className="mt-4 text-lg text-glimps-600">
-              Our premium photo booths are designed specifically for the bar and nightlife industry.
+              Our premium photo booths are designed specifically for venues in the hospitality and entertainment industry.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -135,7 +135,7 @@ const Index = () => {
             <div className="order-2 lg:order-1 glimps-shadow rounded-xl overflow-hidden">
               <ImageWithFallback
                 src="https://images.unsplash.com/photo-1519389950473-47ba0277781c"
-                alt="Bar patrons enjoying themselves"
+                alt="Venue patrons enjoying themselves"
                 className="w-full h-auto rounded-xl object-cover"
               />
             </div>
@@ -146,7 +146,7 @@ const Index = () => {
                 </span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold">
-                How Glimps Works for Your Bar
+                How Glimps Works for Your Venue
               </h2>
               
               <div className="space-y-6 mt-6">
@@ -173,7 +173,7 @@ const Index = () => {
                       Customer Engagement
                     </h3>
                     <p className="text-glimps-600">
-                      Bar-goers use the intuitive touchscreen interface to take photos, apply filters, and instantly share branded content to their social networks.
+                      Guests use the intuitive touchscreen interface to take photos, apply filters, and instantly share branded content to their social networks.
                     </p>
                   </div>
                 </div>
@@ -211,7 +211,7 @@ const Index = () => {
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold">
-              What Bar Owners Are Saying
+              What Venue Owners Are Saying
             </h2>
             <p className="mt-4 text-lg text-glimps-600">
               Join hundreds of satisfied venue owners who've transformed their customer experience with Glimps.
@@ -250,7 +250,7 @@ const Index = () => {
               The Glimps Impact
             </h2>
             <p className="mt-4 text-lg text-glimps-600">
-              Real results from bars using our photo booths.
+              Real results from venues using our photo booths.
             </p>
           </div>
           
@@ -262,7 +262,7 @@ const Index = () => {
             
             <div className="bg-white p-8 rounded-xl glimps-shadow text-center">
               <div className="text-4xl font-bold text-glimps-accent mb-2">18%</div>
-              <p className="text-glimps-600">Increase in beverage sales</p>
+              <p className="text-glimps-600">Increase in sales</p>
             </div>
             
             <div className="bg-white p-8 rounded-xl glimps-shadow text-center">

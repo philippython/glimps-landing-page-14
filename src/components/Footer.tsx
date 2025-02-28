@@ -12,7 +12,7 @@ const Footer = () => {
             <div className="flex flex-col space-y-4">
               <h3 className="text-xl font-semibold text-glimps-900">Glimps</h3>
               <p className="text-glimps-600 max-w-xs">
-                Elevate your bar experience with premium photo booth technology 
+                Elevate your venue experience with premium photo booth technology 
                 that customers love and remember.
               </p>
             </div>
@@ -60,7 +60,7 @@ const Footer = () => {
                 +1 (234) 567-890
               </a>
               <address className="text-glimps-600 not-italic">
-                123 Photo Lane, Bar District
+                123 Photo Lane, Entertainment District
               </address>
             </div>
           </div>

@@ -10,7 +10,7 @@ const Pricing = () => {
   const pricingPlans = [
     {
       name: "Starter",
-      description: "Perfect for smaller bars looking to test the waters",
+      description: "Perfect for smaller venues looking to test the waters",
       monthlyPrice: 349,
       yearlyPrice: 3149,
       yearlyDiscount: 500,
@@ -46,7 +46,7 @@ const Pricing = () => {
     },
     {
       name: "Enterprise",
-      description: "For multi-location bars and entertainment groups",
+      description: "For multi-location venues and entertainment groups",
       monthlyPrice: 999,
       yearlyPrice: 8999,
       yearlyDiscount: 2000,
@@ -72,7 +72,7 @@ const Pricing = () => {
         "Our team handles everything from physical setup to network configuration and staff training. We ensure your photo booth is perfectly placed to maximize visibility and usage while blending with your venue's aesthetic.",
     },
     {
-      question: "Can I customize the booth to match my bar's branding?",
+      question: "Can I customize the booth to match my venue's branding?",
       answer:
         "Absolutely! All plans include some level of customization. Our Professional and Enterprise plans offer extensive branding options including custom templates, physical booth branding, and even custom backdrops.",
     },
