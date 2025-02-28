@@ -60,9 +60,15 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center space-x-4">
           <NavLink
-            to="/pricing"
+            to="/login"
+            className="text-base font-medium text-glimps-700 hover:text-glimps-accent transition-colors"
+          >
+            Login
+          </NavLink>
+          <NavLink
+            to="/register"
             className="inline-flex h-10 items-center justify-center rounded-md bg-glimps-900 px-6 text-sm font-medium text-white transition-colors hover:bg-glimps-800 focus:outline-none focus:ring-2 focus:ring-glimps-accent focus:ring-offset-2"
           >
             Get Started
@@ -106,7 +112,14 @@ const Navbar = () => {
               </NavLink>
             ))}
             <NavLink
-              to="/pricing"
+              to="/login"
+              className="text-lg py-3 border-b border-gray-100 text-glimps-800"
+              onClick={() => setIsOpen(false)}
+            >
+              Login
+            </NavLink>
+            <NavLink
+              to="/register"
               className="mt-4 w-full inline-flex h-12 items-center justify-center rounded-md bg-glimps-900 px-6 text-base font-medium text-white transition-colors hover:bg-glimps-800 focus:outline-none"
               onClick={() => setIsOpen(false)}
             >
