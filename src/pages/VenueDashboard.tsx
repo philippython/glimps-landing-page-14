@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import DashboardSidebar from "../components/DashboardSidebar";
+import VenueSettings from "../components/VenueSettings";
 import { 
   Users, 
   Camera,
@@ -9,7 +10,8 @@ import {
   ChevronDown,
   Phone,
   MessageSquare,
-  Calendar
+  Calendar,
+  Store
 } from "lucide-react";
 import {
   Table,
@@ -149,7 +151,7 @@ const VenueDashboard = () => {
         <main className="p-6">
           <div className="grid gap-6">
             <Tabs defaultValue="sessions" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsList className="grid w-full grid-cols-3 mb-6">
                 <TabsTrigger value="sessions" className="flex items-center gap-2">
                   <Camera className="h-4 w-4" />
                   Photo Sessions
@@ -157,6 +159,10 @@ const VenueDashboard = () => {
                 <TabsTrigger value="users" className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
                   Users
+                </TabsTrigger>
+                <TabsTrigger value="venue-settings" className="flex items-center gap-2">
+                  <Store className="h-4 w-4" />
+                  Venue Settings
                 </TabsTrigger>
               </TabsList>
               
@@ -284,6 +290,10 @@ const VenueDashboard = () => {
                     </div>
                   </div>
                 </Card>
+              </TabsContent>
+              
+              <TabsContent value="venue-settings">
+                <VenueSettings />
               </TabsContent>
             </Tabs>
           </div>
