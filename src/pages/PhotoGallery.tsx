@@ -1,0 +1,178 @@
+
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { Download, ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import ImageWithFallback from "@/components/ImageWithFallback";
+
+// Mock API function to fetch photos by UUID
+const fetchPhotosByUuid = async (uuid: string) => {
+  // This would be replaced with an actual API call in production
+  console.log(`Fetching photos for UUID: ${uuid}`);
+  
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  // Mock response
+  return {
+    uuid,
+    eventName: "Sample Event",
+    date: new Date().toLocaleDateString(),
+    photos: [
+      { id: 1, url: "https://source.unsplash.com/random/800x600?party&sig=1", name: "Photo 1" },
+      { id: 2, url: "https://source.unsplash.com/random/800x600?party&sig=2", name: "Photo 2" },
+      { id: 3, url: "https://source.unsplash.com/random/800x600?party&sig=3", name: "Photo 3" },
+      { id: 4, url: "https://source.unsplash.com/random/800x600?party&sig=4", name: "Photo 4" },
+      { id: 5, url: "https://source.unsplash.com/random/800x600?party&sig=5", name: "Photo 5" },
+      { id: 6, url: "https://source.unsplash.com/random/800x600?party&sig=6", name: "Photo 6" },
+    ]
+  };
+};
+
+const PhotoGallery = () => {
+  const { uuid } = useParams<{ uuid: string }>();
+  
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['photos', uuid],
+    queryFn: () => fetchPhotosByUuid(uuid || ''),
+    enabled: !!uuid,
+  });
+
+  const handleDownload = (url: string, name: string) => {
+    fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = blobUrl;
+        a.download = name + '.jpg';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(blobUrl);
+        toast.success(`Downloaded ${name}`);
+      })
+      .catch(() => {
+        toast.error(`Failed to download ${name}`);
+      });
+  };
+
+  if (!uuid) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <h1 className="text-2xl font-bold text-glimps-900 mb-4">Invalid Gallery Link</h1>
+        <p className="text-glimps-600">No photo gallery ID was provided. Please check your link and try again.</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <h1 className="text-2xl font-bold text-glimps-900 mb-4">Error Loading Gallery</h1>
+        <p className="text-glimps-600">We couldn't load your photos. Please check your link and try again.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <header className="bg-white border-b">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-glimps-900">Your Glimps Photos</h1>
+              {data && (
+                <p className="text-glimps-600">
+                  {data.eventName} • {data.date}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  if (data?.photos) {
+                    data.photos.forEach(photo => {
+                      setTimeout(() => {
+                        handleDownload(photo.url, photo.name);
+                      }, 300);
+                    });
+                    toast.success("Downloading all photos");
+                  }
+                }}
+                disabled={isLoading || !data}
+              >
+                Download All
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-grow container mx-auto px-4 py-8">
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, index) => (
+              <Card key={index} className="overflow-hidden">
+                <div className="relative pt-[75%]">
+                  <Skeleton className="absolute inset-0" />
+                </div>
+                <div className="p-4">
+                  <Skeleton className="h-4 w-1/2 mb-2" />
+                  <Skeleton className="h-8 w-28" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : data?.photos && data.photos.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data.photos.map((photo) => (
+              <Card key={photo.id} className="overflow-hidden group">
+                <div className="relative pt-[75%] bg-gray-100">
+                  <ImageWithFallback
+                    src={photo.url}
+                    alt={photo.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-4 flex justify-between items-center">
+                  <p className="font-medium">{photo.name}</p>
+                  <Button 
+                    size="sm" 
+                    onClick={() => handleDownload(photo.url, photo.name)}
+                    className="transition-all"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <ImageIcon className="mx-auto h-12 w-12 text-glimps-400" />
+            <h3 className="mt-4 text-lg font-medium text-glimps-900">No photos found</h3>
+            <p className="mt-1 text-glimps-600">We couldn't find any photos for this gallery.</p>
+          </div>
+        )}
+      </main>
+
+      <footer className="bg-white border-t py-6">
+        <div className="container mx-auto px-4 text-center text-glimps-600">
+          <p>© {new Date().getFullYear()} Glimps. All rights reserved.</p>
+          <p className="text-sm mt-2">
+            Photos are available for 30 days from the event date.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default PhotoGallery;

@@ -12,6 +12,7 @@ import Register from "./pages/Register";
 import VenueDashboard from "./pages/VenueDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import PhotoGallery from "./pages/PhotoGallery";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
@@ -70,6 +71,9 @@ const App = () => (
             {/* Dashboard routes */}
             <Route path="/venue-dashboard" element={<VenueDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            
+            {/* Photo Gallery route */}
+            <Route path="/photos/:uuid" element={<PhotoGallery />} />
             
             {/* 404 route */}
             <Route
