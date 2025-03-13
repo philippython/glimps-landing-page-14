@@ -1,8 +1,5 @@
 
 import { useState } from "react";
-import DashboardSidebar from "../components/DashboardSidebar";
-import VenueSettings from "../components/VenueSettings";
-import AccountSettings from "../components/AccountSettings";
 import { 
   Users, 
   Camera,
@@ -13,7 +10,12 @@ import {
   MessageSquare,
   Calendar,
   Store,
-  User
+  User,
+  Settings,
+  LogOut,
+  LayoutDashboard,
+  BarChart3,
+  Images
 } from "lucide-react";
 import {
   Table,
@@ -27,6 +29,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import VenueSettings from "../components/VenueSettings";
+import AccountSettings from "../components/AccountSettings";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Mock data for photo sessions
 const photoSessions = [
@@ -101,6 +113,7 @@ const users = [
 
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("sessions");
   
   const filteredSessions = photoSessions.filter(
     session => 
@@ -116,17 +129,22 @@ const VenueDashboard = () => {
       user.telegram.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const navItems = [
+    { id: "sessions", label: "Photo Sessions", icon: <Camera className="h-4 w-4" /> },
+    { id: "users", label: "Users", icon: <Users className="h-4 w-4" /> },
+    { id: "venue-settings", label: "Venue Settings", icon: <Store className="h-4 w-4" /> },
+    { id: "account-settings", label: "Account Settings", icon: <User className="h-4 w-4" /> },
+  ];
+
   return (
-    <div className="flex h-screen bg-gray-50">
-      <DashboardSidebar />
-      
-      <div className="flex-1 overflow-auto">
-        <div className="border-b bg-white">
-          <div className="flex h-16 items-center gap-8 px-6">
-            <div className="flex-1">
-              <h1 className="text-lg font-semibold">Venue Dashboard</h1>
-            </div>
-            
+    <div className="min-h-screen bg-gray-50">
+      <div className="border-b bg-white">
+        <div className="flex h-16 items-center gap-4 px-6">
+          <div className="flex-1">
+            <h1 className="text-lg font-semibold">Venue Dashboard</h1>
+          </div>
+          
+          <div className="flex items-center gap-4">
             <div className="relative w-64">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
               <Input
@@ -143,172 +161,203 @@ const VenueDashboard = () => {
               <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-glimps-accent"></span>
             </button>
             
-            <button className="flex items-center gap-2 text-sm font-medium">
-              The Venue Club
-              <ChevronDown className="h-4 w-4" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 text-sm font-medium">
+                  The Venue Club
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="flex items-center gap-3 p-3">
+                  <img
+                    src="/placeholder.svg"
+                    alt="User"
+                    className="h-10 w-10 rounded-full"
+                  />
+                  <div>
+                    <div className="text-sm font-medium">John Smith</div>
+                    <div className="text-xs text-glimps-600">john@thevenueclub.com</div>
+                  </div>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setActiveTab("account-settings")}>
+                  <User className="mr-2 h-4 w-4" />
+                  Account Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveTab("venue-settings")}>
+                  <Store className="mr-2 h-4 w-4" />
+                  Venue Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <a href="/" className="flex w-full items-center">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign out
+                  </a>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
         
-        <main className="p-6">
-          <div className="grid gap-6">
-            <Tabs defaultValue="sessions" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 mb-6">
-                <TabsTrigger value="sessions" className="flex items-center gap-2">
-                  <Camera className="h-4 w-4" />
-                  Photo Sessions
-                </TabsTrigger>
-                <TabsTrigger value="users" className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Users
-                </TabsTrigger>
-                <TabsTrigger value="venue-settings" className="flex items-center gap-2">
-                  <Store className="h-4 w-4" />
-                  Venue Settings
-                </TabsTrigger>
-                <TabsTrigger value="account-settings" className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  Account Settings
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="sessions">
-                <Card>
-                  <div className="p-6">
-                    <h2 className="text-xl font-semibold mb-4">Photo Sessions</h2>
-                    <div className="rounded-md border">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="w-[180px]">UUID</TableHead>
-                            <TableHead className="w-[140px]">
-                              <div className="flex items-center gap-2">
-                                <Phone className="h-4 w-4" />
-                                Phone Number
-                              </div>
-                            </TableHead>
-                            <TableHead className="w-[140px]">
-                              <div className="flex items-center gap-2">
-                                <MessageSquare className="h-4 w-4" />
-                                Telegram
-                              </div>
-                            </TableHead>
-                            <TableHead className="w-[180px]">
-                              <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4" />
-                                Timestamp
-                              </div>
-                            </TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {filteredSessions.length > 0 ? (
-                            filteredSessions.map((session) => (
-                              <TableRow key={session.id}>
-                                <TableCell className="font-medium">{session.uuid}</TableCell>
-                                <TableCell>{session.phone}</TableCell>
-                                <TableCell>{session.telegram}</TableCell>
-                                <TableCell>{session.timestamp}</TableCell>
-                                <TableCell className="text-right">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => window.open(`/photos/${session.uuid}`, '_blank')}
-                                  >
-                                    View Photos
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            ))
-                          ) : (
-                            <TableRow>
-                              <TableCell colSpan={5} className="h-24 text-center">
-                                No photo sessions found.
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="users">
-                <Card>
-                  <div className="p-6">
-                    <h2 className="text-xl font-semibold mb-4">User List</h2>
-                    <div className="rounded-md border">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="w-[180px]">UUID</TableHead>
-                            <TableHead className="w-[140px]">
-                              <div className="flex items-center gap-2">
-                                <Phone className="h-4 w-4" />
-                                Phone Number
-                              </div>
-                            </TableHead>
-                            <TableHead className="w-[140px]">
-                              <div className="flex items-center gap-2">
-                                <MessageSquare className="h-4 w-4" />
-                                Telegram
-                              </div>
-                            </TableHead>
-                            <TableHead className="w-[180px]">
-                              <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4" />
-                                Last Session
-                              </div>
-                            </TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {filteredUsers.length > 0 ? (
-                            filteredUsers.map((user) => (
-                              <TableRow key={user.id}>
-                                <TableCell className="font-medium">{user.uuid}</TableCell>
-                                <TableCell>{user.phone}</TableCell>
-                                <TableCell>{user.telegram}</TableCell>
-                                <TableCell>{user.lastSessionTimestamp}</TableCell>
-                                <TableCell className="text-right">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => window.open(`/photos/${user.uuid}`, '_blank')}
-                                  >
-                                    View Photos
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            ))
-                          ) : (
-                            <TableRow>
-                              <TableCell colSpan={5} className="h-24 text-center">
-                                No users found.
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="venue-settings">
-                <VenueSettings />
-              </TabsContent>
-              
-              <TabsContent value="account-settings">
-                <AccountSettings />
-              </TabsContent>
-            </Tabs>
-          </div>
-        </main>
+        <div className="border-t px-6">
+          <nav className="flex space-x-4">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                className={`flex items-center gap-2 py-3 px-2 text-sm font-medium transition-colors border-b-2 ${
+                  activeTab === item.id
+                    ? "border-glimps-900 text-glimps-900"
+                    : "border-transparent text-glimps-600 hover:text-glimps-900"
+                }`}
+                onClick={() => setActiveTab(item.id)}
+              >
+                {item.icon}
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        </div>
       </div>
+        
+      <main className="p-6">
+        <div className="grid gap-6">
+          {activeTab === "sessions" && (
+            <Card>
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-4">Photo Sessions</h2>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[180px]">UUID</TableHead>
+                        <TableHead className="w-[140px]">
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-4 w-4" />
+                            Phone Number
+                          </div>
+                        </TableHead>
+                        <TableHead className="w-[140px]">
+                          <div className="flex items-center gap-2">
+                            <MessageSquare className="h-4 w-4" />
+                            Telegram
+                          </div>
+                        </TableHead>
+                        <TableHead className="w-[180px]">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            Timestamp
+                          </div>
+                        </TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredSessions.length > 0 ? (
+                        filteredSessions.map((session) => (
+                          <TableRow key={session.id}>
+                            <TableCell className="font-medium">{session.uuid}</TableCell>
+                            <TableCell>{session.phone}</TableCell>
+                            <TableCell>{session.telegram}</TableCell>
+                            <TableCell>{session.timestamp}</TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => window.open(`/photos/${session.uuid}`, '_blank')}
+                              >
+                                View Photos
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={5} className="h-24 text-center">
+                            No photo sessions found.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </Card>
+          )}
+              
+          {activeTab === "users" && (
+            <Card>
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-4">User List</h2>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[180px]">UUID</TableHead>
+                        <TableHead className="w-[140px]">
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-4 w-4" />
+                            Phone Number
+                          </div>
+                        </TableHead>
+                        <TableHead className="w-[140px]">
+                          <div className="flex items-center gap-2">
+                            <MessageSquare className="h-4 w-4" />
+                            Telegram
+                          </div>
+                        </TableHead>
+                        <TableHead className="w-[180px]">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            Last Session
+                          </div>
+                        </TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredUsers.length > 0 ? (
+                        filteredUsers.map((user) => (
+                          <TableRow key={user.id}>
+                            <TableCell className="font-medium">{user.uuid}</TableCell>
+                            <TableCell>{user.phone}</TableCell>
+                            <TableCell>{user.telegram}</TableCell>
+                            <TableCell>{user.lastSessionTimestamp}</TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => window.open(`/photos/${user.uuid}`, '_blank')}
+                              >
+                                View Photos
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={5} className="h-24 text-center">
+                            No users found.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </Card>
+          )}
+              
+          {activeTab === "venue-settings" && (
+            <VenueSettings />
+          )}
+              
+          {activeTab === "account-settings" && (
+            <AccountSettings />
+          )}
+        </div>
+      </main>
     </div>
   );
 };
