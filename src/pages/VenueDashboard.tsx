@@ -1,93 +1,116 @@
 
+import { useState } from "react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import { 
-  BarChart3, 
   Users, 
-  TrendingUp, 
-  Camera, 
-  Calendar, 
-  MessageSquare,
+  Camera,
   Bell,
   Search,
-  ChevronDown
+  ChevronDown,
+  Phone,
+  MessageSquare,
+  Calendar
 } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+// Mock data for photo sessions
+const photoSessions = [
+  {
+    id: 1,
+    uuid: "a1b2c3d4-e5f6",
+    phone: "+1 (555) 123-4567",
+    telegram: "@user123",
+    timestamp: "2023-06-15 19:32",
+  },
+  {
+    id: 2,
+    uuid: "g7h8i9j0-k1l2",
+    phone: "+1 (555) 987-6543",
+    telegram: "@partyfriend42",
+    timestamp: "2023-06-14 21:15",
+  },
+  {
+    id: 3,
+    uuid: "m3n4o5p6-q7r8",
+    phone: "+1 (555) 456-7890",
+    telegram: "@photolover",
+    timestamp: "2023-06-14 20:45",
+  },
+  {
+    id: 4,
+    uuid: "s9t0u1v2-w3x4",
+    phone: "+1 (555) 234-5678",
+    telegram: "@nightlife22",
+    timestamp: "2023-06-13 22:17",
+  },
+  {
+    id: 5,
+    uuid: "y5z6a7b8-c9d0",
+    phone: "+1 (555) 345-6789",
+    telegram: "@memorycollector",
+    timestamp: "2023-06-12 21:30",
+  },
+];
+
+// Mock data for users
+const users = [
+  {
+    id: 1,
+    uuid: "a1b2c3d4-e5f6",
+    phone: "+1 (555) 123-4567",
+    telegram: "@user123",
+    lastSessionTimestamp: "2023-06-15 19:32",
+  },
+  {
+    id: 2,
+    uuid: "g7h8i9j0-k1l2",
+    phone: "+1 (555) 987-6543",
+    telegram: "@partyfriend42",
+    lastSessionTimestamp: "2023-06-14 21:15",
+  },
+  {
+    id: 3,
+    uuid: "m3n4o5p6-q7r8",
+    phone: "+1 (555) 456-7890",
+    telegram: "@photolover",
+    lastSessionTimestamp: "2023-06-14 20:45",
+  },
+  {
+    id: 4,
+    uuid: "y5z6a7b8-c9d0",
+    phone: "+1 (555) 345-6789",
+    telegram: "@memorycollector",
+    lastSessionTimestamp: "2023-06-12 21:30",
+  },
+];
 
 const VenueDashboard = () => {
-  const stats = [
-    {
-      name: "Total Photos",
-      value: "14,298",
-      change: "+12.5%",
-      isPositive: true,
-      icon: <Camera className="h-5 w-5 text-glimps-accent" />,
-    },
-    {
-      name: "User Engagement",
-      value: "87%",
-      change: "+4.3%",
-      isPositive: true,
-      icon: <Users className="h-5 w-5 text-glimps-accent" />,
-    },
-    {
-      name: "Social Shares",
-      value: "9,432",
-      change: "+18.2%",
-      isPositive: true,
-      icon: <TrendingUp className="h-5 w-5 text-glimps-accent" />,
-    },
-    {
-      name: "Upcoming Bookings",
-      value: "12",
-      change: "-2",
-      isPositive: false,
-      icon: <Calendar className="h-5 w-5 text-glimps-accent" />,
-    },
-  ];
-
-  const recentActivity = [
-    {
-      id: 1,
-      action: "Booth #2 needs maintenance",
-      time: "Just now",
-      isAlert: true,
-    },
-    {
-      id: 2,
-      action: "42 photos taken yesterday",
-      time: "2 hours ago",
-      isAlert: false,
-    },
-    {
-      id: 3,
-      action: "New booking confirmed for next Saturday",
-      time: "Yesterday",
-      isAlert: false,
-    },
-    {
-      id: 4,
-      action: "Software update available",
-      time: "2 days ago",
-      isAlert: true,
-    },
-    {
-      id: 5,
-      action: "Monthly report ready for download",
-      time: "1 week ago",
-      isAlert: false,
-    },
-  ];
-
-  const weeklyData = [
-    { day: "Mon", photos: 58 },
-    { day: "Tue", photos: 45 },
-    { day: "Wed", photos: 73 },
-    { day: "Thu", photos: 91 },
-    { day: "Fri", photos: 130 },
-    { day: "Sat", photos: 176 },
-    { day: "Sun", photos: 112 },
-  ];
-
-  const maxPhotos = Math.max(...weeklyData.map(d => d.photos));
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  const filteredSessions = photoSessions.filter(
+    session => 
+      session.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      session.phone.includes(searchTerm) ||
+      session.telegram.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  const filteredUsers = users.filter(
+    user => 
+      user.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.phone.includes(searchTerm) ||
+      user.telegram.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -102,10 +125,12 @@ const VenueDashboard = () => {
             
             <div className="relative w-64">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-              <input
+              <Input
                 type="search"
                 placeholder="Search..."
-                className="w-full rounded-full bg-gray-100 pl-9 pr-4 py-2 text-sm outline-none focus:ring-2 focus:ring-glimps-accent"
+                className="w-full rounded-full bg-gray-100 pl-9 pr-4"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             
@@ -123,135 +148,144 @@ const VenueDashboard = () => {
         
         <main className="p-6">
           <div className="grid gap-6">
-            <section>
-              <h2 className="text-xl font-semibold mb-5">Overview</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, index) => (
-                  <div key={index} className="rounded-lg border bg-white p-5 shadow-sm">
-                    <div className="flex justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">{stat.name}</p>
-                        <p className="text-2xl font-bold">{stat.value}</p>
-                      </div>
-                      <div className="rounded-full bg-glimps-50 p-3">
-                        {stat.icon}
-                      </div>
-                    </div>
-                    <p className={`mt-2 text-xs font-medium ${stat.isPositive ? 'text-green-500' : 'text-red-500'}`}>
-                      {stat.change} from last month
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
-              <section className="lg:col-span-4 rounded-lg border bg-white shadow-sm">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium">Weekly Photo Activity</h3>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">This Week</span>
-                      <ChevronDown className="h-4 w-4" />
-                    </div>
-                  </div>
-                  <div className="h-64 flex items-end gap-2">
-                    {weeklyData.map((item, index) => (
-                      <div key={index} className="flex-1 flex flex-col items-center gap-2">
-                        <div
-                          className="w-full bg-glimps-100 hover:bg-glimps-200 transition-all rounded-t-sm"
-                          style={{ height: `${(item.photos / maxPhotos) * 200}px` }}
-                        >
-                          <div className="bg-glimps-accent h-1 w-full"></div>
-                        </div>
-                        <span className="text-xs text-gray-600">{item.day}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
+            <Tabs defaultValue="sessions" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="sessions" className="flex items-center gap-2">
+                  <Camera className="h-4 w-4" />
+                  Photo Sessions
+                </TabsTrigger>
+                <TabsTrigger value="users" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Users
+                </TabsTrigger>
+              </TabsList>
               
-              <section className="lg:col-span-2 rounded-lg border bg-white shadow-sm overflow-hidden">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium">Recent Activity</h3>
-                    <a href="#" className="text-sm text-glimps-accent">View all</a>
+              <TabsContent value="sessions">
+                <Card>
+                  <div className="p-6">
+                    <h2 className="text-xl font-semibold mb-4">Photo Sessions</h2>
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[180px]">UUID</TableHead>
+                            <TableHead className="w-[140px]">
+                              <div className="flex items-center gap-2">
+                                <Phone className="h-4 w-4" />
+                                Phone Number
+                              </div>
+                            </TableHead>
+                            <TableHead className="w-[140px]">
+                              <div className="flex items-center gap-2">
+                                <MessageSquare className="h-4 w-4" />
+                                Telegram
+                              </div>
+                            </TableHead>
+                            <TableHead className="w-[180px]">
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4" />
+                                Timestamp
+                              </div>
+                            </TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredSessions.length > 0 ? (
+                            filteredSessions.map((session) => (
+                              <TableRow key={session.id}>
+                                <TableCell className="font-medium">{session.uuid}</TableCell>
+                                <TableCell>{session.phone}</TableCell>
+                                <TableCell>{session.telegram}</TableCell>
+                                <TableCell>{session.timestamp}</TableCell>
+                                <TableCell className="text-right">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => window.open(`/photos/${session.uuid}`, '_blank')}
+                                  >
+                                    View Photos
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          ) : (
+                            <TableRow>
+                              <TableCell colSpan={5} className="h-24 text-center">
+                                No photo sessions found.
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
                   </div>
-                  <div className="space-y-4">
-                    {recentActivity.map((activity) => (
-                      <div key={activity.id} className="flex items-start gap-4">
-                        <div className={`mt-0.5 rounded-full p-1.5 ${activity.isAlert ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
-                          {activity.isAlert ? <Bell className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
-                        </div>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm">{activity.action}</p>
-                          <p className="text-xs text-gray-500">{activity.time}</p>
-                        </div>
-                      </div>
-                    ))}
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="users">
+                <Card>
+                  <div className="p-6">
+                    <h2 className="text-xl font-semibold mb-4">User List</h2>
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[180px]">UUID</TableHead>
+                            <TableHead className="w-[140px]">
+                              <div className="flex items-center gap-2">
+                                <Phone className="h-4 w-4" />
+                                Phone Number
+                              </div>
+                            </TableHead>
+                            <TableHead className="w-[140px]">
+                              <div className="flex items-center gap-2">
+                                <MessageSquare className="h-4 w-4" />
+                                Telegram
+                              </div>
+                            </TableHead>
+                            <TableHead className="w-[180px]">
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4" />
+                                Last Session
+                              </div>
+                            </TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredUsers.length > 0 ? (
+                            filteredUsers.map((user) => (
+                              <TableRow key={user.id}>
+                                <TableCell className="font-medium">{user.uuid}</TableCell>
+                                <TableCell>{user.phone}</TableCell>
+                                <TableCell>{user.telegram}</TableCell>
+                                <TableCell>{user.lastSessionTimestamp}</TableCell>
+                                <TableCell className="text-right">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => window.open(`/photos/${user.uuid}`, '_blank')}
+                                  >
+                                    View Photos
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          ) : (
+                            <TableRow>
+                              <TableCell colSpan={5} className="h-24 text-center">
+                                No users found.
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
                   </div>
-                </div>
-              </section>
-            </div>
-            
-            <section className="rounded-lg border bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-medium">Upcoming Bookings</h3>
-                <a href="#" className="text-sm text-glimps-accent">View all bookings</a>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Event</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Date</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Time</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Contact</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Status</th>
-                      <th className="px-4 py-2 text-right text-sm font-medium text-gray-500">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b">
-                      <td className="px-4 py-3 text-sm">Private Party</td>
-                      <td className="px-4 py-3 text-sm">Jun 28, 2023</td>
-                      <td className="px-4 py-3 text-sm">7:00 PM - 11:00 PM</td>
-                      <td className="px-4 py-3 text-sm">Sarah Johnson</td>
-                      <td className="px-4 py-3 text-sm">
-                        <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Confirmed</span>
-                      </td>
-                      <td className="px-4 py-3 text-right text-sm">
-                        <button className="text-glimps-accent hover:text-glimps-accent/90">Details</button>
-                      </td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="px-4 py-3 text-sm">Corporate Event</td>
-                      <td className="px-4 py-3 text-sm">Jul 2, 2023</td>
-                      <td className="px-4 py-3 text-sm">6:00 PM - 9:00 PM</td>
-                      <td className="px-4 py-3 text-sm">Michael Chen</td>
-                      <td className="px-4 py-3 text-sm">
-                        <span className="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">Pending</span>
-                      </td>
-                      <td className="px-4 py-3 text-right text-sm">
-                        <button className="text-glimps-accent hover:text-glimps-accent/90">Details</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-3 text-sm">Wedding Reception</td>
-                      <td className="px-4 py-3 text-sm">Jul 15, 2023</td>
-                      <td className="px-4 py-3 text-sm">5:00 PM - 12:00 AM</td>
-                      <td className="px-4 py-3 text-sm">Jessica Williams</td>
-                      <td className="px-4 py-3 text-sm">
-                        <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Confirmed</span>
-                      </td>
-                      <td className="px-4 py-3 text-right text-sm">
-                        <button className="text-glimps-accent hover:text-glimps-accent/90">Details</button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
         </main>
       </div>
