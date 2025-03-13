@@ -13,7 +13,8 @@ import {
   MessageSquare,
   FileText,
   CircleDollarSign,
-  Store
+  Store,
+  User
 } from "lucide-react";
 
 interface SidebarProps {
@@ -36,6 +37,7 @@ const DashboardSidebar = ({ isAdmin = false }: SidebarProps) => {
 
   const venueLinks = [
     { name: "Venue Settings", icon: <Store className="w-5 h-5" />, href: "#venue-settings" },
+    { name: "Account Settings", icon: <User className="w-5 h-5" />, href: "#account-settings" },
     { name: "Support", icon: <MessageSquare className="w-5 h-5" />, href: "#support" },
     { name: "Invoices", icon: <FileText className="w-5 h-5" />, href: "#invoices" },
     { name: "Settings", icon: <Settings className="w-5 h-5" />, href: "#settings" },
