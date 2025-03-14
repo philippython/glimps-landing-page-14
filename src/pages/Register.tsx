@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { UserPlus, Eye, EyeOff } from "lucide-react";
+import { UserPlus, Eye, EyeOff, Image } from "lucide-react";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -46,6 +46,14 @@ const Register = () => {
     <div className="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
+          <NavLink to="/" className="inline-flex items-center gap-2 mb-6 justify-center">
+            <div className="flex items-center justify-center rounded-md bg-glimps-900 p-1.5">
+              <Image className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-2xl font-bold tracking-tight text-glimps-900">
+              Glimps
+            </span>
+          </NavLink>
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-glimps-900">
             Create your account
           </h2>

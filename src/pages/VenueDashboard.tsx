@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Users, 
@@ -15,7 +14,8 @@ import {
   LogOut,
   LayoutDashboard,
   BarChart3,
-  Images
+  Images,
+  Image
 } from "lucide-react";
 import {
   Table,
@@ -39,8 +39,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NavLink } from "react-router-dom";
 
-// Mock data for photo sessions
 const photoSessions = [
   {
     id: 1,
@@ -79,7 +79,6 @@ const photoSessions = [
   },
 ];
 
-// Mock data for users
 const users = [
   {
     id: 1,
@@ -140,6 +139,15 @@ const VenueDashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="border-b bg-white">
         <div className="flex h-16 items-center gap-4 px-6">
+          <NavLink to="/" className="flex items-center gap-2">
+            <div className="flex items-center justify-center rounded-md bg-glimps-900 p-1.5">
+              <Image className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-2xl font-bold tracking-tight text-glimps-900">
+              Glimps
+            </span>
+          </NavLink>
+          
           <div className="flex-1">
             <h1 className="text-lg font-semibold">Venue Dashboard</h1>
           </div>
