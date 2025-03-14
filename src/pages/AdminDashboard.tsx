@@ -1,23 +1,59 @@
 
-import DashboardSidebar from "../components/DashboardSidebar";
+import { useState } from "react";
 import { 
-  BarChart3, 
-  Building, 
-  TrendingUp, 
-  Camera, 
-  CircleDollarSign, 
-  AlertCircle,
+  Users, 
+  Camera,
   Bell,
   Search,
   ChevronDown,
-  ArrowUpRight,
-  ArrowDownRight,
-  MapPin,
+  Store,
+  User,
+  Settings,
+  LogOut,
+  LayoutDashboard,
+  BarChart3,
+  Image,
+  Building,
+  TrendingUp,
+  CircleDollarSign,
+  AlertCircle,
+  Calendar,
+  Phone,
+  MessageSquare,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Edit
 } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import VenueSettings from "../components/VenueSettings";
+import AccountSettings from "../components/AccountSettings";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { NavLink } from "react-router-dom";
+import DashboardSidebar from "../components/DashboardSidebar";
 
 const AdminDashboard = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [selectedVenue, setSelectedVenue] = useState(null);
+  
+  // Sample data for admin dashboard
   const stats = [
     {
       name: "Total Venues",
@@ -49,106 +85,165 @@ const AdminDashboard = () => {
     },
   ];
 
-  const topVenues = [
-    {
-      name: "Urban Lounge",
-      location: "New York, NY",
-      revenue: "$8,245",
-      photos: "45,231",
-      status: "Active",
-      growth: 12.4,
-      isPositive: true,
-    },
-    {
-      name: "Sky Bar",
-      location: "Los Angeles, CA",
-      revenue: "$7,891",
-      photos: "38,129",
-      status: "Active",
-      growth: 8.7,
-      isPositive: true,
-    },
-    {
-      name: "The Capitol",
-      location: "Washington, DC",
-      revenue: "$6,452",
-      photos: "32,456",
-      status: "Active",
-      growth: -2.3,
-      isPositive: false,
-    },
-    {
-      name: "Midnight Club",
-      location: "Miami, FL",
-      revenue: "$5,934",
-      photos: "29,874",
-      status: "Active",
-      growth: 5.1,
-      isPositive: true,
-    },
-    {
-      name: "Azure",
-      location: "Chicago, IL",
-      revenue: "$5,127",
-      photos: "27,129",
-      status: "Maintenance",
-      growth: 0,
-      isPositive: false,
-    },
-  ];
-
-  const pendingIssues = [
+  const photoSessions = [
     {
       id: 1,
-      venue: "Midnight Club",
-      issue: "Touchscreen calibration issue",
-      priority: "High",
-      date: "Jun 24, 2023",
-      status: "In Progress",
+      uuid: "a1b2c3d4-e5f6",
+      venue: "The Venue Club",
+      phone: "+1 (555) 123-4567",
+      telegram: "@user123",
+      timestamp: "2023-06-15 19:32",
     },
     {
       id: 2,
+      uuid: "g7h8i9j0-k1l2",
       venue: "Sky Bar",
-      issue: "Printer not responding",
-      priority: "Medium",
-      date: "Jun 25, 2023",
-      status: "Open",
+      phone: "+1 (555) 987-6543",
+      telegram: "@partyfriend42",
+      timestamp: "2023-06-14 21:15",
     },
     {
       id: 3,
-      venue: "Azure",
-      issue: "Software update failed",
-      priority: "High",
-      date: "Jun 25, 2023",
-      status: "Open",
-    },
-  ];
-
-  const recentAlerts = [
-    {
-      id: 1,
-      venue: "The Capitol",
-      alert: "Photobooth #3 offline for 2 hours",
-      time: "Just now",
-    },
-    {
-      id: 2,
+      uuid: "m3n4o5p6-q7r8",
       venue: "Urban Lounge",
-      alert: "High usage detected",
-      time: "3 hours ago",
-    },
-    {
-      id: 3,
-      venue: "Blue Wave",
-      alert: "Maintenance completed",
-      time: "Yesterday",
+      phone: "+1 (555) 456-7890",
+      telegram: "@photolover",
+      timestamp: "2023-06-14 20:45",
     },
     {
       id: 4,
-      venue: "Sky Bar",
-      alert: "New issue reported",
-      time: "2 days ago",
+      uuid: "s9t0u1v2-w3x4",
+      venue: "Blue Wave",
+      phone: "+1 (555) 234-5678",
+      telegram: "@nightlife22",
+      timestamp: "2023-06-13 22:17",
     },
+    {
+      id: 5,
+      uuid: "y5z6a7b8-c9d0",
+      venue: "Midnight Club",
+      phone: "+1 (555) 345-6789",
+      telegram: "@memorycollector",
+      timestamp: "2023-06-12 21:30",
+    },
+  ];
+
+  const users = [
+    {
+      id: 1,
+      uuid: "a1b2c3d4-e5f6",
+      venue: "The Venue Club",
+      phone: "+1 (555) 123-4567",
+      telegram: "@user123",
+      lastSessionTimestamp: "2023-06-15 19:32",
+    },
+    {
+      id: 2,
+      uuid: "g7h8i9j0-k1l2",
+      venue: "Sky Bar",
+      phone: "+1 (555) 987-6543",
+      telegram: "@partyfriend42",
+      lastSessionTimestamp: "2023-06-14 21:15",
+    },
+    {
+      id: 3,
+      uuid: "m3n4o5p6-q7r8",
+      venue: "Urban Lounge",
+      phone: "+1 (555) 456-7890",
+      telegram: "@photolover",
+      lastSessionTimestamp: "2023-06-14 20:45",
+    },
+    {
+      id: 4,
+      uuid: "y5z6a7b8-c9d0",
+      venue: "Midnight Club",
+      phone: "+1 (555) 345-6789",
+      telegram: "@memorycollector",
+      lastSessionTimestamp: "2023-06-12 21:30",
+    },
+  ];
+
+  const venues = [
+    {
+      id: 1,
+      name: "The Venue Club",
+      location: "New York, NY",
+      contact: "+1 (555) 123-4567",
+      status: "Active",
+    },
+    {
+      id: 2,
+      name: "Sky Bar",
+      location: "Los Angeles, CA",
+      contact: "+1 (555) 987-6543",
+      status: "Active",
+    },
+    {
+      id: 3,
+      name: "Urban Lounge",
+      location: "Chicago, IL",
+      contact: "+1 (555) 456-7890",
+      status: "Active",
+    },
+    {
+      id: 4,
+      name: "Blue Wave",
+      location: "Miami, FL",
+      contact: "+1 (555) 234-5678",
+      status: "Active",
+    },
+    {
+      id: 5,
+      name: "Midnight Club",
+      location: "Las Vegas, NV",
+      contact: "+1 (555) 345-6789",
+      status: "Maintenance",
+    },
+    {
+      id: 6,
+      name: "Azure",
+      location: "Seattle, WA",
+      contact: "+1 (555) 678-9012",
+      status: "Active",
+    },
+    {
+      id: 7,
+      name: "The Capitol",
+      location: "Washington, DC",
+      contact: "+1 (555) 901-2345",
+      status: "Active",
+    },
+  ];
+
+  const filteredSessions = photoSessions.filter(
+    session => 
+      session.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      session.phone.includes(searchTerm) ||
+      session.telegram.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      session.venue.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  const filteredUsers = users.filter(
+    user => 
+      user.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.phone.includes(searchTerm) ||
+      user.telegram.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.venue.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredVenues = venues.filter(
+    venue => 
+      venue.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      venue.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      venue.contact.includes(searchTerm)
+  );
+
+  const navItems = [
+    { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-4 w-4" /> },
+    { id: "sessions", label: "Photo Sessions", icon: <Camera className="h-4 w-4" /> },
+    { id: "users", label: "Users", icon: <Users className="h-4 w-4" /> },
+    { id: "venues", label: "Venues", icon: <Store className="h-4 w-4" /> },
+    { id: "account-settings", label: "Account Settings", icon: <User className="h-4 w-4" /> },
   ];
 
   return (
@@ -158,210 +253,412 @@ const AdminDashboard = () => {
       <div className="flex-1 overflow-auto">
         <div className="border-b bg-white">
           <div className="flex h-16 items-center gap-8 px-6">
+            <NavLink to="/" className="flex items-center gap-2">
+              <div className="flex items-center justify-center rounded-md bg-glimps-900 p-1.5">
+                <Image className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-2xl font-bold tracking-tight text-glimps-900">
+                Glimps
+              </span>
+            </NavLink>
+            
             <div className="flex-1">
               <h1 className="text-lg font-semibold">Admin Dashboard</h1>
             </div>
             
-            <div className="relative w-64">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-              <input
-                type="search"
-                placeholder="Search venues, issues..."
-                className="w-full rounded-full bg-gray-100 pl-9 pr-4 py-2 text-sm outline-none focus:ring-2 focus:ring-glimps-accent"
-              />
+            <div className="flex items-center gap-4">
+              <div className="relative w-64">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="w-full rounded-full bg-gray-100 pl-9 pr-4"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              
+              <button className="relative p-2 text-gray-600 hover:text-gray-700">
+                <Bell className="h-5 w-5" />
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-glimps-accent"></span>
+              </button>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 text-sm font-medium">
+                    Admin Portal
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="flex items-center gap-3 p-3">
+                    <img
+                      src="/placeholder.svg"
+                      alt="User"
+                      className="h-10 w-10 rounded-full"
+                    />
+                    <div>
+                      <div className="text-sm font-medium">Admin User</div>
+                      <div className="text-xs text-glimps-600">admin@glimps.com</div>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setActiveTab("account-settings")}>
+                    <User className="mr-2 h-4 w-4" />
+                    Account Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <a href="/" className="flex w-full items-center">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign out
+                    </a>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            
-            <button className="relative p-2 text-gray-600 hover:text-gray-700">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-glimps-accent"></span>
-            </button>
-            
-            <button className="flex items-center gap-2 text-sm font-medium">
-              Admin Portal
-              <ChevronDown className="h-4 w-4" />
-            </button>
+          </div>
+          
+          <div className="border-t px-6">
+            <nav className="flex space-x-4">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  className={`flex items-center gap-2 py-3 px-2 text-sm font-medium transition-colors border-b-2 ${
+                    activeTab === item.id
+                      ? "border-glimps-900 text-glimps-900"
+                      : "border-transparent text-glimps-600 hover:text-glimps-900"
+                  }`}
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setSelectedVenue(null);
+                  }}
+                >
+                  {item.icon}
+                  {item.label}
+                </button>
+              ))}
+            </nav>
           </div>
         </div>
-        
+          
         <main className="p-6">
           <div className="grid gap-6">
-            <section>
-              <h2 className="text-xl font-semibold mb-5">System Overview</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, index) => (
-                  <div key={index} className="rounded-lg border bg-white p-5 shadow-sm">
-                    <div className="flex justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">{stat.name}</p>
-                        <p className="text-2xl font-bold">{stat.value}</p>
-                      </div>
-                      <div className="rounded-full bg-glimps-50 p-3">
-                        {stat.icon}
-                      </div>
-                    </div>
-                    <p className={`mt-2 text-xs font-medium ${stat.isPositive ? 'text-green-500' : 'text-red-500'}`}>
-                      {stat.change} from last month
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <section className="lg:col-span-2 rounded-lg border bg-white shadow-sm">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-medium">Top Performing Venues</h3>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">This Month</span>
-                      <ChevronDown className="h-4 w-4" />
-                    </div>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="whitespace-nowrap px-4 py-2 text-left text-sm font-medium text-gray-500">Venue</th>
-                          <th className="whitespace-nowrap px-4 py-2 text-left text-sm font-medium text-gray-500">Revenue</th>
-                          <th className="whitespace-nowrap px-4 py-2 text-left text-sm font-medium text-gray-500">Photos</th>
-                          <th className="whitespace-nowrap px-4 py-2 text-left text-sm font-medium text-gray-500">Growth</th>
-                          <th className="whitespace-nowrap px-4 py-2 text-left text-sm font-medium text-gray-500">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {topVenues.map((venue, index) => (
-                          <tr key={index} className="border-b last:border-0">
-                            <td className="whitespace-nowrap px-4 py-3">
-                              <div>
-                                <div className="font-medium">{venue.name}</div>
-                                <div className="text-xs text-gray-500 flex items-center">
-                                  <MapPin className="h-3 w-3 mr-1" />
-                                  {venue.location}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="whitespace-nowrap px-4 py-3 font-medium">{venue.revenue}</td>
-                            <td className="whitespace-nowrap px-4 py-3 text-gray-600">{venue.photos}</td>
-                            <td className="whitespace-nowrap px-4 py-3">
-                              <div className={`flex items-center ${venue.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                                {venue.isPositive ? (
-                                  <ArrowUpRight className="h-4 w-4 mr-1" />
-                                ) : venue.growth === 0 ? (
-                                  <span className="text-gray-500">—</span>
-                                ) : (
-                                  <ArrowDownRight className="h-4 w-4 mr-1" />
-                                )}
-                                {venue.growth === 0 ? '0%' : `${Math.abs(venue.growth)}%`}
-                              </div>
-                            </td>
-                            <td className="whitespace-nowrap px-4 py-3">
-                              <span 
-                                className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                                  venue.status === 'Active' 
-                                    ? 'bg-green-100 text-green-800' 
-                                    : 'bg-orange-100 text-orange-800'
-                                }`}
-                              >
-                                {venue.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </section>
-              
-              <section className="rounded-lg border bg-white shadow-sm overflow-hidden">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium">Recent Alerts</h3>
-                    <a href="#" className="text-sm text-glimps-accent">View all</a>
-                  </div>
-                  <div className="space-y-4">
-                    {recentAlerts.map((alert) => (
-                      <div key={alert.id} className="flex items-start gap-4">
-                        <div className="mt-0.5 rounded-full p-1.5 bg-yellow-100 text-yellow-600">
-                          <AlertCircle className="h-3 w-3" />
-                        </div>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm font-medium">{alert.venue}</p>
-                          <p className="text-sm">{alert.alert}</p>
-                          <p className="text-xs text-gray-500">{alert.time}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-            </div>
-            
-            <section className="rounded-lg border bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-medium">Pending Issues</h3>
-                <a href="#" className="text-sm text-glimps-accent">View all issues</a>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Venue</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Issue</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Priority</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Date</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Status</th>
-                      <th className="px-4 py-2 text-right text-sm font-medium text-gray-500">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pendingIssues.map((issue) => (
-                      <tr key={issue.id} className="border-b">
-                        <td className="px-4 py-3 text-sm font-medium">{issue.venue}</td>
-                        <td className="px-4 py-3 text-sm">{issue.issue}</td>
-                        <td className="px-4 py-3 text-sm">
-                          <span 
-                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                              issue.priority === 'High' 
-                                ? 'bg-red-100 text-red-800' 
-                                : issue.priority === 'Medium'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-blue-100 text-blue-800'
-                            }`}
-                          >
-                            {issue.priority}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-sm">{issue.date}</td>
-                        <td className="px-4 py-3 text-sm">
-                          <span 
-                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                              issue.status === 'Open' 
-                                ? 'bg-orange-100 text-orange-800' 
-                                : issue.status === 'In Progress'
-                                ? 'bg-blue-100 text-blue-800'
-                                : 'bg-green-100 text-green-800'
-                            }`}
-                          >
-                            {issue.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-right text-sm">
-                          <div className="flex justify-end gap-2">
-                            <button className="rounded-full p-1 text-green-600 hover:bg-green-50">
-                              <CheckCircle2 className="h-4 w-4" />
-                            </button>
-                            <button className="rounded-full p-1 text-red-600 hover:bg-red-50">
-                              <XCircle className="h-4 w-4" />
-                            </button>
+            {activeTab === "dashboard" && (
+              <>
+                <section>
+                  <h2 className="text-xl font-semibold mb-5">System Overview</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {stats.map((stat, index) => (
+                      <div key={index} className="rounded-lg border bg-white p-5 shadow-sm">
+                        <div className="flex justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">{stat.name}</p>
+                            <p className="text-2xl font-bold">{stat.value}</p>
                           </div>
-                        </td>
-                      </tr>
+                          <div className="rounded-full bg-glimps-50 p-3">
+                            {stat.icon}
+                          </div>
+                        </div>
+                        <p className={`mt-2 text-xs font-medium ${stat.isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                          {stat.change} from last month
+                        </p>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
+                  </div>
+                </section>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card>
+                    <div className="p-6">
+                      <h2 className="text-xl font-semibold mb-4">Recent Photo Sessions</h2>
+                      <div className="rounded-md border">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Venue</TableHead>
+                              <TableHead>User</TableHead>
+                              <TableHead>Time</TableHead>
+                              <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {photoSessions.slice(0, 5).map((session) => (
+                              <TableRow key={session.id}>
+                                <TableCell className="font-medium">{session.venue}</TableCell>
+                                <TableCell>{session.telegram}</TableCell>
+                                <TableCell>{session.timestamp}</TableCell>
+                                <TableCell className="text-right">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => window.open(`/photos/${session.uuid}`, '_blank')}
+                                  >
+                                    View
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  </Card>
+                  
+                  <Card>
+                    <div className="p-6">
+                      <h2 className="text-xl font-semibold mb-4">Venue Status</h2>
+                      <div className="rounded-md border">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Venue</TableHead>
+                              <TableHead>Location</TableHead>
+                              <TableHead>Status</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {venues.slice(0, 5).map((venue) => (
+                              <TableRow key={venue.id}>
+                                <TableCell className="font-medium">{venue.name}</TableCell>
+                                <TableCell>{venue.location}</TableCell>
+                                <TableCell>
+                                  <span 
+                                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                                      venue.status === 'Active' 
+                                        ? 'bg-green-100 text-green-800' 
+                                        : 'bg-orange-100 text-orange-800'
+                                    }`}
+                                  >
+                                    {venue.status}
+                                  </span>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </>
+            )}
+                
+            {activeTab === "sessions" && (
+              <Card>
+                <div className="p-6">
+                  <h2 className="text-xl font-semibold mb-4">All Photo Sessions</h2>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[180px]">UUID</TableHead>
+                          <TableHead className="w-[140px]">
+                            <div className="flex items-center gap-2">
+                              <Store className="h-4 w-4" />
+                              Venue
+                            </div>
+                          </TableHead>
+                          <TableHead className="w-[140px]">
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-4 w-4" />
+                              Phone Number
+                            </div>
+                          </TableHead>
+                          <TableHead className="w-[140px]">
+                            <div className="flex items-center gap-2">
+                              <MessageSquare className="h-4 w-4" />
+                              Telegram
+                            </div>
+                          </TableHead>
+                          <TableHead className="w-[180px]">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4" />
+                              Timestamp
+                            </div>
+                          </TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredSessions.length > 0 ? (
+                          filteredSessions.map((session) => (
+                            <TableRow key={session.id}>
+                              <TableCell className="font-medium">{session.uuid}</TableCell>
+                              <TableCell>{session.venue}</TableCell>
+                              <TableCell>{session.phone}</TableCell>
+                              <TableCell>{session.telegram}</TableCell>
+                              <TableCell>{session.timestamp}</TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => window.open(`/photos/${session.uuid}`, '_blank')}
+                                >
+                                  View Photos
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={6} className="h-24 text-center">
+                              No photo sessions found.
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </Card>
+            )}
+                
+            {activeTab === "users" && (
+              <Card>
+                <div className="p-6">
+                  <h2 className="text-xl font-semibold mb-4">All Users</h2>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[180px]">UUID</TableHead>
+                          <TableHead className="w-[140px]">
+                            <div className="flex items-center gap-2">
+                              <Store className="h-4 w-4" />
+                              Venue
+                            </div>
+                          </TableHead>
+                          <TableHead className="w-[140px]">
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-4 w-4" />
+                              Phone Number
+                            </div>
+                          </TableHead>
+                          <TableHead className="w-[140px]">
+                            <div className="flex items-center gap-2">
+                              <MessageSquare className="h-4 w-4" />
+                              Telegram
+                            </div>
+                          </TableHead>
+                          <TableHead className="w-[180px]">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4" />
+                              Last Session
+                            </div>
+                          </TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredUsers.length > 0 ? (
+                          filteredUsers.map((user) => (
+                            <TableRow key={user.id}>
+                              <TableCell className="font-medium">{user.uuid}</TableCell>
+                              <TableCell>{user.venue}</TableCell>
+                              <TableCell>{user.phone}</TableCell>
+                              <TableCell>{user.telegram}</TableCell>
+                              <TableCell>{user.lastSessionTimestamp}</TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => window.open(`/photos/${user.uuid}`, '_blank')}
+                                >
+                                  View Photos
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={6} className="h-24 text-center">
+                              No users found.
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </Card>
+            )}
+                
+            {activeTab === "venues" && !selectedVenue && (
+              <Card>
+                <div className="p-6">
+                  <h2 className="text-xl font-semibold mb-4">All Venues</h2>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[180px]">Name</TableHead>
+                          <TableHead className="w-[180px]">Location</TableHead>
+                          <TableHead className="w-[140px]">Contact</TableHead>
+                          <TableHead className="w-[100px]">Status</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredVenues.length > 0 ? (
+                          filteredVenues.map((venue) => (
+                            <TableRow key={venue.id}>
+                              <TableCell className="font-medium">{venue.name}</TableCell>
+                              <TableCell>{venue.location}</TableCell>
+                              <TableCell>{venue.contact}</TableCell>
+                              <TableCell>
+                                <span 
+                                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                                    venue.status === 'Active' 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-orange-100 text-orange-800'
+                                  }`}
+                                >
+                                  {venue.status}
+                                </span>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setSelectedVenue(venue)}
+                                >
+                                  <Edit className="h-4 w-4 mr-1" />
+                                  Edit
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={5} className="h-24 text-center">
+                              No venues found.
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </Card>
+            )}
+                
+            {activeTab === "venues" && selectedVenue && (
+              <div className="mb-6">
+                <Button
+                  variant="outline"
+                  className="mb-4"
+                  onClick={() => setSelectedVenue(null)}
+                >
+                  ← Back to Venues
+                </Button>
+                <VenueSettings />
               </div>
-            </section>
+            )}
+                
+            {activeTab === "account-settings" && (
+              <AccountSettings />
+            )}
           </div>
         </main>
       </div>
