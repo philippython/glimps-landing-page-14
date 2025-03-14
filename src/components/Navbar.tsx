@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Image } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,7 +37,10 @@ const Navbar = () => {
       }`}
     >
       <div className="container mx-auto flex items-center justify-between">
-        <NavLink to="/" className="flex items-center">
+        <NavLink to="/" className="flex items-center gap-2">
+          <div className="flex items-center justify-center rounded-md bg-glimps-900 p-1.5">
+            <Image className="h-5 w-5 text-white" />
+          </div>
           <span className="text-2xl font-bold tracking-tight text-glimps-900">
             Glimps
           </span>
