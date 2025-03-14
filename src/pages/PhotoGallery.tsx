@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, NavLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Download, ImageIcon } from "lucide-react";
+import { Download, ImageIcon, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -64,6 +64,14 @@ const PhotoGallery = () => {
   if (!uuid) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
+        <NavLink to="/" className="flex items-center gap-2 mb-6 justify-center">
+          <div className="flex items-center justify-center rounded-md bg-glimps-900 p-1.5">
+            <Image className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-2xl font-bold tracking-tight text-glimps-900">
+            Glimps
+          </span>
+        </NavLink>
         <h1 className="text-2xl font-bold text-glimps-900 mb-4">Invalid Gallery Link</h1>
         <p className="text-glimps-600">No photo gallery ID was provided. Please check your link and try again.</p>
       </div>
@@ -73,6 +81,14 @@ const PhotoGallery = () => {
   if (error) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
+        <NavLink to="/" className="flex items-center gap-2 mb-6 justify-center">
+          <div className="flex items-center justify-center rounded-md bg-glimps-900 p-1.5">
+            <Image className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-2xl font-bold tracking-tight text-glimps-900">
+            Glimps
+          </span>
+        </NavLink>
         <h1 className="text-2xl font-bold text-glimps-900 mb-4">Error Loading Gallery</h1>
         <p className="text-glimps-600">We couldn't load your photos. Please check your link and try again.</p>
       </div>
@@ -84,12 +100,22 @@ const PhotoGallery = () => {
       <header className="bg-white border-b">
         <div className="container mx-auto px-4 py-6">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-glimps-900">Your Glimps Photos</h1>
+            <div className="flex items-center gap-6">
+              <NavLink to="/" className="flex items-center gap-2">
+                <div className="flex items-center justify-center rounded-md bg-glimps-900 p-1.5">
+                  <Image className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-2xl font-bold tracking-tight text-glimps-900">
+                  Glimps
+                </span>
+              </NavLink>
               {data && (
-                <p className="text-glimps-600">
-                  {data.eventName} • {data.date}
-                </p>
+                <div>
+                  <h1 className="text-2xl font-bold text-glimps-900">Your Glimps Photos</h1>
+                  <p className="text-glimps-600">
+                    {data.eventName} • {data.date}
+                  </p>
+                </div>
               )}
             </div>
             <div className="flex items-center space-x-2">
