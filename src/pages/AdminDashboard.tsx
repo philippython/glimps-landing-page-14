@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Users, 
@@ -216,7 +215,6 @@ const AdminDashboard = () => {
             <span className="text-2xl font-bold tracking-tight text-glimps-900">
               Glimps
             </span>
-            <span className="ml-2 text-xs bg-glimps-900 text-white px-2 py-0.5 rounded-full">Admin</span>
           </NavLink>
           
           <div className="flex-1">
