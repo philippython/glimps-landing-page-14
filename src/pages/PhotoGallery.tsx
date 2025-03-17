@@ -2,12 +2,18 @@
 import { useState, useEffect } from "react";
 import { useParams, NavLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Download, ImageIcon, Image } from "lucide-react";
+import { Download, ImageIcon, Image, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import ImageWithFallback from "@/components/ImageWithFallback";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Mock API function to fetch photos by UUID
 const fetchPhotosByUuid = async (uuid: string) => {
@@ -35,12 +41,26 @@ const fetchPhotosByUuid = async (uuid: string) => {
 
 const PhotoGallery = () => {
   const { uuid } = useParams<{ uuid: string }>();
+  const [language, setLanguage] = useState("English");
   
   const { data, isLoading, error } = useQuery({
     queryKey: ['photos', uuid],
     queryFn: () => fetchPhotosByUuid(uuid || ''),
     enabled: !!uuid,
   });
+
+  const languages = [
+    { name: "English", code: "en" },
+    { name: "Español", code: "es" },
+    { name: "Français", code: "fr" },
+    { name: "Deutsch", code: "de" },
+  ];
+
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    // Here you would typically call a function to change the app's language
+    console.log(`Language changed to ${lang}`);
+  };
 
   const handleDownload = (url: string, name: string) => {
     fetch(url)
@@ -118,7 +138,26 @@ const PhotoGallery = () => {
                 </div>
               )}
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
+              {/* Language Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center text-glimps-700 hover:text-glimps-accent transition-colors">
+                  <Globe className="h-5 w-5 mr-1" />
+                  <span className="text-sm font-medium">{language}</span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white">
+                  {languages.map((lang) => (
+                    <DropdownMenuItem 
+                      key={lang.code}
+                      onClick={() => handleLanguageChange(lang.name)}
+                      className="cursor-pointer"
+                    >
+                      {lang.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
               <Button
                 variant="outline"
                 onClick={() => {

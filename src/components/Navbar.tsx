@@ -1,11 +1,18 @@
 
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { Menu, X, Image } from "lucide-react";
+import { Menu, X, Image, Globe } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [language, setLanguage] = useState("English");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,6 +34,19 @@ const Navbar = () => {
     { name: "Pricing", path: "/pricing" },
     { name: "About", path: "/about" },
   ];
+
+  const languages = [
+    { name: "English", code: "en" },
+    { name: "Español", code: "es" },
+    { name: "Français", code: "fr" },
+    { name: "Deutsch", code: "de" },
+  ];
+
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    // Here you would typically call a function to change the app's language
+    console.log(`Language changed to ${lang}`);
+  };
 
   return (
     <nav
@@ -64,6 +84,25 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center space-x-4">
+          {/* Language Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center text-glimps-700 hover:text-glimps-accent transition-colors">
+              <Globe className="h-5 w-5 mr-1" />
+              <span className="text-base font-medium">{language}</span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-white">
+              {languages.map((lang) => (
+                <DropdownMenuItem 
+                  key={lang.code}
+                  onClick={() => handleLanguageChange(lang.name)}
+                  className="cursor-pointer"
+                >
+                  {lang.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <NavLink
             to="/login"
             className="text-base font-medium text-glimps-700 hover:text-glimps-accent transition-colors"
@@ -114,6 +153,31 @@ const Navbar = () => {
                 {link.name}
               </NavLink>
             ))}
+            
+            {/* Mobile Language Selector */}
+            <div className="py-3 border-b border-gray-100">
+              <div className="flex items-center text-glimps-800 mb-2">
+                <Globe className="h-5 w-5 mr-2" />
+                <span>Language</span>
+              </div>
+              <div className="pl-7 flex flex-col space-y-2">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    className={`text-left ${
+                      language === lang.name ? "text-glimps-accent font-medium" : "text-glimps-700"
+                    }`}
+                    onClick={() => {
+                      handleLanguageChange(lang.name);
+                      setIsOpen(false);
+                    }}
+                  >
+                    {lang.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
             <NavLink
               to="/login"
               className="text-lg py-3 border-b border-gray-100 text-glimps-800"

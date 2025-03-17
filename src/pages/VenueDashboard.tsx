@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { 
   Users, 
@@ -12,10 +13,8 @@ import {
   User,
   Settings,
   LogOut,
-  LayoutDashboard,
-  BarChart3,
-  Images,
-  Image
+  Image,
+  Globe
 } from "lucide-react";
 import {
   Table,
@@ -28,7 +27,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VenueSettings from "../components/VenueSettings";
 import AccountSettings from "../components/AccountSettings";
 import {
@@ -113,6 +111,7 @@ const users = [
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("sessions");
+  const [language, setLanguage] = useState("English");
   
   const filteredSessions = photoSessions.filter(
     session => 
@@ -127,6 +126,19 @@ const VenueDashboard = () => {
       user.phone.includes(searchTerm) ||
       user.telegram.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const languages = [
+    { name: "English", code: "en" },
+    { name: "Español", code: "es" },
+    { name: "Français", code: "fr" },
+    { name: "Deutsch", code: "de" },
+  ];
+
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    // Here you would typically call a function to change the app's language
+    console.log(`Language changed to ${lang}`);
+  };
 
   const navItems = [
     { id: "sessions", label: "Photo Sessions", icon: <Camera className="h-4 w-4" /> },
@@ -176,7 +188,7 @@ const VenueDashboard = () => {
                   <ChevronDown className="h-4 w-4" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-56 bg-white">
                 <div className="flex items-center gap-3 p-3">
                   <img
                     src="/placeholder.svg"
@@ -196,6 +208,26 @@ const VenueDashboard = () => {
                 <DropdownMenuItem onClick={() => setActiveTab("venue-settings")}>
                   <Store className="mr-2 h-4 w-4" />
                   Venue Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Globe className="mr-2 h-4 w-4" />
+                  Language: {language}
+                  <ChevronDown className="ml-auto h-4 w-4" />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="hidden" />
+                    <DropdownMenuContent align="end" side="right" className="bg-white">
+                      {languages.map((lang) => (
+                        <DropdownMenuItem 
+                          key={lang.code}
+                          onClick={() => handleLanguageChange(lang.name)}
+                          className="cursor-pointer"
+                        >
+                          {lang.name}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
