@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
-import { convertDateTime } from "@/lib/utils";
+import { convertDateTime, convertOnlyDate } from "@/lib/utils";
 
 type Photo = {
   photo_url: string,
@@ -38,6 +38,8 @@ const PhotoGallery = () => {
     queryFn: () => fetchPhotosFromApi(uuid),
     enabled: !!uuid,
   });
+
+  const photoName = (index: number) => `Glimps photo ${convertOnlyDate(data.created_at)} (${index + 1})`;
 
   const languages = [
     { name: "English", code: "en" },
@@ -123,7 +125,6 @@ const PhotoGallery = () => {
                 <div>
                   <h1 className="text-2xl font-bold text-glimps-900">Your Glimps Photos</h1>
                   <p className="text-glimps-600">
-                    {/* {data.eventName} • {data.date} */}
                     {convertDateTime(data.created_at)} • {data.photos.length} photos
                   </p>
                 </div>
@@ -153,9 +154,9 @@ const PhotoGallery = () => {
                 variant="outline"
                 onClick={() => {
                   if (data?.photos) {
-                    data.photos.forEach(photo => {
+                    data.photos.forEach((photo, index) => {
                       setTimeout(() => {
-                        handleDownload(photo.photo_url, "Glimps Photo");
+                        handleDownload(photo.photo_url, photoName(index));
                       }, 300);
                     });
                     toast.success("Downloading all photos");
@@ -187,7 +188,7 @@ const PhotoGallery = () => {
           </div>
         ) : data?.photos && data.photos.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.photos.map((photo) => (
+            {data.photos.map((photo, index) => (
               <Card key={photo.photo_url} className="overflow-hidden group">
                 <div className="relative pt-[75%] bg-gray-100">
                   <ImageWithFallback
@@ -197,10 +198,10 @@ const PhotoGallery = () => {
                   />
                 </div>
                 <div className="p-4 flex justify-between items-center">
-                  {/* <p className="font-medium">{photo.name}</p> */}
+                  <p className="font-medium">{photoName(index)}</p>
                   <Button
                     size="sm"
-                    onClick={() => handleDownload(photo.photo_url, "Glimps Photo")}
+                    onClick={() => handleDownload(photo.photo_url, photoName(index))}
                     className="transition-all"
                   >
                     <Download className="h-4 w-4 mr-2" />

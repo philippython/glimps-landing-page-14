@@ -10,3 +10,9 @@ export function convertDateTime(timestamp: string) {
   const date = new Date(timestamp);
   return date.toLocaleString();
 }
+
+// Only date, no time
+export function convertOnlyDate(timestamp: string) {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString();
+}
