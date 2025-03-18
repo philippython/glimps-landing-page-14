@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
+import { convertDateTime } from "@/lib/utils";
 
 type Photo = {
   photo_url: string,
@@ -122,7 +123,8 @@ const PhotoGallery = () => {
                 <div>
                   <h1 className="text-2xl font-bold text-glimps-900">Your Glimps Photos</h1>
                   <p className="text-glimps-600">
-                    {data.eventName} • {data.date}
+                    {/* {data.eventName} • {data.date} */}
+                    {convertDateTime(data.created_at)} • {data.photos.length} photos
                   </p>
                 </div>
               )}
