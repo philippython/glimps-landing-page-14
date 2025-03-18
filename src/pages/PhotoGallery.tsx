@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, NavLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Download, ImageIcon, Image, Globe } from "lucide-react";
@@ -14,38 +14,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-// Mock API function to fetch photos by UUID
-const fetchPhotosByUuid = async (uuid: string) => {
-  // This would be replaced with an actual API call in production
-  console.log(`Fetching photos for UUID: ${uuid}`);
-  
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Mock response
-  return {
-    uuid,
-    eventName: "Sample Event",
-    date: new Date().toLocaleDateString(),
-    photos: [
-      { id: 1, url: "https://source.unsplash.com/random/800x600?party&sig=1", name: "Photo 1" },
-      { id: 2, url: "https://source.unsplash.com/random/800x600?party&sig=2", name: "Photo 2" },
-      { id: 3, url: "https://source.unsplash.com/random/800x600?party&sig=3", name: "Photo 3" },
-      { id: 4, url: "https://source.unsplash.com/random/800x600?party&sig=4", name: "Photo 4" },
-      { id: 5, url: "https://source.unsplash.com/random/800x600?party&sig=5", name: "Photo 5" },
-      { id: 6, url: "https://source.unsplash.com/random/800x600?party&sig=6", name: "Photo 6" },
-    ]
-  };
-};
+import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
 
 const PhotoGallery = () => {
   const { uuid } = useParams<{ uuid: string }>();
   const [language, setLanguage] = useState("English");
-  
   const { data, isLoading, error } = useQuery({
     queryKey: ['photos', uuid],
-    queryFn: () => fetchPhotosByUuid(uuid || ''),
+    queryFn: () => fetchPhotosFromApi(uuid),
     enabled: !!uuid,
   });
 
@@ -147,7 +123,7 @@ const PhotoGallery = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-white">
                   {languages.map((lang) => (
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       key={lang.code}
                       onClick={() => handleLanguageChange(lang.name)}
                       className="cursor-pointer"
@@ -157,14 +133,14 @@ const PhotoGallery = () => {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-              
+
               <Button
                 variant="outline"
                 onClick={() => {
                   if (data?.photos) {
                     data.photos.forEach(photo => {
                       setTimeout(() => {
-                        handleDownload(photo.url, photo.name);
+                        handleDownload(photo.photo_url, "Glimps Photo");
                       }, 300);
                     });
                     toast.success("Downloading all photos");
@@ -197,19 +173,19 @@ const PhotoGallery = () => {
         ) : data?.photos && data.photos.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.photos.map((photo) => (
-              <Card key={photo.id} className="overflow-hidden group">
+              <Card key={photo.photo_url} className="overflow-hidden group">
                 <div className="relative pt-[75%] bg-gray-100">
                   <ImageWithFallback
-                    src={photo.url}
-                    alt={photo.name}
+                    src={photo.photo_url}
+                    alt="Your photo"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 </div>
                 <div className="p-4 flex justify-between items-center">
                   <p className="font-medium">{photo.name}</p>
-                  <Button 
-                    size="sm" 
-                    onClick={() => handleDownload(photo.url, photo.name)}
+                  <Button
+                    size="sm"
+                    onClick={() => handleDownload(photo.photo_url, "Glimps Photo")}
                     className="transition-all"
                   >
                     <Download className="h-4 w-4 mr-2" />
