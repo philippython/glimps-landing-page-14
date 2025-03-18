@@ -16,10 +16,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
 
+type Photo = {
+  photo_url: string,
+  sent: boolean
+}
+
+interface PhotosDataFromApi {
+  id: string,
+  photos: Photo[],
+  sent: boolean,
+  synced: boolean,
+  created_at: string
+}
+
 const PhotoGallery = () => {
   const { uuid } = useParams<{ uuid: string }>();
   const [language, setLanguage] = useState("English");
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
     queryKey: ['photos', uuid],
     queryFn: () => fetchPhotosFromApi(uuid),
     enabled: !!uuid,
@@ -182,7 +195,7 @@ const PhotoGallery = () => {
                   />
                 </div>
                 <div className="p-4 flex justify-between items-center">
-                  <p className="font-medium">{photo.name}</p>
+                  {/* <p className="font-medium">{photo.name}</p> */}
                   <Button
                     size="sm"
                     onClick={() => handleDownload(photo.photo_url, "Glimps Photo")}
