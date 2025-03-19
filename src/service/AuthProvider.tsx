@@ -1,8 +1,24 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-const AuthContext = createContext(null);
+export type User = {
+  email: string;
+  name: string;
+}
 
-export const AuthProvider = ({ children }) => {
+export interface AuthContextType {
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+  loading: boolean;
+}
+
+type AuthProviderProps = {
+  children: React.ReactNode;
+}
+
+const AuthContext = createContext<AuthContextType>(null);
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +49,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
