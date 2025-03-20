@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import { 
-  Users, 
+import {
+  Users,
   Camera,
   Bell,
   Search,
@@ -38,6 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "@/auth/AuthProvider";
 
 const photoSessions = [
   {
@@ -112,16 +113,17 @@ const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("sessions");
   const [language, setLanguage] = useState("English");
-  
+  const { logout } = useAuth();
+
   const filteredSessions = photoSessions.filter(
-    session => 
+    session =>
       session.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
       session.phone.includes(searchTerm) ||
       session.telegram.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
   const filteredUsers = users.filter(
-    user => 
+    user =>
       user.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.phone.includes(searchTerm) ||
       user.telegram.toLowerCase().includes(searchTerm.toLowerCase())
@@ -159,11 +161,11 @@ const VenueDashboard = () => {
               Glimps
             </span>
           </NavLink>
-          
+
           <div className="flex-1">
             <h1 className="text-lg font-semibold">Venue Dashboard</h1>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <div className="relative w-64">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
@@ -175,12 +177,12 @@ const VenueDashboard = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <button className="relative p-2 text-gray-600 hover:text-gray-700">
               <Bell className="h-5 w-5" />
               <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-glimps-accent"></span>
             </button>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 text-sm font-medium">
@@ -218,7 +220,7 @@ const VenueDashboard = () => {
                     <DropdownMenuTrigger className="hidden" />
                     <DropdownMenuContent align="end" side="right" className="bg-white">
                       {languages.map((lang) => (
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           key={lang.code}
                           onClick={() => handleLanguageChange(lang.name)}
                           className="cursor-pointer"
@@ -231,26 +233,25 @@ const VenueDashboard = () => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <a href="/" className="flex w-full items-center">
+                  <div onClick={logout} className="flex w-full items-center">
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign out
-                  </a>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
-        
+
         <div className="border-t px-6">
           <nav className="flex space-x-4">
             {navItems.map((item) => (
               <button
                 key={item.id}
-                className={`flex items-center gap-2 py-3 px-2 text-sm font-medium transition-colors border-b-2 ${
-                  activeTab === item.id
-                    ? "border-glimps-900 text-glimps-900"
-                    : "border-transparent text-glimps-600 hover:text-glimps-900"
-                }`}
+                className={`flex items-center gap-2 py-3 px-2 text-sm font-medium transition-colors border-b-2 ${activeTab === item.id
+                  ? "border-glimps-900 text-glimps-900"
+                  : "border-transparent text-glimps-600 hover:text-glimps-900"
+                  }`}
                 onClick={() => setActiveTab(item.id)}
               >
                 {item.icon}
@@ -260,7 +261,7 @@ const VenueDashboard = () => {
           </nav>
         </div>
       </div>
-        
+
       <main className="p-6">
         <div className="grid gap-6">
           {activeTab === "sessions" && (
@@ -325,7 +326,7 @@ const VenueDashboard = () => {
               </div>
             </Card>
           )}
-              
+
           {activeTab === "users" && (
             <Card>
               <div className="p-6">
@@ -388,11 +389,11 @@ const VenueDashboard = () => {
               </div>
             </Card>
           )}
-              
+
           {activeTab === "venue-settings" && (
             <VenueSettings />
           )}
-              
+
           {activeTab === "account-settings" && (
             <AccountSettings />
           )}

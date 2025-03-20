@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import { 
-  Users, 
+import {
+  Users,
   Camera,
   Bell,
   Search,
@@ -10,7 +10,6 @@ import {
   User,
   LogOut,
   Image,
-  Building,
   Phone,
   MessageSquare,
   Calendar,
@@ -39,13 +38,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "@/auth/AuthProvider";
 
 const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("sessions");
   const [selectedVenue, setSelectedVenue] = useState(null);
   const [language, setLanguage] = useState("English");
-  
+  const { logout } = useAuth();
+
   const photoSessions = [
     {
       id: 1,
@@ -177,15 +178,15 @@ const AdminDashboard = () => {
   ];
 
   const filteredSessions = photoSessions.filter(
-    session => 
+    session =>
       session.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
       session.phone.includes(searchTerm) ||
       session.telegram.toLowerCase().includes(searchTerm.toLowerCase()) ||
       session.venue.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
   const filteredUsers = users.filter(
-    user => 
+    user =>
       user.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.phone.includes(searchTerm) ||
       user.telegram.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -193,7 +194,7 @@ const AdminDashboard = () => {
   );
 
   const filteredVenues = venues.filter(
-    venue => 
+    venue =>
       venue.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       venue.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
       venue.contact.includes(searchTerm)
@@ -231,11 +232,11 @@ const AdminDashboard = () => {
               Glimps
             </span>
           </NavLink>
-          
+
           <div className="flex-1">
             <h1 className="text-lg font-semibold">Admin Dashboard</h1>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <div className="relative w-64">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
@@ -247,12 +248,12 @@ const AdminDashboard = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <button className="relative p-2 text-gray-600 hover:text-gray-700">
               <Bell className="h-5 w-5" />
               <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-glimps-accent"></span>
             </button>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 text-sm font-medium">
@@ -286,7 +287,7 @@ const AdminDashboard = () => {
                     <DropdownMenuTrigger className="hidden" />
                     <DropdownMenuContent align="end" side="right" className="bg-white">
                       {languages.map((lang) => (
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           key={lang.code}
                           onClick={() => handleLanguageChange(lang.name)}
                           className="cursor-pointer"
@@ -299,26 +300,25 @@ const AdminDashboard = () => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <a href="/" className="flex w-full items-center">
+                  <div onClick={logout} className="flex w-full items-center">
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign out
-                  </a>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
-        
+
         <div className="border-t px-6">
           <nav className="flex space-x-4">
             {navItems.map((item) => (
               <button
                 key={item.id}
-                className={`flex items-center gap-2 py-3 px-2 text-sm font-medium transition-colors border-b-2 ${
-                  activeTab === item.id
-                    ? "border-glimps-900 text-glimps-900"
-                    : "border-transparent text-glimps-600 hover:text-glimps-900"
-                }`}
+                className={`flex items-center gap-2 py-3 px-2 text-sm font-medium transition-colors border-b-2 ${activeTab === item.id
+                  ? "border-glimps-900 text-glimps-900"
+                  : "border-transparent text-glimps-600 hover:text-glimps-900"
+                  }`}
                 onClick={() => {
                   setActiveTab(item.id);
                   setSelectedVenue(null);
@@ -331,7 +331,7 @@ const AdminDashboard = () => {
           </nav>
         </div>
       </div>
-          
+
       <main className="flex-1 overflow-auto p-6">
         <div className="grid gap-6">
           {activeTab === "sessions" && (
@@ -403,7 +403,7 @@ const AdminDashboard = () => {
               </div>
             </Card>
           )}
-              
+
           {activeTab === "users" && (
             <Card>
               <div className="p-6">
@@ -473,7 +473,7 @@ const AdminDashboard = () => {
               </div>
             </Card>
           )}
-              
+
           {activeTab === "venues" && !selectedVenue && (
             <Card>
               <div className="p-6">
@@ -497,12 +497,11 @@ const AdminDashboard = () => {
                             <TableCell>{venue.location}</TableCell>
                             <TableCell>{venue.contact}</TableCell>
                             <TableCell>
-                              <span 
-                                className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                                  venue.status === 'Active' 
-                                    ? 'bg-green-100 text-green-800' 
-                                    : 'bg-orange-100 text-orange-800'
-                                }`}
+                              <span
+                                className={`rounded-full px-2 py-0.5 text-xs font-medium ${venue.status === 'Active'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-orange-100 text-orange-800'
+                                  }`}
                               >
                                 {venue.status}
                               </span>
@@ -532,7 +531,7 @@ const AdminDashboard = () => {
               </div>
             </Card>
           )}
-              
+
           {activeTab === "venues" && selectedVenue && (
             <div className="mb-6">
               <Button
@@ -545,7 +544,7 @@ const AdminDashboard = () => {
               <VenueSettings />
             </div>
           )}
-              
+
           {activeTab === "account-settings" && (
             <AccountSettings />
           )}
