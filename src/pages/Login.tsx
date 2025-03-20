@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LogIn, Eye, EyeOff, Image } from "lucide-react";
+import { useAuth } from "@/auth/AuthProvider";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -9,8 +10,13 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { user, login } = useAuth();
 
   const navigate = useNavigate();
+
+  if (user) {
+    navigate("/admin-dashboard");
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,21 +24,9 @@ const Login = () => {
     setError("");
 
     try {
-      // In a real app, this would authenticate with a backend
-      // For this demo, we'll simulate login based on email address
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated delay
-
-      if (email === "venue@glimps.com") {
-        navigate("/venue-dashboard");
-      } else if (email === "admin@glimps.com") {
-        navigate("/admin-dashboard");
-      } else {
-        setError("Invalid credentials. Please try again.");
-      }
-    } catch (err) {
-      setError("An error occurred during login. Please try again.");
-      console.error("Login error:", err);
-    } finally {
+      await login(email, password);
+    } catch (error) {
+      setError(error.message);
       setLoading(false);
     }
   };
@@ -78,7 +72,7 @@ const Login = () => {
               <input
                 id="email"
                 name="email"
-                type="email"
+                type="text"
                 autoComplete="email"
                 required
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-glimps-900 placeholder-glimps-400 focus:border-glimps-accent focus:outline-none focus:ring-glimps-accent sm:text-sm"
