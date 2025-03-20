@@ -34,6 +34,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (email: string, password: string) => {
     try {
       console.log("Logging in with creadential:", email, password);
+      setUser("User");
       localStorage.setItem("user", JSON.stringify("user"));
       localStorage.setItem("token", "token");
     } catch (error) {
