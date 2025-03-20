@@ -9,19 +9,19 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    
+
     try {
       // In a real app, this would authenticate with a backend
       // For this demo, we'll simulate login based on email address
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated delay
-      
+
       if (email === "venue@glimps.com") {
         navigate("/venue-dashboard");
       } else if (email === "admin@glimps.com") {
@@ -62,18 +62,18 @@ const Login = () => {
             </NavLink>
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="rounded-md bg-red-50 p-4">
               <div className="text-sm text-red-700">{error}</div>
             </div>
           )}
-          
+
           <div className="space-y-4 rounded-md">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-glimps-700">
-                Email address
+                Username
               </label>
               <input
                 id="email"
@@ -87,10 +87,10 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <p className="mt-1 text-xs text-gray-500">
-                Try: venue@glimps.com or admin@glimps.com
+                Can be username or email address
               </p>
             </div>
-            
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-glimps-700">
                 Password
@@ -119,13 +119,14 @@ const Login = () => {
                   )}
                 </button>
               </div>
-              <p className="mt-1 text-xs text-gray-500">
+              {/* <p className="mt-1 text-xs text-gray-500">
                 Use any password (this is a demo)
-              </p>
+              </p> */}
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          {/* Remember creadential and forgot password. not implemented */}
+          {/* <div className="flex items-center justify-between">
             <div className="flex items-center">
               <input
                 id="remember-me"
@@ -143,7 +144,7 @@ const Login = () => {
                 Forgot your password?
               </a>
             </div>
-          </div>
+          </div> */}
 
           <div>
             <button
@@ -158,8 +159,8 @@ const Login = () => {
             </button>
           </div>
         </form>
-        
-        <div className="mt-6">
+
+        {/* <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300" />
@@ -195,7 +196,7 @@ const Login = () => {
               </svg>
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
