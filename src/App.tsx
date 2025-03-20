@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import PhotoGallery from "./pages/PhotoGallery";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -63,18 +64,20 @@ const App = () => (
                 </>
               }
             />
-            
+
             {/* Authentication routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            
-            {/* Dashboard routes */}
-            <Route path="/venue-dashboard" element={<VenueDashboard />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            
+
+            {/* Protected routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/venue-dashboard" element={<VenueDashboard />} />
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            </Route>
+
             {/* Photo Gallery route */}
             <Route path="/photos/:uuid" element={<PhotoGallery />} />
-            
+
             {/* 404 route */}
             <Route
               path="*"
