@@ -9,7 +9,7 @@ export type UserData = {
 
 export type LogoPosition = "top_left" | "top_right" | "top_center" | "bottom_left" | "bottom_right" | "bottom_center" | "center_left" | "center_right" | "center";
 
-export interface RenterData {
+export interface VenueData {
   id: string,
   name: string,
   logo_url: string,
@@ -24,7 +24,7 @@ export interface RenterData {
 
 export interface LoginTokenResponse {
   access_token: string,
-  venue: RenterData
+  venue: VenueData | null,
 };
 
 export const fetchLoginTokenFromApi = async (username, password) => {
