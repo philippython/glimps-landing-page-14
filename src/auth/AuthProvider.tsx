@@ -1,3 +1,5 @@
+import { fetchLoginTokenFromApi } from "@/service/fetchLoginTokenFromApi";
+import { set } from "date-fns";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export type User = {
@@ -25,21 +27,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // check login status on page load
   useEffect(() => {
     const user = localStorage.getItem("user");
-    if (user) {
+    const token = localStorage.getItem("token");
+    if (user && token) {
       setUser(JSON.parse(user));
     }
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    console.log("User:", user);
+  }, [user]);
+
   const login = async (email: string, password: string) => {
     try {
-      console.log("Logging in with creadential:", email, password);
-      setUser("User");
-      localStorage.setItem("user", JSON.stringify("user"));
-      localStorage.setItem("token", "token");
+      const res = await fetchLoginTokenFromApi(email, password);
+      setUser(res.venue);
+      localStorage.setItem("user", JSON.stringify(res.venue));
+      localStorage.setItem("token", res.access_token);
     } catch (error) {
       console.error("Login error:", error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
