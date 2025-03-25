@@ -24,10 +24,10 @@ export interface VenueData {
 
 export interface LoginTokenResponse {
   access_token: string,
-  venue: VenueData | null,
+  venue: VenueData,
 };
 
-export const fetchLoginTokenFromApi = async (username, password) => {
+export const fetchLoginTokenFromApi = async (username: string, password: string) => {
   try {
     const res = await axios.post<LoginTokenResponse>(
       `${import.meta.env.VITE_API_URL}/token`,
