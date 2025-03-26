@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LogIn, Eye, EyeOff, Image } from "lucide-react";
 import { useAuth } from "@/auth/AuthProvider";
@@ -14,13 +14,15 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  if (user && user.role === "admin") {
-    navigate("/admin-dashboard");
-  }
+  useEffect(() => {
+    if (user && user.role === "admin") {
+      navigate("/admin-dashboard");
+    }
 
-  if (user && user.role === "renter") {
-    navigate("/venue-dashboard");
-  }
+    if (user && user.role === "renter") {
+      navigate("/venue-dashboard");
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -37,7 +37,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/auth/AuthProvider";
 
 const AdminDashboard = () => {
@@ -46,6 +46,12 @@ const AdminDashboard = () => {
   const [selectedVenue, setSelectedVenue] = useState(null);
   const [language, setLanguage] = useState("English");
   const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   const photoSessions = [
     {
@@ -300,7 +306,7 @@ const AdminDashboard = () => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <div onClick={logout} className="flex w-full items-center">
+                  <div onClick={handleLogout} className="flex w-full items-center">
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign out
                   </div>
