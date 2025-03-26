@@ -21,7 +21,7 @@ import { useAuth } from "./auth/AuthProvider";
 const queryClient = new QueryClient();
 
 const App = () => {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -74,9 +74,7 @@ const App = () => {
 
               {/* Protected routes */}
               <Route element={<ProtectedRoute />}>
-                {user && user.role === "renter" || "admin"
-                  && <Route path="/venue-dashboard" element={<VenueDashboard />} />
-                }
+                <Route path="/venue-dashboard" element={<VenueDashboard />} />
                 {user && user.role === "admin"
                   && <Route path="/admin-dashboard" element={<AdminDashboard />} />
                 }

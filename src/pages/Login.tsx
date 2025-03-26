@@ -14,8 +14,12 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  if (user) {
+  if (user && user.role === "admin") {
     navigate("/admin-dashboard");
+  }
+
+  if (user && user.role === "renter") {
+    navigate("/venue-dashboard");
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,7 +29,7 @@ const Login = () => {
 
     try {
       await login(email, password);
-    } catch (error) {
+    } catch (error: any) {
       setError(error.message);
       setLoading(false);
     }
