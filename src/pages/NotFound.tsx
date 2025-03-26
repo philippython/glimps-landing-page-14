@@ -6,13 +6,6 @@ import { Image } from "lucide-react";
 const NotFound = () => {
   const location = useLocation();
 
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center pt-20 pb-16 px-4 animate-fade-in">
       <NavLink to="/" className="flex items-center gap-2 mb-12">
@@ -23,7 +16,7 @@ const NotFound = () => {
           Glimps
         </span>
       </NavLink>
-      
+
       <div className="text-center max-w-xl">
         <h1 className="text-6xl font-bold text-glimps-900 mb-6">404</h1>
         <p className="text-xl text-glimps-600 mb-8">
