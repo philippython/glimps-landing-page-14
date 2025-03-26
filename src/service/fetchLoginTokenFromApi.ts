@@ -4,6 +4,7 @@ export type UserData = {
   id: string,
   email: string,
   username: string,
+  role: "renter" | "admin",
   created_at: string,
 };
 
