@@ -18,17 +18,16 @@ const AuthContext = createContext<AuthContextType>({
   venue: null,
   login: async () => { },
   logout: () => { },
-  loading: false,
+  loading: true,
 });
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<UserData | null>(null);
   const [venue, setVenue] = useState<VenueData | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // check login status on page load
   useEffect(() => {
-    setLoading(true);
     const user = localStorage.getItem("user");
     const venue = localStorage.getItem("venue");
     const token = localStorage.getItem("token");
@@ -46,7 +45,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async (email: string, password: string) => {
     try {
-      setLoading(true);
       const res = await fetchLoginTokenFromApi(email, password);
       setUser(res.venue.owner);
       setVenue(res.venue);
