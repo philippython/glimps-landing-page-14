@@ -74,8 +74,12 @@ const App = () => {
 
               {/* Protected routes */}
               <Route element={<ProtectedRoute />}>
-                <Route path="/venue-dashboard" element={<VenueDashboard />} />
-                <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                {user && user.role === "renter" || "admin"
+                  && <Route path="/venue-dashboard" element={<VenueDashboard />} />
+                }
+                {user && user.role === "admin"
+                  && <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                }
               </Route>
 
               {/* Photo Gallery route */}
