@@ -16,86 +16,90 @@ import PhotoGallery from "./pages/PhotoGallery";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./auth/ProtectedRoute";
+import { useAuth } from "./auth/AuthProvider";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <div className="flex flex-col min-h-screen">
-          <Routes>
-            {/* Public routes with navbar and footer */}
-            <Route
-              path="/"
-              element={
-                <>
-                  <Navbar />
-                  <main className="flex-grow">
-                    <Index />
-                  </main>
-                  <Footer />
-                </>
-              }
-            />
-            <Route
-              path="/pricing"
-              element={
-                <>
-                  <Navbar />
-                  <main className="flex-grow">
-                    <Pricing />
-                  </main>
-                  <Footer />
-                </>
-              }
-            />
-            <Route
-              path="/about"
-              element={
-                <>
-                  <Navbar />
-                  <main className="flex-grow">
-                    <About />
-                  </main>
-                  <Footer />
-                </>
-              }
-            />
+const App = () => {
+  const { user, loading } = useAuth();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="flex flex-col min-h-screen">
+            <Routes>
+              {/* Public routes with navbar and footer */}
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Navbar />
+                    <main className="flex-grow">
+                      <Index />
+                    </main>
+                    <Footer />
+                  </>
+                }
+              />
+              <Route
+                path="/pricing"
+                element={
+                  <>
+                    <Navbar />
+                    <main className="flex-grow">
+                      <Pricing />
+                    </main>
+                    <Footer />
+                  </>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <>
+                    <Navbar />
+                    <main className="flex-grow">
+                      <About />
+                    </main>
+                    <Footer />
+                  </>
+                }
+              />
 
-            {/* Authentication routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+              {/* Authentication routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-            {/* Protected routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/venue-dashboard" element={<VenueDashboard />} />
-              <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            </Route>
+              {/* Protected routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/venue-dashboard" element={<VenueDashboard />} />
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              </Route>
 
-            {/* Photo Gallery route */}
-            <Route path="/photos/:uuid" element={<PhotoGallery />} />
+              {/* Photo Gallery route */}
+              <Route path="/photos/:uuid" element={<PhotoGallery />} />
 
-            {/* 404 route */}
-            <Route
-              path="*"
-              element={
-                <>
-                  <Navbar />
-                  <main className="flex-grow">
-                    <NotFound />
-                  </main>
-                  <Footer />
-                </>
-              }
-            />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+              {/* 404 route */}
+              <Route
+                path="*"
+                element={
+                  <>
+                    <Navbar />
+                    <main className="flex-grow">
+                      <NotFound />
+                    </main>
+                    <Footer />
+                  </>
+                }
+              />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  )
+};
 
 export default App;
