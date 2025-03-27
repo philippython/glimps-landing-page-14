@@ -17,11 +17,19 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import { useAuth } from "./auth/AuthProvider";
+import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const { user } = useAuth();
+  const [locale, setLocale] = useState('en');
+  const [messages, setMessages] = useState({});
+
+  useEffect(() => {
+    import(`./locales/${locale}.json`).then(setMessages);
+  }, [locale]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
