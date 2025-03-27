@@ -35,11 +35,11 @@ const PhotoGallery = () => {
   const [language, setLanguage] = useState("English");
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
     queryKey: ['photos', uuid],
-    queryFn: () => fetchPhotosFromApi(uuid),
+    queryFn: () => fetchPhotosFromApi(uuid || ""),
     enabled: !!uuid,
   });
 
-  const photoName = (index: number) => `Glimps photo ${convertOnlyDate(data.created_at)} (${index + 1})`;
+  const photoName = (index: number) => `Glimps photo ${data && convertOnlyDate(data.created_at)} (${index + 1})`;
 
   const languages = [
     { name: "English", code: "en" },
