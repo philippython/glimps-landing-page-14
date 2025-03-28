@@ -1,0 +1,73 @@
+{
+  "common": {
+    "glimps": "Glimps",
+    "navbar": {
+      "home": "Home",
+      "pricing": "Pricing",
+      "about": "About",
+      "login": "Login",
+      "getStarted": "Get Started"
+    },
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "about": {},
+  "adminDashboard": {},
+  "index": {},
+  "login": {
+    "title": "Sign in to your account",
+    "optionalTitle": {
+      "or": "Or",
+      "createAnAccount": "create an account"
+    },
+    "form": {
+      "username": "Username",
+      "usernameTips": "Can be username or email address",
+      "password": "Password",
+      "button": "Sign in"
+    }
+  },
+  "notFound": {
+    "message": "Oops! We couldn't find the page you're looking for.",
+    "button": "Return to Home"
+  },
+  "photoGallery": {
+    "invalidId": {
+      "title": "Invalid Photos Link",
+      "message": "No photo found. Please check your link and try again."
+    },
+    "error": {
+      "title": "Error Loading Gallery",
+      "message": "We couldn't load your photos. Please check your link and try again."
+    },
+    "noPhotoFound": {
+      "title": "No Photos Found",
+      "message": "We couldn't find any photos for this gallery."
+    },
+    "title": "Your Glimps Photos",
+    "photos": "photos",
+    "buttons": {
+      "downloadAll": "Download All",
+      "download": "Download"
+    },
+    "footer": {
+      "trademark": "Glimps. All rights reserved.",
+      "message": "Photos are available for 30 days from the event date."
+    }
+  },
+  "pricing": {},
+  "register": {
+    "title": "Create your account",
+    "optionalTitle": {
+      "or": "Already have an account?",
+      "sign in": "Sign in"
+    },
+    "form": {
+      "username": "Username",
+      "usernameTips": "Can be username or email address",
+      "password": "Password",
+      "button": "Create account"
+    }
+  },
+  "venueDashboard": {}
+}
