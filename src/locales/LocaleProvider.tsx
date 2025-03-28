@@ -15,7 +15,7 @@ type LocaleContextType = {
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const [currentLocale, setCurrentLocale] = useState("en");
+  const [currentLocale, setCurrentLocale] = useState(import.meta.env.VITE_DEFAULT_LOCALE as string);
   const [messages, setMessages] = useState<Messages>({} as Messages);
   const [availableLocales, setAvailableLocales] = useState<locales>({});
 
