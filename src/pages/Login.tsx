@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { LogIn, Eye, EyeOff, Image } from "lucide-react";
 import { useAuth } from "@/auth/AuthProvider";
 import { FormattedMessage } from "react-intl";
+import LogoWithText from "@/components/LogoWithText";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -42,14 +43,7 @@ const Login = () => {
     <div className="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <NavLink to="/" className="inline-flex items-center gap-2 mb-6 justify-center">
-            <div className="flex items-center justify-center rounded-md bg-glimps-900 p-1.5">
-              <Image className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-2xl font-bold tracking-tight text-glimps-900">
-              Glimps
-            </span>
-          </NavLink>
+          <LogoWithText />
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-glimps-900">
             <FormattedMessage id="login.title" />
           </h2>
