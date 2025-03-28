@@ -17,28 +17,15 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import { useAuth } from "./auth/AuthProvider";
-import { useEffect, useState } from "react";
-import { IntlProvider } from 'react-intl';
-import { Messages } from "./locales/types";
-import { flattenMessages } from "./lib/utils";
+import { LocaleProvider } from "./locales/LocaleProvider";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const { user } = useAuth();
-  const [locale, setLocale] = useState('en');
-  const [messages, setMessages] = useState<Messages>({} as Messages);
-
-  useEffect(() => {
-    import(`./locales/${locale}.json`).then(setMessages);
-  }, [locale]);
-
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
 
   return (
-    <IntlProvider locale={locale} messages={flattenMessages(messages)}>
+    <LocaleProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
@@ -117,7 +104,7 @@ const App = () => {
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
-    </IntlProvider>
+    </LocaleProvider>
   )
 };
 
