@@ -4,12 +4,13 @@ import { IntlProvider } from 'react-intl';
 import { Messages } from './types';
 
 type locales = {
-  [key: string]: string;
+  "code": string,
+  "name": string
 }
 
 type LocaleContextType = {
   setLocale: (locale: string) => void;
-  availableLocales: locales;
+  availableLocales: locales[];
 };
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
@@ -17,7 +18,7 @@ const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const [currentLocale, setCurrentLocale] = useState(import.meta.env.VITE_DEFAULT_LOCALE as string);
   const [messages, setMessages] = useState<Messages>({} as Messages);
-  const [availableLocales, setAvailableLocales] = useState<locales>({});
+  const [availableLocales, setAvailableLocales] = useState<locales[]>([]);
 
   useEffect(() => {
     import('./locales.json').then(module => setAvailableLocales(module.default || module));

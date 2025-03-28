@@ -1,4 +1,10 @@
-{
-  "en": "English",
-  "ru": "Русский"
-}
+[
+  {
+    "code": "en",
+    "name": "English"
+  },
+  {
+    "code": "ru",
+    "name": "Русский"
+  }
+]
