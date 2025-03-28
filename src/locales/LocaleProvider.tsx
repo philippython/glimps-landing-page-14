@@ -11,6 +11,7 @@ type locales = {
 type LocaleContextType = {
   setLocale: (locale: string) => void;
   availableLocales: locales[];
+  currentLocale: string;
 };
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
@@ -36,10 +37,10 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     setCurrentLocale(locale);
   };
 
-  if (!messages.common) return null;
+  if (!messages.common || !availableLocales) return null;
 
   return (
-    <LocaleContext.Provider value={{ setLocale, availableLocales }}>
+    <LocaleContext.Provider value={{ setLocale, availableLocales, currentLocale }}>
       <IntlProvider locale={currentLocale} messages={flattenMessages(messages)}>
         {children}
       </IntlProvider>
