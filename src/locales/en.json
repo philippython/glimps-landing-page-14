@@ -24,7 +24,10 @@
       "username": "Username",
       "usernameTips": "Can be username or email address",
       "password": "Password",
-      "button": "Sign in"
+      "button": {
+        "signIn": "Sign in",
+        "loading": "Signing in..."
+      }
     }
   },
   "notFound": {

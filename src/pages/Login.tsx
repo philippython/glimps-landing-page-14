@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LogIn, Eye, EyeOff, Image } from "lucide-react";
 import { useAuth } from "@/auth/AuthProvider";
+import { FormattedMessage } from "react-intl";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -50,15 +51,15 @@ const Login = () => {
             </span>
           </NavLink>
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-glimps-900">
-            Sign in to your account
+            <FormattedMessage id="login.title" />
           </h2>
           <p className="mt-2 text-sm text-glimps-600">
-            Or{" "}
+            <FormattedMessage id="login.optionalTitle.or" />{" "}
             <NavLink
               to="/register"
               className="font-medium text-glimps-accent hover:text-glimps-accent/90"
             >
-              create an account
+              <FormattedMessage id="login.optionalTitle.createAnAccount" />
             </NavLink>
           </p>
         </div>
@@ -73,7 +74,7 @@ const Login = () => {
           <div className="space-y-4 rounded-md">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-glimps-700">
-                Username
+                <FormattedMessage id="login.form.username" />
               </label>
               <input
                 id="email"
@@ -87,13 +88,13 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <p className="mt-1 text-xs text-gray-500">
-                Can be username or email address
+                <FormattedMessage id="login.form.usernameTips" />
               </p>
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-glimps-700">
-                Password
+                <FormattedMessage id="login.form.password" />
               </label>
               <div className="relative mt-1">
                 <input
@@ -155,7 +156,9 @@ const Login = () => {
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                 <LogIn className="h-5 w-5 text-glimps-500 group-hover:text-glimps-400" aria-hidden="true" />
               </span>
-              {loading ? "Signing in..." : "Sign in"}
+              {loading
+                ? <FormattedMessage id="login.form.button.loading" />
+                : <FormattedMessage id="login.form.button.signIn" />}
             </button>
           </div>
         </form>
