@@ -38,11 +38,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    console.log("User:", user);
-    console.log("Venue:", venue);
-  }, [user]);
-
   const login = async (email: string, password: string) => {
     try {
       const res = await fetchLoginTokenFromApi(email, password);

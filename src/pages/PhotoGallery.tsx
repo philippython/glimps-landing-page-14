@@ -1,22 +1,16 @@
-import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Download, ImageIcon, Globe } from "lucide-react";
+import { Download, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import ImageWithFallback from "@/components/ImageWithFallback";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
 import { convertDateTime, convertOnlyDate } from "@/lib/utils";
 import LogoWithText from "@/components/LogoWithText";
 import { FormattedMessage } from "react-intl";
+import LanguagePicker from "@/components/LanguagePicker";
 
 type Photo = {
   photo_url: string,
@@ -33,7 +27,6 @@ interface PhotosDataFromApi {
 
 const PhotoGallery = () => {
   const { uuid } = useParams<{ uuid: string }>();
-  const [language, setLanguage] = useState("English");
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
     queryKey: ['photos', uuid],
     queryFn: () => fetchPhotosFromApi(uuid || ""),
@@ -41,19 +34,6 @@ const PhotoGallery = () => {
   });
 
   const photoName = (index: number) => `Glimps photo ${data && convertOnlyDate(data.created_at)} (${index + 1})`;
-
-  const languages = [
-    { name: "English", code: "en" },
-    { name: "Español", code: "es" },
-    { name: "Français", code: "fr" },
-    { name: "Deutsch", code: "de" },
-  ];
-
-  const handleLanguageChange = (lang: string) => {
-    setLanguage(lang);
-    // Here you would typically call a function to change the app's language
-    console.log(`Language changed to ${lang}`);
-  };
 
   const handleDownload = (url: string, name: string) => {
     fetch(url)
@@ -123,23 +103,7 @@ const PhotoGallery = () => {
             </div>
             <div className="flex items-center space-x-3">
               {/* Language Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center text-glimps-700 hover:text-glimps-accent transition-colors">
-                  <Globe className="h-5 w-5 mr-1" />
-                  <span className="text-sm font-medium">{language}</span>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white">
-                  {languages.map((lang) => (
-                    <DropdownMenuItem
-                      key={lang.code}
-                      onClick={() => handleLanguageChange(lang.name)}
-                      className="cursor-pointer"
-                    >
-                      {lang.name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <LanguagePicker />
 
               <Button
                 variant="outline"
@@ -155,7 +119,7 @@ const PhotoGallery = () => {
                 }}
                 disabled={isLoading || !data}
               >
-                <FormattedMessage id="photoGallery.downloadAll" />
+                <FormattedMessage id="photoGallery.buttons.downloadAll" />
               </Button>
             </div>
           </div>
@@ -196,7 +160,7 @@ const PhotoGallery = () => {
                     className="transition-all"
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    <FormattedMessage id="photoGallery.download" />
+                    <FormattedMessage id="photoGallery.buttons.download" />
                   </Button>
                 </div>
               </Card>
