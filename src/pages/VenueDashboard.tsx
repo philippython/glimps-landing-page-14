@@ -37,6 +37,7 @@ import LanguagePicker from "@/components/LanguagePicker";
 import LogoWithText from "@/components/LogoWithText";
 import { VenueUser, fetchVenueUsersFromApi } from "@/service/fetchVenueUsersFromApi";
 import { convertDateTime } from '@/lib/utils';
+import { VenuePhotos, fetchVenuePhotosFromApi } from "@/service/fetchVenuePhotosFromApi";
 
 const photoSessions = [
   {
@@ -80,6 +81,7 @@ const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("sessions");
   const [venueUsers, setVenueUsers] = useState<VenueUser[]>([]);
+  const [venuePhotos, setVenuePhotos] = useState<VenuePhotos[]>([]);
   const { user, venue, token, logout } = useAuth();
 
   useEffect(() => {
@@ -87,6 +89,10 @@ const VenueDashboard = () => {
       fetchVenueUsersFromApi(token, venue.id)
         .then((data) => setVenueUsers(data))
         .catch((error) => console.error("Error fetching venue users", error));
+
+      fetchVenuePhotosFromApi(token, venue.id)
+        .then((data) => setVenuePhotos(data))
+        .catch((error) => console.error("Error fetching venue photos", error));
     }
   }, [venue, token]);
 
@@ -97,9 +103,16 @@ const VenueDashboard = () => {
       session.telegram.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredVenuePhotos = venuePhotos.filter(
+    photo =>
+      photo.id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim()) ||
+      photo.user_id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim()) ||
+      photo.link_id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
+  );
+
   const filteredVenueUsers = venueUsers.filter(
     user =>
-      user.user_id.toLowerCase().trim().includes(searchTerm.toLowerCase())
+      user.user_id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
   );
 
   const navItems = [
@@ -202,20 +215,20 @@ const VenueDashboard = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[180px]">UUID</TableHead>
-                        <TableHead className="w-[140px]">
+                        <TableHead className="">UUID</TableHead>
+                        <TableHead className="">
                           <div className="flex items-center gap-2">
                             <Phone className="h-4 w-4" />
-                            Phone Number
+                            User UUID
                           </div>
                         </TableHead>
                         <TableHead className="w-[140px]">
                           <div className="flex items-center gap-2">
                             <MessageSquare className="h-4 w-4" />
-                            Telegram
+                            Sent to user
                           </div>
                         </TableHead>
-                        <TableHead className="w-[180px]">
+                        <TableHead className="">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4" />
                             Timestamp
@@ -225,20 +238,27 @@ const VenueDashboard = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredSessions.length > 0 ? (
-                        filteredSessions.map((session) => (
-                          <TableRow key={session.id}>
-                            <TableCell className="font-medium">{session.uuid}</TableCell>
-                            <TableCell>{session.phone}</TableCell>
-                            <TableCell>{session.telegram}</TableCell>
-                            <TableCell>{session.timestamp}</TableCell>
+                      {filteredVenuePhotos.length > 0 ? (
+                        filteredVenuePhotos.map((photo) => (
+                          <TableRow key={photo.id}>
+                            <TableCell className="font-medium">{photo.id}</TableCell>
+                            <TableCell>{photo.user_id}</TableCell>
+                            <TableCell>{photo.sent ? "Yes" : "No"}</TableCell>
+                            <TableCell>{convertDateTime(photo.created_at)}</TableCell>
                             <TableCell className="text-right">
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => window.open(`/photos/${session.uuid}`, '_blank')}
+                                onClick={() => window.open(``, '_blank')}
                               >
-                                View Photos
+                                View Photo
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => window.open(`/photos/${photo.link_id}`, '_blank')}
+                              >
+                                View photo session
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -265,8 +285,8 @@ const VenueDashboard = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[180px]">UUID</TableHead>
-                        <TableHead className="w-[140px]">
+                        <TableHead className="">UUID</TableHead>
+                        <TableHead className="w-[160px]">
                           <div className="flex items-center gap-2">
                             <Phone className="h-4 w-4" />
                             Phone Number
