@@ -1,9 +1,8 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Users,
   Camera,
-  // Bell,
   Search,
   ChevronDown,
   Phone,
@@ -12,7 +11,6 @@ import {
   Store,
   User,
   LogOut,
-  Image,
 } from "lucide-react";
 import {
   Table,
@@ -34,10 +32,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { NavLink } from "react-router-dom";
 import { useAuth } from "@/auth/AuthProvider";
 import LanguagePicker from "@/components/LanguagePicker";
 import LogoWithText from "@/components/LogoWithText";
+import { VenueUser, fetchVenueUsersFromApi } from "@/service/fetchVenueUsersFromApi";
+import { convertDateTime } from '@/lib/utils';
 
 const photoSessions = [
   {
@@ -77,41 +76,19 @@ const photoSessions = [
   },
 ];
 
-const users = [
-  {
-    id: 1,
-    uuid: "a1b2c3d4-e5f6",
-    phone: "+1 (555) 123-4567",
-    telegram: "@user123",
-    lastSessionTimestamp: "2023-06-15 19:32",
-  },
-  {
-    id: 2,
-    uuid: "g7h8i9j0-k1l2",
-    phone: "+1 (555) 987-6543",
-    telegram: "@partyfriend42",
-    lastSessionTimestamp: "2023-06-14 21:15",
-  },
-  {
-    id: 3,
-    uuid: "m3n4o5p6-q7r8",
-    phone: "+1 (555) 456-7890",
-    telegram: "@photolover",
-    lastSessionTimestamp: "2023-06-14 20:45",
-  },
-  {
-    id: 4,
-    uuid: "y5z6a7b8-c9d0",
-    phone: "+1 (555) 345-6789",
-    telegram: "@memorycollector",
-    lastSessionTimestamp: "2023-06-12 21:30",
-  },
-];
-
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("sessions");
-  const { user, token, logout } = useAuth();
+  const [venueUsers, setVenueUsers] = useState<VenueUser[]>([]);
+  const { user, venue, token, logout } = useAuth();
+
+  useEffect(() => {
+    if (venue && token) {
+      fetchVenueUsersFromApi(token, venue.id)
+        .then((data) => setVenueUsers(data))
+        .catch((error) => console.error("Error fetching venue users", error));
+    }
+  }, [venue, token]);
 
   const filteredSessions = photoSessions.filter(
     session =>
@@ -120,11 +97,9 @@ const VenueDashboard = () => {
       session.telegram.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredUsers = users.filter(
+  const filteredVenueUsers = venueUsers.filter(
     user =>
-      user.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.phone.includes(searchTerm) ||
-      user.telegram.toLowerCase().includes(searchTerm.toLowerCase())
+      user.user_id.toLowerCase().trim().includes(searchTerm.toLowerCase())
   );
 
   const navItems = [
@@ -309,22 +284,29 @@ const VenueDashboard = () => {
                             Last Session
                           </div>
                         </TableHead>
+                        <TableHead className="w-[180px]">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            Created At
+                          </div>
+                        </TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredUsers.length > 0 ? (
-                        filteredUsers.map((user) => (
+                      {filteredVenueUsers.length > 0 ? (
+                        filteredVenueUsers.map((user) => (
                           <TableRow key={user.id}>
-                            <TableCell className="font-medium">{user.uuid}</TableCell>
-                            <TableCell>{user.phone}</TableCell>
-                            <TableCell>{user.telegram}</TableCell>
-                            <TableCell>{user.lastSessionTimestamp}</TableCell>
+                            <TableCell className="font-medium">{user.user_id}</TableCell>
+                            <TableCell>{""}</TableCell>
+                            <TableCell>{""}</TableCell>
+                            <TableCell>{convertDateTime(user.created_at)}</TableCell>
+                            <TableCell>{convertDateTime(user.created_at)}</TableCell>
                             <TableCell className="text-right">
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => window.open(`/photos/${user.uuid}`, '_blank')}
+                                onClick={() => window.open(`/photos/`, '_blank')}
                               >
                                 View Photos
                               </Button>
