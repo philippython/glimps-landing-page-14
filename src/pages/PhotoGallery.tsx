@@ -33,7 +33,7 @@ const PhotoGallery = () => {
     enabled: !!uuid,
   });
 
-  const photoName = (index: number) => `Glimps photo ${data && convertOnlyDate(data.created_at)} (${index + 1})`;
+  const photoName = (index: number) => `${data && convertOnlyDate(data.created_at)} (${index + 1})`;
 
   const handleDownload = (url: string, name: string) => {
     fetch(url)
