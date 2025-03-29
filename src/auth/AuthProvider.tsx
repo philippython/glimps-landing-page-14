@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 export interface AuthContextType {
   user: UserData | null;
   venue: VenueData | null;
+  token: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
@@ -16,6 +17,7 @@ type AuthProviderProps = {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   venue: null,
+  token: null,
   login: async () => { },
   logout: () => { },
   loading: true,
@@ -24,6 +26,7 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<UserData | null>(null);
   const [venue, setVenue] = useState<VenueData | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   // check login status on page load
@@ -34,6 +37,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (user && token && venue) {
       setUser(JSON.parse(user));
       setVenue(JSON.parse(venue));
+      setToken(token);
     }
     setLoading(false);
   }, []);
@@ -43,6 +47,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const res = await fetchLoginTokenFromApi(email, password);
       setUser(res.venue.owner);
       setVenue(res.venue);
+      setToken(res.access_token);
       localStorage.setItem("user", JSON.stringify(res.venue.owner));
       localStorage.setItem("venue", JSON.stringify(res.venue));
       localStorage.setItem("token", res.access_token);
@@ -57,13 +62,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = () => {
     setUser(null);
     setVenue(null);
+    setToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("venue");
     localStorage.removeItem("token");
   };
 
   return (
-    <AuthContext.Provider value={{ user, venue, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, venue, token, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
