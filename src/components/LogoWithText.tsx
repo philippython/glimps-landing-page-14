@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 
 export default function LogoWithText() {
   return (
-    <NavLink to="/" className="inline-flex items-center gap-2 mb-6 justify-center">
+    <NavLink to="/" className="inline-flex items-center gap-2 justify-center">
       <div className="flex items-center justify-center rounded-md bg-glimps-900 p-1.5">
         <Image className="h-5 w-5 text-white" />
       </div>
