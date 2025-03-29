@@ -38,6 +38,8 @@ import LogoWithText from "@/components/LogoWithText";
 import { VenueUser, fetchVenueUsersFromApi } from "@/service/fetchVenueUsersFromApi";
 import { convertDateTime } from '@/lib/utils';
 import { VenuePhotos, fetchVenuePhotosFromApi } from "@/service/fetchVenuePhotosFromApi";
+import { Dialog, DialogContent, DialogOverlay, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
+import ImageWithFallback from "@/components/ImageWithFallback";
 
 const photoSessions = [
   {
@@ -246,13 +248,25 @@ const VenueDashboard = () => {
                             <TableCell>{photo.sent ? "Yes" : "No"}</TableCell>
                             <TableCell>{convertDateTime(photo.created_at)}</TableCell>
                             <TableCell className="text-right">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => window.open(``, '_blank')}
-                              >
-                                View Photo
-                              </Button>
+                              <Dialog>
+                                <DialogTrigger>
+                                  <Button variant="outline" size="sm">
+                                    View Photo
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogPortal>
+                                  <DialogOverlay className="fixed bg-transparent backdrop-blur-sm" />
+                                  <DialogContent className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-lg w-full p-0 bg-transparent overflow-hidden flex items-center justify-center">
+                                    <ImageWithFallback
+                                      src={photo.photo_url}
+                                      alt="User photo"
+                                      className="object-scale-down"
+                                    />
+                                  </DialogContent>
+
+                                </DialogPortal>
+                              </Dialog>
+
                               <Button
                                 variant="outline"
                                 size="sm"
