@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   Users,
   Camera,
-  Bell,
+  // Bell,
   Search,
   ChevronDown,
   Phone,
@@ -11,10 +11,8 @@ import {
   Calendar,
   Store,
   User,
-  Settings,
   LogOut,
   Image,
-  Globe
 } from "lucide-react";
 import {
   Table,
@@ -33,12 +31,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "@/auth/AuthProvider";
+import LanguagePicker from "@/components/LanguagePicker";
+import LogoWithText from "@/components/LogoWithText";
 
 const photoSessions = [
   {
@@ -112,8 +111,7 @@ const users = [
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("sessions");
-  const [language, setLanguage] = useState("English");
-  const { logout } = useAuth();
+  const { user, token, logout } = useAuth();
 
   const filteredSessions = photoSessions.filter(
     session =>
@@ -129,19 +127,6 @@ const VenueDashboard = () => {
       user.telegram.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const languages = [
-    { name: "English", code: "en" },
-    { name: "Español", code: "es" },
-    { name: "Français", code: "fr" },
-    { name: "Deutsch", code: "de" },
-  ];
-
-  const handleLanguageChange = (lang: string) => {
-    setLanguage(lang);
-    // Here you would typically call a function to change the app's language
-    console.log(`Language changed to ${lang}`);
-  };
-
   const navItems = [
     { id: "sessions", label: "Photo Sessions", icon: <Camera className="h-4 w-4" /> },
     { id: "users", label: "Users", icon: <Users className="h-4 w-4" /> },
@@ -152,15 +137,8 @@ const VenueDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="border-b bg-white">
-        <div className="flex h-16 items-center gap-4 px-6">
-          <NavLink to="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center rounded-md bg-glimps-900 p-1.5">
-              <Image className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-2xl font-bold tracking-tight text-glimps-900">
-              Glimps
-            </span>
-          </NavLink>
+        <div className="flex h-16 items-center gap-4 px-6 align-middle">
+          <LogoWithText />
 
           <div className="flex-1">
             <h1 className="text-lg font-semibold">Venue Dashboard</h1>
@@ -178,10 +156,7 @@ const VenueDashboard = () => {
               />
             </div>
 
-            <button className="relative p-2 text-gray-600 hover:text-gray-700">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-glimps-accent"></span>
-            </button>
+            <LanguagePicker />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -210,26 +185,6 @@ const VenueDashboard = () => {
                 <DropdownMenuItem onClick={() => setActiveTab("venue-settings")}>
                   <Store className="mr-2 h-4 w-4" />
                   Venue Settings
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Globe className="mr-2 h-4 w-4" />
-                  Language: {language}
-                  <ChevronDown className="ml-auto h-4 w-4" />
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="hidden" />
-                    <DropdownMenuContent align="end" side="right" className="bg-white">
-                      {languages.map((lang) => (
-                        <DropdownMenuItem
-                          key={lang.code}
-                          onClick={() => handleLanguageChange(lang.name)}
-                          className="cursor-pointer"
-                        >
-                          {lang.name}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
