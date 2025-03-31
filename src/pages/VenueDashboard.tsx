@@ -118,8 +118,8 @@ const VenueDashboard = () => {
                     className="h-10 w-10 rounded-full"
                   />
                   <div>
-                    <div className="text-sm font-medium">John Smith</div>
-                    <div className="text-xs text-glimps-600">john@thevenueclub.com</div>
+                    <div className="text-sm font-medium">{user ? user.username : ""}</div>
+                    <div className="text-xs text-glimps-600">{user ? user.email : ""}</div>
                   </div>
                 </div>
                 <DropdownMenuSeparator />
