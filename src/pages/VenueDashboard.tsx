@@ -38,7 +38,7 @@ import LogoWithText from "@/components/LogoWithText";
 import { VenueUser, fetchVenueUsersFromApi } from "@/service/fetchVenueUsersFromApi";
 import { convertDateTime } from '@/lib/utils';
 import { VenuePhotos, fetchVenuePhotosFromApi } from "@/service/fetchVenuePhotosFromApi";
-import { Dialog, DialogContent, DialogOverlay, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogOverlay, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import ImageWithFallback from "@/components/ImageWithFallback";
 
 const VenueDashboard = () => {
@@ -212,6 +212,8 @@ const VenueDashboard = () => {
                                 <DialogPortal>
                                   <DialogOverlay className="fixed bg-transparent backdrop-blur-sm" />
                                   <DialogContent className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-lg w-full p-0 bg-transparent overflow-hidden flex items-center justify-center">
+                                    <DialogTitle className="hidden">User photo</DialogTitle>
+                                    <DialogDescription className="hidden">User photo</DialogDescription>
                                     <ImageWithFallback
                                       src={photo.photo_url}
                                       alt="User photo"
