@@ -33,6 +33,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { LogoPosition } from "@/service/fetchLoginTokenFromApi";
+import { useAuth } from "@/auth/AuthProvider";
 
 const formSchema = z.object({
   venueName: z.string().min(2, {
@@ -42,8 +43,16 @@ const formSchema = z.object({
     message: "Contact number must be at least 5 characters.",
   }),
   logoPosition: z.nativeEnum(LogoPosition),
-  logoRatio: z.array(z.number()),
-  logoTransparency: z.array(z.number()),
+  logoRatio: z.array(z
+    .number()
+    .min(1)
+    .max(100)
+  ),
+  logoTransparency: z.array(z
+    .number()
+    .min(16)
+    .max(255)
+  ),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -54,19 +63,19 @@ type FormProps = {
 };
 
 const VenueSettings = (props: FormProps) => {
+  const { venue } = useAuth();
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
-
+  const [logoPreview, setLogoPreview] = useState<string | null>(venue?.logo_url || null);
   const { mode, loading } = props;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      venueName: "The Venue Club",
-      contactNumber: "+1 (555) 123-4567",
-      logoPosition: LogoPosition.topLeft,
-      logoRatio: [50],
-      logoTransparency: [80],
+      venueName: venue ? venue.name : "",
+      contactNumber: venue ? venue.contact_num.toString() : "",
+      logoPosition: venue ? venue.logo_position : LogoPosition.topLeft,
+      logoRatio: venue ? [venue.logo_ratio] : [50],
+      logoTransparency: venue ? [venue.logo_transparency] : [80],
     },
   });
 
@@ -111,7 +120,11 @@ const VenueSettings = (props: FormProps) => {
                   <FormItem>
                     <FormLabel>Venue Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter venue name" {...field} disabled={loading} />
+                      <Input
+                        placeholder="Enter venue name"
+                        {...field}
+                        disabled={loading}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
