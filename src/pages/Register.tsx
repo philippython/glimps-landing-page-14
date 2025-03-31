@@ -1,11 +1,34 @@
-
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { UserPlus, Eye, EyeOff, Image } from "lucide-react";
 import LogoWithText from "@/components/LogoWithText";
 import VenueSettings from "@/components/VenueSettings";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type Steps = "register" | "venue";
+
+const formSchema = z
+  .object({
+    username: z.string().min(5, {
+      message: "Venue name must be at least 5 characters.",
+    }),
+    email: z
+      .string()
+      .min(1, { message: "Email is required" })
+      .email("This is not a valid email."),
+    password: z.string().min(8, {
+      message: "Password must be at least 8 characters.",
+    }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirm"]
+  });
+
+type FormValues = z.infer<typeof formSchema>;
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -17,6 +40,16 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [step, setStep] = useState<Steps>("venue");
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
   const navigate = useNavigate();
 
