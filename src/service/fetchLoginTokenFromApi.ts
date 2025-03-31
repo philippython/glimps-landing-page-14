@@ -8,7 +8,17 @@ export type UserData = {
   created_at: string,
 };
 
-export type LogoPosition = "top_left" | "top_right" | "top_center" | "bottom_left" | "bottom_right" | "bottom_center" | "center_left" | "center_right" | "center";
+export enum LogoPosition {
+  topLeft = "top_left",
+  topRight = "top_right",
+  topCenter = "top_center",
+  bottomLeft = "bottom_left",
+  bottomRight = "bottom_right",
+  bottomCenter = "bottom_center",
+  centerLeft = "center_left",
+  centerRight = "center_right",
+  center = "center",
+}
 
 export interface VenueData {
   id: string,

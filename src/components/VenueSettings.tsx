@@ -32,6 +32,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { LogoPosition } from "@/service/fetchLoginTokenFromApi";
 
 const formSchema = z.object({
   venueName: z.string().min(2, {
@@ -40,7 +41,7 @@ const formSchema = z.object({
   contactNumber: z.string().min(5, {
     message: "Contact number must be at least 5 characters.",
   }),
-  logoPosition: z.string(),
+  logoPosition: z.nativeEnum(LogoPosition),
   logoRatio: z.array(z.number()),
   logoTransparency: z.array(z.number()),
 });
@@ -63,7 +64,7 @@ const VenueSettings = (props: FormProps) => {
     defaultValues: {
       venueName: "The Venue Club",
       contactNumber: "+1 (555) 123-4567",
-      logoPosition: "top-left",
+      logoPosition: LogoPosition.topLeft,
       logoRatio: [50],
       logoTransparency: [80],
     },
@@ -187,12 +188,11 @@ const VenueSettings = (props: FormProps) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="top-left">Top Left</SelectItem>
-                        <SelectItem value="top-center">Top Center</SelectItem>
-                        <SelectItem value="top-right">Top Right</SelectItem>
-                        <SelectItem value="bottom-left">Bottom Left</SelectItem>
-                        <SelectItem value="bottom-center">Bottom Center</SelectItem>
-                        <SelectItem value="bottom-right">Bottom Right</SelectItem>
+                        {Object.values(LogoPosition).map((position) => (
+                          <SelectItem key={position} value={position}>
+                            {position}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
