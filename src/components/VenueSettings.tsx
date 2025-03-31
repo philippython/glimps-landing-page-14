@@ -49,13 +49,14 @@ type FormValues = z.infer<typeof formSchema>;
 
 type FormProps = {
   mode: "create" | "edit";
+  loading: boolean;
 };
 
 const VenueSettings = (props: FormProps) => {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
-  const mode = props.mode;
+  const { mode, loading } = props;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -109,7 +110,7 @@ const VenueSettings = (props: FormProps) => {
                   <FormItem>
                     <FormLabel>Venue Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter venue name" {...field} />
+                      <Input placeholder="Enter venue name" {...field} disabled={loading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -123,7 +124,7 @@ const VenueSettings = (props: FormProps) => {
                   <FormItem>
                     <FormLabel>Contact Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter contact number" {...field} />
+                      <Input placeholder="Enter contact number" {...field} disabled={loading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -160,6 +161,7 @@ const VenueSettings = (props: FormProps) => {
                       accept="image/*"
                       className="hidden"
                       onChange={handleLogoChange}
+                      disabled={loading}
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       Recommended: 512x512px, PNG or JPG
@@ -177,6 +179,7 @@ const VenueSettings = (props: FormProps) => {
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={loading}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -210,6 +213,7 @@ const VenueSettings = (props: FormProps) => {
                           max={100}
                           step={1}
                           onValueChange={field.onChange}
+                          disabled={loading}
                         />
                         <div className="flex justify-between mt-1 text-xs text-gray-500">
                           <span>Small</span>
@@ -238,6 +242,7 @@ const VenueSettings = (props: FormProps) => {
                           max={100}
                           step={1}
                           onValueChange={field.onChange}
+                          disabled={loading}
                         />
                         <div className="flex justify-between mt-1 text-xs text-gray-500">
                           <span>Transparent</span>
@@ -255,7 +260,7 @@ const VenueSettings = (props: FormProps) => {
             </div>
 
             <div className="flex justify-end">
-              <Button type="submit">
+              <Button type="submit" disabled={loading}>
                 {mode === "create" && "Submit"}
                 {mode === "edit" && "Save Settings"}
               </Button>

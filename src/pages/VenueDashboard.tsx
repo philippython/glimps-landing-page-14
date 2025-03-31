@@ -320,7 +320,7 @@ const VenueDashboard = () => {
           )}
 
           {activeTab === "venue-settings" && (
-            <VenueSettings />
+            <VenueSettings mode="edit" loading={false} />
           )}
 
           {activeTab === "account-settings" && (

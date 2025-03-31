@@ -209,7 +209,7 @@ const Register = () => {
         </div>
       )}
 
-      {step == "venue" && <VenueSettings mode="create" />}
+      {step == "venue" && <VenueSettings mode="create" loading={loading} />}
 
     </div>
   );
