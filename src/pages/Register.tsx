@@ -3,20 +3,20 @@ import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { UserPlus, Eye, EyeOff, Image } from "lucide-react";
 import LogoWithText from "@/components/LogoWithText";
+import VenueSettings from "@/components/VenueSettings";
 
 type Steps = "register" | "venue";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [venueName, setVenueName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [step, setStep] = useState<Steps>("register");
+  const [step, setStep] = useState<Steps>("venue");
 
   const navigate = useNavigate();
 
@@ -37,7 +37,7 @@ const Register = () => {
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulated delay
 
       // Simulate successful registration
-      navigate("/venue-dashboard");
+      setStep("venue");
     } catch (err) {
       setError("An error occurred during registration. Please try again.");
       console.error("Registration error:", err);
@@ -208,6 +208,8 @@ const Register = () => {
 
         </div>
       )}
+
+      {step == "venue" && <VenueSettings mode="create" />}
 
     </div>
   );

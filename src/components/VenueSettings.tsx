@@ -1,23 +1,23 @@
 
 import { useState } from "react";
 import { Store, Upload } from "lucide-react";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
 import {
   Form,
@@ -47,9 +47,15 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const VenueSettings = () => {
+type FormProps = {
+  mode: "create" | "edit";
+};
+
+const VenueSettings = (props: FormProps) => {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+
+  const mode = props.mode;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -85,7 +91,8 @@ const VenueSettings = () => {
       <CardHeader>
         <CardTitle className="text-xl flex items-center gap-2">
           <Store className="h-5 w-5" />
-          Venue Settings
+          {mode === "create" && "Create your venue"}
+          {mode === "edit" && "Venue Settings"}
         </CardTitle>
         <CardDescription>
           Configure your venue booth appearance and contact information
@@ -108,7 +115,7 @@ const VenueSettings = () => {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="contactNumber"
@@ -130,10 +137,10 @@ const VenueSettings = () => {
                 <div className="mt-2 flex items-center gap-4">
                   <div className="flex-shrink-0 h-24 w-24 border rounded-md flex items-center justify-center overflow-hidden bg-gray-50">
                     {logoPreview ? (
-                      <img 
-                        src={logoPreview} 
-                        alt="Logo preview" 
-                        className="h-full w-full object-contain" 
+                      <img
+                        src={logoPreview}
+                        alt="Logo preview"
+                        className="h-full w-full object-contain"
                       />
                     ) : (
                       <Store className="h-10 w-10 text-gray-300" />
@@ -167,8 +174,8 @@ const VenueSettings = () => {
                 render={({ field }) => (
                   <FormItem className="mt-4">
                     <FormLabel>Logo Position</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
+                    <Select
+                      onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -248,7 +255,10 @@ const VenueSettings = () => {
             </div>
 
             <div className="flex justify-end">
-              <Button type="submit">Save Settings</Button>
+              <Button type="submit">
+                {mode === "create" && "Submit"}
+                {mode === "edit" && "Save Settings"}
+              </Button>
             </div>
           </form>
         </Form>
