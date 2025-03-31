@@ -41,44 +41,6 @@ import { VenuePhotos, fetchVenuePhotosFromApi } from "@/service/fetchVenuePhotos
 import { Dialog, DialogContent, DialogOverlay, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import ImageWithFallback from "@/components/ImageWithFallback";
 
-const photoSessions = [
-  {
-    id: 1,
-    uuid: "a1b2c3d4-e5f6",
-    phone: "+1 (555) 123-4567",
-    telegram: "@user123",
-    timestamp: "2023-06-15 19:32",
-  },
-  {
-    id: 2,
-    uuid: "g7h8i9j0-k1l2",
-    phone: "+1 (555) 987-6543",
-    telegram: "@partyfriend42",
-    timestamp: "2023-06-14 21:15",
-  },
-  {
-    id: 3,
-    uuid: "m3n4o5p6-q7r8",
-    phone: "+1 (555) 456-7890",
-    telegram: "@photolover",
-    timestamp: "2023-06-14 20:45",
-  },
-  {
-    id: 4,
-    uuid: "s9t0u1v2-w3x4",
-    phone: "+1 (555) 234-5678",
-    telegram: "@nightlife22",
-    timestamp: "2023-06-13 22:17",
-  },
-  {
-    id: 5,
-    uuid: "y5z6a7b8-c9d0",
-    phone: "+1 (555) 345-6789",
-    telegram: "@memorycollector",
-    timestamp: "2023-06-12 21:30",
-  },
-];
-
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("sessions");
@@ -98,13 +60,6 @@ const VenueDashboard = () => {
     }
   }, [venue, token]);
 
-  const filteredSessions = photoSessions.filter(
-    session =>
-      session.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      session.phone.includes(searchTerm) ||
-      session.telegram.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const filteredVenuePhotos = venuePhotos.filter(
     photo =>
       photo.id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim()) ||
@@ -114,7 +69,7 @@ const VenueDashboard = () => {
 
   const filteredVenueUsers = venueUsers.filter(
     user =>
-      user.user_id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
+      user.id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
   );
 
   const navItems = [
@@ -249,7 +204,7 @@ const VenueDashboard = () => {
                             <TableCell>{convertDateTime(photo.created_at)}</TableCell>
                             <TableCell className="text-right">
                               <Dialog>
-                                <DialogTrigger>
+                                <DialogTrigger asChild>
                                   <Button variant="outline" size="sm">
                                     View Photo
                                   </Button>
@@ -331,18 +286,19 @@ const VenueDashboard = () => {
                       {filteredVenueUsers.length > 0 ? (
                         filteredVenueUsers.map((user) => (
                           <TableRow key={user.id}>
-                            <TableCell className="font-medium">{user.user_id}</TableCell>
-                            <TableCell>{""}</TableCell>
-                            <TableCell>{""}</TableCell>
-                            <TableCell>{convertDateTime(user.created_at)}</TableCell>
+                            <TableCell className="font-medium">{user.id}</TableCell>
+                            <TableCell>{user.phone_number}</TableCell>
+                            <TableCell>{user.telegram_username}</TableCell>
+                            <TableCell>{convertDateTime(user.photos.at(-1)?.created_at)}</TableCell>
                             <TableCell>{convertDateTime(user.created_at)}</TableCell>
                             <TableCell className="text-right">
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => window.open(`/photos/`, '_blank')}
+                                onClick={() => window.open(`/photos/${user.photos.at(-1)?.link_id}`, '_blank')}
+                                disabled={user.photos.length === 0}
                               >
-                                View Photos
+                                {user.photos.length > 0 ? "View Last Photos" : "No Photos"}
                               </Button>
                             </TableCell>
                           </TableRow>

@@ -6,7 +6,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function convertDateTime(timestamp: string) {
+export function convertDateTime(timestamp: string | undefined) {
+  if (!timestamp) return '';
   const date = new Date(timestamp);
   return date.toLocaleString();
 }
