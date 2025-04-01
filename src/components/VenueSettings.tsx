@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Store, Upload } from "lucide-react";
 import {
@@ -33,10 +32,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LogoPosition } from "@/service/fetchLoginTokenFromApi";
 import { useAuth } from "@/auth/AuthProvider";
-import { checkFileType } from "@/lib/utils";
 
-// Max size is 5MB.
-const MAX_FILE_SIZE = 5000000;
+// File validation constants
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg"];
 
 const formSchema = z.object({
@@ -46,21 +44,15 @@ const formSchema = z.object({
   contact_num: z.string().min(5, {
     message: "Contact number must be at least 5 characters.",
   }),
-  venue_logo: z.any()
-    .refine((file: File) => file !== null || undefined, "File is required")
-    .refine((file) => file.size < MAX_FILE_SIZE, "Max size is 5MB.")
-    .refine((file) => checkFileType(file, ACCEPTED_FILE_TYPES), "Only png, jpeg and jpg formats are supported."),
+  venue_logo: z.instanceof(File, { message: "Logo is required" })
+    .refine(file => file.size <= MAX_FILE_SIZE, "Max file size is 5MB.")
+    .refine(
+      file => ACCEPTED_FILE_TYPES.includes(file.type),
+      "Only .jpg, .jpeg, and .png formats are supported."
+    ),
   logo_position: z.nativeEnum(LogoPosition),
-  logo_ratio: z.array(z
-    .number()
-    .min(1)
-    .max(100)
-  ),
-  logo_transparency: z.array(z
-    .number()
-    .min(16)
-    .max(255)
-  ),
+  logo_ratio: z.array(z.number().min(1).max(100)),
+  logo_transparency: z.array(z.number().min(16).max(255)),
 });
 
 export type VenueFormValues = z.infer<typeof formSchema>;
@@ -73,17 +65,16 @@ type FormProps = {
 
 const VenueSettings = (props: FormProps) => {
   const { venue } = useAuth();
-  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(venue?.logo_url || null);
-  const { mode, loading } = props;
+  const { mode, loading, onSubmit } = props;
 
   const form = useForm<VenueFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: venue ? venue.name : "",
-      contact_num: venue ? venue.contact_num.toString() : "",
-      venue_logo: null,
-      logo_position: venue ? venue.logo_position : LogoPosition.topLeft,
+      name: venue?.name || "",
+      contact_num: venue?.contact_num.toString() || "",
+      venue_logo: undefined,
+      logo_position: venue?.logo_position || LogoPosition.topLeft,
       logo_ratio: venue ? [venue.logo_ratio] : [50],
       logo_transparency: venue ? [venue.logo_transparency] : [80],
     },
@@ -92,7 +83,10 @@ const VenueSettings = (props: FormProps) => {
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setLogoFile(file);
+      // Update form value
+      form.setValue("venue_logo", file, { shouldValidate: true });
+
+      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoPreview(reader.result as string);
@@ -151,43 +145,51 @@ const VenueSettings = (props: FormProps) => {
             </div>
 
             <div className="border rounded-md p-4">
-              <div className="mb-4">
-                <Label htmlFor="logo-upload">Venue Logo</Label>
-                <div className="mt-2 flex items-center gap-4">
-                  <div className="flex-shrink-0 h-24 w-24 border rounded-md flex items-center justify-center overflow-hidden bg-gray-50">
-                    {logoPreview ? (
-                      <img
-                        src={logoPreview}
-                        alt="Logo preview"
-                        className="h-full w-full object-contain"
-                      />
-                    ) : (
-                      <Store className="h-10 w-10 text-gray-300" />
-                    )}
-                  </div>
-                  <div>
-                    <Label
-                      htmlFor="logo-upload"
-                      className="cursor-pointer inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-md transition-colors"
-                    >
-                      <Upload className="h-4 w-4" />
-                      Upload Logo
-                    </Label>
-                    <Input
-                      id="venue_logo"
-                      name="venue_logo"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleLogoChange}
-                      disabled={loading}
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Recommended: 512x512px, PNG or JPG
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <FormField
+                control={form.control}
+                name="venue_logo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Venue Logo</FormLabel>
+                    <div className="mt-2 flex items-center gap-4">
+                      <div className="flex-shrink-0 h-24 w-24 border rounded-md flex items-center justify-center overflow-hidden bg-gray-50">
+                        {logoPreview ? (
+                          <img
+                            src={logoPreview}
+                            alt="Logo preview"
+                            className="h-full w-full object-contain"
+                          />
+                        ) : (
+                          <Store className="h-10 w-10 text-gray-300" />
+                        )}
+                      </div>
+                      <div>
+                        <Label
+                          htmlFor="venue_logo"
+                          className="cursor-pointer inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-md transition-colors"
+                        >
+                          <Upload className="h-4 w-4" />
+                          Upload Logo
+                        </Label>
+                        <FormControl>
+                          <Input
+                            id="venue_logo"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleLogoChange}
+                            disabled={loading}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Recommended: 512x512px, PNG or JPG (Max 5MB)
+                        </p>
+                      </div>
+                    </div>
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
