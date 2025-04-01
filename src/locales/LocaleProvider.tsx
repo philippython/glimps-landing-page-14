@@ -22,15 +22,19 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const [availableLocales, setAvailableLocales] = useState<locales[]>([]);
 
   useEffect(() => {
-    import('@/locales/locales.json').then(module => setAvailableLocales(module.default || module));
+    const loadLocales = async () => {
+      const response = await fetch('/locales/locales.json');
+      return await response.json();
+    };
+    loadLocales().then(module => setAvailableLocales(module.default || module));
   }, []);
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      const messages = await import(`@/locales/${currentLocale}.json`);
-      setMessages(messages);
-    }
-    fetchMessages();
+    const loadMessages = async () => {
+      const messages = await fetch(`/locales/${currentLocale}.json`);
+      return await messages.json();
+    };
+    loadMessages().then(messages => setMessages(messages));
   }, [currentLocale]);
 
   const setLocale = (locale: string) => {
