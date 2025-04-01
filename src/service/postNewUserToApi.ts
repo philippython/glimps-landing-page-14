@@ -31,9 +31,9 @@ export const postNewUserToApi = async (username: string, email: string, password
       "activated": true,
       "venue": null,
       "created_at": "2025-04-01T08:04:04.899734"
-    };
+    } as UserData;
   } catch (error) {
-    console.error("Error fetching login token from API", error);
+    console.error("Error sending new user data to API", error);
     throw error;
   }
 }

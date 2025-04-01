@@ -5,12 +5,13 @@ import { toast } from "sonner";
 import { postNewUserToApi } from "@/service/postNewUserToApi";
 import RegisterForm, { RegisterFormValues } from "@/components/RegisterForm";
 import { UserData } from '@/service/fetchLoginTokenFromApi';
+import { postNewVenueToApi } from "@/service/postNewVenueToApi";
 
 type Steps = "register" | "venue";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<Steps>("venue");
+  const [step, setStep] = useState<Steps>("register");
 
   const navigate = useNavigate();
 
@@ -34,7 +35,7 @@ const Register = () => {
   const onVenueSubmit = async (values: VenueFormValues) => {
     setLoading(true);
     try {
-      console.log(values);
+      const res = await postNewVenueToApi(values, "");
     } catch (error) {
       toast.error("Registration failed. Please try again.");
     } finally {
