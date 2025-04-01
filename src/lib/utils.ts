@@ -33,3 +33,11 @@ export const flattenMessages = (nestedMessages: any, prefix = ''): Record<string
     return messages;
   }, {} as Record<string, string>);
 };
+
+export function checkFileType(file: File, acceptedTypes: string[]) {
+  if (file?.name) {
+    const fileType = file.name.split(".").pop();
+    if (fileType && acceptedTypes.includes(fileType)) return true;
+  }
+  return false;
+}

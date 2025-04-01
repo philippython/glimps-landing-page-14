@@ -31,35 +31,44 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import { LogoPosition } from "@/service/fetchLoginTokenFromApi";
 import { useAuth } from "@/auth/AuthProvider";
+import { checkFileType } from "@/lib/utils";
+
+// Max size is 5MB.
+const MAX_FILE_SIZE = 5000000;
+const ACCEPTED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg"];
 
 const formSchema = z.object({
-  venueName: z.string().min(2, {
+  name: z.string().min(2, {
     message: "Venue name must be at least 2 characters.",
   }),
-  contactNumber: z.string().min(5, {
+  contact_num: z.string().min(5, {
     message: "Contact number must be at least 5 characters.",
   }),
-  logoPosition: z.nativeEnum(LogoPosition),
-  logoRatio: z.array(z
+  venue_logo: z.any()
+    .refine((file: File) => file !== null || undefined, "File is required")
+    .refine((file) => file.size < MAX_FILE_SIZE, "Max size is 5MB.")
+    .refine((file) => checkFileType(file, ACCEPTED_FILE_TYPES), "Only png, jpeg and jpg formats are supported."),
+  logo_position: z.nativeEnum(LogoPosition),
+  logo_ratio: z.array(z
     .number()
     .min(1)
     .max(100)
   ),
-  logoTransparency: z.array(z
+  logo_transparency: z.array(z
     .number()
     .min(16)
     .max(255)
   ),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+export type VenueFormValues = z.infer<typeof formSchema>;
 
 type FormProps = {
   mode: "create" | "edit";
   loading: boolean;
+  onSubmit: (data: VenueFormValues) => void;
 };
 
 const VenueSettings = (props: FormProps) => {
@@ -68,14 +77,15 @@ const VenueSettings = (props: FormProps) => {
   const [logoPreview, setLogoPreview] = useState<string | null>(venue?.logo_url || null);
   const { mode, loading } = props;
 
-  const form = useForm<FormValues>({
+  const form = useForm<VenueFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      venueName: venue ? venue.name : "",
-      contactNumber: venue ? venue.contact_num.toString() : "",
-      logoPosition: venue ? venue.logo_position : LogoPosition.topLeft,
-      logoRatio: venue ? [venue.logo_ratio] : [50],
-      logoTransparency: venue ? [venue.logo_transparency] : [80],
+      name: venue ? venue.name : "",
+      contact_num: venue ? venue.contact_num.toString() : "",
+      venue_logo: null,
+      logo_position: venue ? venue.logo_position : LogoPosition.topLeft,
+      logo_ratio: venue ? [venue.logo_ratio] : [50],
+      logo_transparency: venue ? [venue.logo_transparency] : [80],
     },
   });
 
@@ -89,12 +99,6 @@ const VenueSettings = (props: FormProps) => {
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const onSubmit = (data: FormValues) => {
-    // In a real app, we would upload the logo file and save the settings
-    console.log("Form submitted:", data, logoFile);
-    toast.success("Venue settings updated successfully!");
   };
 
   return (
@@ -111,11 +115,11 @@ const VenueSettings = (props: FormProps) => {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(props.onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
-                name="venueName"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Venue Name</FormLabel>
@@ -133,7 +137,7 @@ const VenueSettings = (props: FormProps) => {
 
               <FormField
                 control={form.control}
-                name="contactNumber"
+                name="contact_num"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Contact Number</FormLabel>
@@ -170,7 +174,8 @@ const VenueSettings = (props: FormProps) => {
                       Upload Logo
                     </Label>
                     <Input
-                      id="logo-upload"
+                      id="venue_logo"
+                      name="venue_logo"
                       type="file"
                       accept="image/*"
                       className="hidden"
@@ -186,7 +191,7 @@ const VenueSettings = (props: FormProps) => {
 
               <FormField
                 control={form.control}
-                name="logoPosition"
+                name="logo_position"
                 render={({ field }) => (
                   <FormItem className="mt-4">
                     <FormLabel>Logo Position</FormLabel>
@@ -215,7 +220,7 @@ const VenueSettings = (props: FormProps) => {
 
               <FormField
                 control={form.control}
-                name="logoRatio"
+                name="logo_ratio"
                 render={({ field }) => (
                   <FormItem className="mt-4">
                     <FormLabel>Logo Size Ratio</FormLabel>
@@ -244,7 +249,7 @@ const VenueSettings = (props: FormProps) => {
 
               <FormField
                 control={form.control}
-                name="logoTransparency"
+                name="logo_transparency"
                 render={({ field }) => (
                   <FormItem className="mt-4">
                     <FormLabel>Logo Transparency</FormLabel>
