@@ -28,7 +28,6 @@ const Register = () => {
   const onSubmit = async (values: RegisterFormValues) => {
     setLoading(true);
     try {
-      // Simulate API call
       const res = await postNewUserToApi(values.username, values.email, values.password);
       if (res.username) {
         toast.success("Account created successfully! Logging in...");

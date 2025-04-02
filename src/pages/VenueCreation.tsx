@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import VenueSettings, { VenueFormValues } from "@/components/VenueSettings";
 import { toast } from "sonner";
 import { useAuth } from "@/auth/AuthProvider";
+import { postNewVenueToApi } from "@/service/postNewVenueToApi";
 
 export default function VenueCreation() {
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const { user, token, setUserAndVenueAfterCreation } = useAuth();
 
   const navigate = useNavigate();
 
@@ -23,7 +24,13 @@ export default function VenueCreation() {
   const onSubmit = async (values: VenueFormValues) => {
     setLoading(true);
     try {
-      // Simulate API call
+      if (token) {
+        const res = await postNewVenueToApi(values, token);
+        if (res.id) {
+          toast.success("Venue created successfully!");
+          setUserAndVenueAfterCreation(res);
+        }
+      }
     } catch (error) {
       toast.error("Failed to create venue. Please try again.");
     } finally {

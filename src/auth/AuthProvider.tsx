@@ -8,6 +8,7 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
+  setUserAndVenueAfterCreation: (venue: VenueData) => void;
 }
 
 type AuthProviderProps = {
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => { },
   logout: () => { },
   loading: true,
+  setUserAndVenueAfterCreation: () => { }
 });
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
@@ -59,6 +61,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const setUserAndVenueAfterCreation = (venue: VenueData) => {
+    setUser(venue.owner);
+    setVenue(venue);
+    localStorage.setItem("user", JSON.stringify(venue.owner));
+    localStorage.setItem("venue", JSON.stringify(venue));
+  }
+
   const logout = () => {
     setUser(null);
     setVenue(null);
@@ -69,7 +78,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, venue, token, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, venue, token, loading, login, logout, setUserAndVenueAfterCreation }}>
       {children}
     </AuthContext.Provider>
   )
