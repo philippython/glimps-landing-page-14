@@ -111,7 +111,7 @@ const VenueSettings = (props: FormProps) => {
   };
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="min-w-[70vw] mx-auto">
       <CardHeader>
         {props.mode == "create" && <LogoWithText />}
         <CardTitle className="text-xl flex items-center gap-2 pt-2">

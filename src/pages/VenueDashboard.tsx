@@ -41,6 +41,9 @@ import { VenuePhotos, fetchVenuePhotosFromApi } from "@/service/fetchVenuePhotos
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogOverlay, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import ImageWithFallback from "@/components/ImageWithFallback";
 import { useNavigate } from "react-router-dom";
+import { patchVenueSettingsToApi } from "@/service/patchVenueSettingsToApi";
+import { VenueFormValues } from '@/components/VenueSettings';
+import { toast } from "sonner";
 
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -48,6 +51,7 @@ const VenueDashboard = () => {
   const [venueUsers, setVenueUsers] = useState<VenueUser[]>([]);
   const [venuePhotos, setVenuePhotos] = useState<VenuePhotos[]>([]);
   const { user, venue, token, logout } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -86,8 +90,21 @@ const VenueDashboard = () => {
     { id: "account-settings", label: "Account Settings", icon: <User className="h-4 w-4" /> },
   ];
 
-  const onVenueSettingsSubmit = () => {
-    console.log("Venue settings submitted");
+  const onVenueSettingsSubmit = async (values: VenueFormValues) => {
+    setLoading(true);
+    try {
+      if (!token || !venue) {
+        throw new Error("No token found");
+      }
+      const res = await patchVenueSettingsToApi(values, token, venue.id);
+      if (res) {
+        toast.success("Venue settings updated successfully!");
+      }
+    } catch (error) {
+      toast.error("Failed to update venue settings. Please try again!");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -331,7 +348,7 @@ const VenueDashboard = () => {
           )}
 
           {activeTab === "venue-settings" && (
-            <VenueSettings mode="edit" loading={false} onSubmit={onVenueSettingsSubmit} />
+            <VenueSettings mode="edit" loading={loading} onSubmit={onVenueSettingsSubmit} />
           )}
 
           {activeTab === "account-settings" && (
