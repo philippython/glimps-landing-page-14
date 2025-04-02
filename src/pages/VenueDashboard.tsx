@@ -40,6 +40,7 @@ import { convertDateTime } from '@/lib/utils';
 import { VenuePhotos, fetchVenuePhotosFromApi } from "@/service/fetchVenuePhotosFromApi";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogOverlay, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import ImageWithFallback from "@/components/ImageWithFallback";
+import { useNavigate } from "react-router-dom";
 
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -48,7 +49,13 @@ const VenueDashboard = () => {
   const [venuePhotos, setVenuePhotos] = useState<VenuePhotos[]>([]);
   const { user, venue, token, logout } = useAuth();
 
+  const navigate = useNavigate();
+
   useEffect(() => {
+    if (token && !user) {
+      navigate("/venue-creation");
+    }
+
     if (venue && token) {
       fetchVenueUsersFromApi(token, venue.id)
         .then((data) => setVenueUsers(data))
@@ -320,7 +327,7 @@ const VenueDashboard = () => {
           )}
 
           {activeTab === "venue-settings" && (
-            <VenueSettings mode="edit" loading={false} />
+            <VenueSettings mode="edit" loading={false} onSubmit={() => null} />
           )}
 
           {activeTab === "account-settings" && (

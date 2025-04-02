@@ -7,11 +7,15 @@ import { useAuth } from "@/auth/AuthProvider";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const { user, token, login } = useAuth();
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (token && !user) {
+      navigate("/venue-creation");
+    }
+
     if (user && user.role === "admin") {
       navigate("/admin-dashboard");
     }
@@ -19,7 +23,7 @@ const Register = () => {
     if (user && user.role === "renter") {
       navigate("/venue-dashboard");
     }
-  }, [user, navigate]);
+  }, [user, token, navigate]);
 
   const onSubmit = async (values: RegisterFormValues) => {
     setLoading(true);
@@ -27,7 +31,9 @@ const Register = () => {
       // Simulate API call
       const res = await postNewUserToApi(values.username, values.email, values.password);
       if (res.username) {
-        toast.success("Account created successfully!");
+        toast.success("Account created successfully! Logging in...");
+
+        const res = await login(values.username, values.password);
       }
     } catch (error) {
       toast.error("Registration failed. Please try again.");

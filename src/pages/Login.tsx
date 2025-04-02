@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { LogIn, Eye, EyeOff, Image } from "lucide-react";
+import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/auth/AuthProvider";
 import { FormattedMessage } from "react-intl";
 import LogoWithText from "@/components/LogoWithText";
@@ -12,11 +12,15 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { user, login } = useAuth();
+  const { user, token, login } = useAuth();
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (token && !user) {
+      navigate("/venue-creation");
+    }
+
     if (user && user.role === "admin") {
       navigate("/admin-dashboard");
     }
