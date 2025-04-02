@@ -28,7 +28,7 @@ const Login = () => {
     if (user && user.role === "renter") {
       navigate("/venue-dashboard");
     }
-  }, [user, navigate]);
+  }, [user, token, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,6 +84,7 @@ const Login = () => {
                 placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
               <p className="mt-1 text-xs text-gray-500">
                 <FormattedMessage id="login.form.usernameTips" />
@@ -105,6 +106,7 @@ const Login = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
                 />
                 <button
                   type="button"
