@@ -18,6 +18,7 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import { useAuth } from "./auth/AuthProvider";
 import { LocaleProvider } from "./locales/LocaleProvider";
+import VenueCreation from "./pages/VenueCreation";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,7 @@ const App = () => {
                 {/* Protected routes */}
                 <Route element={<ProtectedRoute />}>
                   <Route path="/venue-dashboard" element={<VenueDashboard />} />
+                  <Route path="/venue-creation" element={<VenueCreation />} />
                   {user && user.role === "admin"
                     && <Route path="/admin-dashboard" element={<AdminDashboard />} />
                   }

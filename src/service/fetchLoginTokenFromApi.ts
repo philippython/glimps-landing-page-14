@@ -35,7 +35,7 @@ export interface VenueData {
 
 export interface LoginTokenResponse {
   access_token: string,
-  venue: VenueData,
+  venue: VenueData | null,
 };
 
 export const fetchLoginTokenFromApi = async (username: string, password: string) => {
