@@ -8,5 +8,5 @@ export default function ProtectedRoute() {
     return <div>Loading...</div>;
   }
 
-  return token ? <Navigate to="/login" /> : <Outlet />
+  return token ? <Outlet /> : <Navigate to="/login" />;
 };
