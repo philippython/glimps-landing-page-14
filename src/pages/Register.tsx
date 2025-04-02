@@ -1,13 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { postNewUserToApi } from "@/service/postNewUserToApi";
 import RegisterForm, { RegisterFormValues } from "@/components/RegisterForm";
+import { useAuth } from "@/auth/AuthProvider";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && user.role === "admin") {
+      navigate("/admin-dashboard");
+    }
+
+    if (user && user.role === "renter") {
+      navigate("/venue-dashboard");
+    }
+  }, [user, navigate]);
 
   const onSubmit = async (values: RegisterFormValues) => {
     setLoading(true);
