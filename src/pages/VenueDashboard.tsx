@@ -50,7 +50,7 @@ const VenueDashboard = () => {
   const [activeTab, setActiveTab] = useState("sessions");
   const [venueUsers, setVenueUsers] = useState<VenueUser[]>([]);
   const [venuePhotos, setVenuePhotos] = useState<VenuePhotos[]>([]);
-  const { user, venue, token, logout } = useAuth();
+  const { user, venue, token, logout, setUserAndVenueAfterCreation } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -97,8 +97,9 @@ const VenueDashboard = () => {
         throw new Error("No token found");
       }
       const res = await patchVenueSettingsToApi(values, token, venue.id);
-      if (res) {
+      if (res.id) {
         toast.success("Venue settings updated successfully!");
+        setUserAndVenueAfterCreation(res);
       }
     } catch (error) {
       toast.error("Failed to update venue settings. Please try again!");

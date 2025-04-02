@@ -21,7 +21,7 @@ export const patchVenueSettingsToApi = async (values: VenueFormValues, token: st
       console.log("Uploading logo to API");
     }
 
-    return res.status === 200;
+    return res.data;
   } catch (error) {
     console.error("Error updating venue data to API", error);
     throw error;
