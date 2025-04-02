@@ -38,13 +38,9 @@ import LogoWithText from "./LogoWithText";
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg"];
 
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Venue name must be at least 2 characters.",
-  }),
-  contact_num: z.string().min(5, {
-    message: "Contact number must be at least 5 characters.",
-  }),
+const createFormSchema = z.object({
+  name: z.string().min(2, { message: "Venue name must be at least 2 characters." }),
+  contact_num: z.string().min(5, { message: "Contact number must be at least 5 characters." }),
   venue_logo: z.instanceof(File, { message: "Logo is required" })
     .refine(file => file.size <= MAX_FILE_SIZE, "Max file size is 5MB.")
     .refine(
@@ -56,10 +52,29 @@ const formSchema = z.object({
   logo_transparency: z.array(z.number().min(16).max(255)),
 });
 
-export type VenueFormValues = z.infer<typeof formSchema>;
+const editFormSchema = z.object({
+  name: z.string().min(2, { message: "Venue name must be at least 2 characters." }),
+  contact_num: z.string().min(5, { message: "Contact number must be at least 5 characters." }),
+  venue_logo: z.instanceof(File, { message: "Logo must be a valid file" })
+    .refine(file => file.size <= MAX_FILE_SIZE, "Max file size is 5MB.")
+    .refine(
+      file => ACCEPTED_FILE_TYPES.includes(file.type),
+      "Only .jpg, .jpeg, and .png formats are supported."
+    )
+    .optional(),
+  logo_position: z.nativeEnum(LogoPosition),
+  logo_ratio: z.array(z.number().min(1).max(100)),
+  logo_transparency: z.array(z.number().min(16).max(255)),
+});
+
+const formSchema = (mode: Mode) => mode === "create" ? createFormSchema : editFormSchema;
+
+export type VenueFormValues = z.infer<ReturnType<typeof formSchema>>;
+
+type Mode = "create" | "edit";
 
 type FormProps = {
-  mode: "create" | "edit";
+  mode: Mode;
   loading: boolean;
   onSubmit: (data: VenueFormValues) => void;
 };
@@ -70,7 +85,7 @@ const VenueSettings = (props: FormProps) => {
   const { mode, loading, onSubmit } = props;
 
   const form = useForm<VenueFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(mode)),
     defaultValues: {
       name: venue?.name || "",
       contact_num: venue?.contact_num.toString() || "",
@@ -84,15 +99,14 @@ const VenueSettings = (props: FormProps) => {
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Update form value
       form.setValue("venue_logo", file, { shouldValidate: true });
-
-      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+    } else if (mode === "edit") {
+      form.setValue("venue_logo", undefined, { shouldValidate: false });
     }
   };
 
