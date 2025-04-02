@@ -32,6 +32,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LogoPosition } from "@/service/fetchLoginTokenFromApi";
 import { useAuth } from "@/auth/AuthProvider";
+import LogoWithText from "./LogoWithText";
 
 // File validation constants
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -64,7 +65,7 @@ type FormProps = {
 };
 
 const VenueSettings = (props: FormProps) => {
-  const { venue } = useAuth();
+  const { venue, logout } = useAuth();
   const [logoPreview, setLogoPreview] = useState<string | null>(venue?.logo_url || null);
   const { mode, loading, onSubmit } = props;
 
@@ -98,7 +99,8 @@ const VenueSettings = (props: FormProps) => {
   return (
     <Card className="max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-xl flex items-center gap-2">
+        {props.mode == "create" && <LogoWithText />}
+        <CardTitle className="text-xl flex items-center gap-2 pt-2">
           <Store className="h-5 w-5" />
           {mode === "create" && "Create your venue"}
           {mode === "edit" && "Venue Settings"}
@@ -280,6 +282,15 @@ const VenueSettings = (props: FormProps) => {
             </div>
 
             <div className="flex justify-end">
+              {props.mode == "create" && <Button
+                type="button"
+                variant={"destructive"}
+                disabled={loading}
+                onClick={logout}
+                className="mr-auto"
+              >
+                Logout
+              </Button>}
               <Button type="submit" disabled={loading}>
                 {mode === "create" && "Submit"}
                 {mode === "edit" && "Save Settings"}
