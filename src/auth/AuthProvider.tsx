@@ -45,12 +45,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (email: string, password: string) => {
     try {
       const res = await fetchLoginTokenFromApi(email, password);
-      setUser(res.venue.owner);
-      setVenue(res.venue);
       setToken(res.access_token);
-      localStorage.setItem("user", JSON.stringify(res.venue.owner));
-      localStorage.setItem("venue", JSON.stringify(res.venue));
+      setUser(res.venue?.owner ?? null);
+      setVenue(res.venue);
       localStorage.setItem("token", res.access_token);
+      localStorage.setItem("user", JSON.stringify(res.venue?.owner ?? null));
+      localStorage.setItem("venue", JSON.stringify(res.venue));
     } catch (error) {
       console.error("Login error:", error);
       throw error;
