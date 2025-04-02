@@ -86,6 +86,10 @@ const VenueDashboard = () => {
     { id: "account-settings", label: "Account Settings", icon: <User className="h-4 w-4" /> },
   ];
 
+  const onVenueSettingsSubmit = () => {
+    console.log("Venue settings submitted");
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="border-b bg-white">
@@ -327,7 +331,7 @@ const VenueDashboard = () => {
           )}
 
           {activeTab === "venue-settings" && (
-            <VenueSettings mode="edit" loading={false} onSubmit={() => null} />
+            <VenueSettings mode="edit" loading={false} onSubmit={onVenueSettingsSubmit} />
           )}
 
           {activeTab === "account-settings" && (
