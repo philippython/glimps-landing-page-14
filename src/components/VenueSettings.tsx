@@ -27,7 +27,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LogoPosition } from "@/service/fetchLoginTokenFromApi";
@@ -35,14 +34,21 @@ import { useAuth } from "@/auth/AuthProvider";
 import LogoWithText from "./LogoWithText";
 import { FormattedMessage, useIntl } from "react-intl";
 import { CreateVenueFormValues, EditVenueFormValues, createSchema } from "@/lib/createSchema";
+import { z } from "zod";
 
 type Mode = "create" | "edit";
 
-type FormProps = {
-  mode: Mode;
-  loading: boolean;
-  onSubmit: (data: CreateVenueFormValues | EditVenueFormValues) => void;
-};
+type FormProps =
+  | {
+    mode: "create";
+    loading: boolean;
+    onSubmit: (values: CreateVenueFormValues) => void;
+  }
+  | {
+    mode: "edit";
+    loading: boolean;
+    onSubmit: (values: EditVenueFormValues) => void;
+  };;
 
 const VenueSettings = (props: FormProps) => {
   const { venue, logout } = useAuth();
@@ -51,30 +57,29 @@ const VenueSettings = (props: FormProps) => {
   const intl = useIntl();
   const { createFormSchema, editFormSchema } = createSchema(intl);
 
-  const formSchema = (mode: Mode) =>
-    mode === "create" ? createFormSchema : editFormSchema;
+  const formSchema = mode === "create" ? createFormSchema : editFormSchema;
 
   const logoPositionText = {
-    [LogoPosition.topLeft]: "Top Left",
-    [LogoPosition.topRight]: "Top Right",
-    [LogoPosition.topCenter]: "Top Center",
-    [LogoPosition.bottomLeft]: "Bottom Left",
-    [LogoPosition.bottomRight]: "Bottom Right",
-    [LogoPosition.bottomCenter]: "Bottom Center",
-    [LogoPosition.centerLeft]: "Center Left",
-    [LogoPosition.centerRight]: "Center Right",
-    [LogoPosition.center]: "Center",
+    [LogoPosition.topLeft]: <FormattedMessage id="venueDashboard.venueSettings.logoPosition.topLeft" />,
+    [LogoPosition.topRight]: <FormattedMessage id="venueDashboard.venueSettings.logoPosition.topRight" />,
+    [LogoPosition.topCenter]: <FormattedMessage id="venueDashboard.venueSettings.logoPosition.topCenter" />,
+    [LogoPosition.bottomLeft]: <FormattedMessage id="venueDashboard.venueSettings.logoPosition.bottomLeft" />,
+    [LogoPosition.bottomRight]: <FormattedMessage id="venueDashboard.venueSettings.logoPosition.bottomRight" />,
+    [LogoPosition.bottomCenter]: <FormattedMessage id="venueDashboard.venueSettings.logoPosition.bottomCenter" />,
+    [LogoPosition.centerLeft]: <FormattedMessage id="venueDashboard.venueSettings.logoPosition.centerLeft" />,
+    [LogoPosition.centerRight]: <FormattedMessage id="venueDashboard.venueSettings.logoPosition.centerRight" />,
+    [LogoPosition.center]: <FormattedMessage id="venueDashboard.venueSettings.logoPosition.center" />,
   }
 
-  const form = useForm<CreateVenueFormValues | EditVenueFormValues>({
-    resolver: zodResolver(formSchema(mode)),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       name: venue?.name || "",
       contact_num: venue?.contact_num.toString() || "",
       venue_logo: undefined,
-      logo_position: venue?.logo_position || LogoPosition.topLeft,
+      logo_position: venue?.logo_position || LogoPosition.bottomCenter,
       logo_ratio: venue ? [venue.logo_ratio] : [50],
-      logo_transparency: venue ? [venue.logo_transparency] : [80],
+      logo_transparency: venue ? [venue.logo_transparency] : [255],
     },
   });
 
@@ -92,32 +97,44 @@ const VenueSettings = (props: FormProps) => {
     }
   };
 
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    if (mode === "create") {
+      onSubmit(values as CreateVenueFormValues);
+    } else {
+      onSubmit(values as EditVenueFormValues);
+    }
+  };
+
   return (
     <Card className="min-w-[70vw] mx-auto">
       <CardHeader>
         {props.mode == "create" && <LogoWithText />}
         <CardTitle className="text-xl flex items-center gap-2 pt-2">
           <Store className="h-5 w-5" />
-          {mode === "create" && "Create your venue"}
-          {mode === "edit" && "Venue Settings"}
+          {mode === "create" && <FormattedMessage id="venueDashboard.venueSettings.title.create" />}
+          {mode === "edit" && <FormattedMessage id="venueDashboard.venueSettings.title.edit" />}
         </CardTitle>
         <CardDescription>
-          Configure your venue booth appearance and contact information
+          <FormattedMessage id="venueDashboard.venueSettings.description" />
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Venue Name</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage id="venueDashboard.venueSettings.form.venueName.label" />
+                    </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter venue name"
+                        placeholder={intl.formatMessage({
+                          id: "venueDashboard.venueSettings.form.venueName.placeholder"
+                        })}
                         {...field}
                         disabled={loading}
                       />
@@ -132,9 +149,17 @@ const VenueSettings = (props: FormProps) => {
                 name="contact_num"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contact Number</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage id="venueDashboard.venueSettings.form.contactNumber.label" />
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter contact number" {...field} disabled={loading} />
+                      <Input
+                        placeholder={intl.formatMessage({
+                          id: "venueDashboard.venueSettings.form.contactNumber.placeholder"
+                        })}
+                        {...field}
+                        disabled={loading}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -148,7 +173,9 @@ const VenueSettings = (props: FormProps) => {
                 name="venue_logo"
                 render={() => (
                   <FormItem>
-                    <FormLabel>Venue Logo</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage id="venueDashboard.venueSettings.form.venue_logo.label" />
+                    </FormLabel>
                     <div className="mt-2 flex items-center gap-4">
                       <div className="flex-shrink-0 h-24 w-24 border rounded-md flex items-center justify-center overflow-hidden bg-gray-50">
                         {logoPreview ? (
@@ -167,7 +194,7 @@ const VenueSettings = (props: FormProps) => {
                           className="cursor-pointer inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-md transition-colors"
                         >
                           <Upload className="h-4 w-4" />
-                          Upload Logo
+                          <FormattedMessage id="venueDashboard.venueSettings.form.venue_logo.button" />
                         </Label>
                         <FormControl>
                           <Input
@@ -181,7 +208,7 @@ const VenueSettings = (props: FormProps) => {
                         </FormControl>
                         <FormMessage />
                         <p className="text-xs text-gray-500 mt-1">
-                          Recommended: 512x512px, PNG or JPG (Max 5MB)
+                          <FormattedMessage id="venueDashboard.venueSettings.form.venue_logo.helper" />
                         </p>
                       </div>
                     </div>
@@ -194,7 +221,9 @@ const VenueSettings = (props: FormProps) => {
                 name="logo_position"
                 render={({ field }) => (
                   <FormItem className="mt-4">
-                    <FormLabel>Logo Position</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage id="venueDashboard.venueSettings.form.logoPosition.label" />
+                    </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -202,7 +231,11 @@ const VenueSettings = (props: FormProps) => {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select logo position" />
+                          <SelectValue
+                            placeholder={intl.formatMessage({
+                              id: "venueDashboard.venueSettings.form.logoPosition.placeholder"
+                            })}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -223,24 +256,31 @@ const VenueSettings = (props: FormProps) => {
                 name="logo_ratio"
                 render={({ field }) => (
                   <FormItem className="mt-4">
-                    <FormLabel>Logo Size Ratio</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage id="venueDashboard.venueSettings.form.logoRatio.label" />
+                    </FormLabel>
                     <FormControl>
                       <div className="pt-2">
                         <Slider
                           defaultValue={field.value}
                           max={100}
+                          min={1}
                           step={1}
                           onValueChange={field.onChange}
                           disabled={loading}
                         />
                         <div className="flex justify-between mt-1 text-xs text-gray-500">
-                          <span>Small</span>
-                          <span>Large</span>
+                          <span>
+                            <FormattedMessage id="venueDashboard.venueSettings.form.logoRatio.helper.min" />
+                          </span>
+                          <span>
+                            <FormattedMessage id="venueDashboard.venueSettings.form.logoRatio.helper.max" />
+                          </span>
                         </div>
                       </div>
                     </FormControl>
                     <FormDescription>
-                      Adjust the size of your logo relative to the photo
+                      <FormattedMessage id="venueDashboard.venueSettings.form.logoRatio.description" />
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -252,24 +292,31 @@ const VenueSettings = (props: FormProps) => {
                 name="logo_transparency"
                 render={({ field }) => (
                   <FormItem className="mt-4">
-                    <FormLabel>Logo Transparency</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage id="venueDashboard.venueSettings.form.logoTransparency.label" />
+                    </FormLabel>
                     <FormControl>
                       <div className="pt-2">
                         <Slider
                           defaultValue={field.value}
-                          max={100}
+                          max={255}
+                          min={16}
                           step={1}
                           onValueChange={field.onChange}
                           disabled={loading}
                         />
                         <div className="flex justify-between mt-1 text-xs text-gray-500">
-                          <span>Transparent</span>
-                          <span>Solid</span>
+                          <span>
+                            <FormattedMessage id="venueDashboard.venueSettings.form.logoTransparency.helper.min" />
+                          </span>
+                          <span>
+                            <FormattedMessage id="venueDashboard.venueSettings.form.logoTransparency.helper.max" />
+                          </span>
                         </div>
                       </div>
                     </FormControl>
                     <FormDescription>
-                      Adjust the transparency of your logo overlay
+                      <FormattedMessage id="venueDashboard.venueSettings.form.logoTransparency.description" />
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -285,11 +332,11 @@ const VenueSettings = (props: FormProps) => {
                 onClick={logout}
                 className="mr-auto"
               >
-                Logout
+                <FormattedMessage id="venueDashboard.venueSettings.form.button.signout" />
               </Button>}
               <Button type="submit" disabled={loading}>
-                {mode === "create" && "Submit"}
-                {mode === "edit" && "Save Settings"}
+                {mode === "create" && <FormattedMessage id="venueDashboard.venueSettings.form.button.create" />}
+                {mode === "edit" && <FormattedMessage id="venueDashboard.venueSettings.form.button.edit" />}
               </Button>
             </div>
           </form>

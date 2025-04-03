@@ -41,9 +41,9 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogOverlay, D
 import ImageWithFallback from "@/components/ImageWithFallback";
 import { useNavigate } from "react-router-dom";
 import { patchVenueSettingsToApi } from "@/service/patchVenueSettingsToApi";
-import { VenueFormValues } from '@/components/VenueSettings';
 import { toast } from "sonner";
 import { FormattedMessage, useIntl } from "react-intl";
+import { EditVenueFormValues } from "@/lib/createSchema";
 
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -107,7 +107,7 @@ const VenueDashboard = () => {
     },
   ];
 
-  const onVenueSettingsSubmit = async (values: VenueFormValues) => {
+  const onVenueSettingsSubmit = async (values: EditVenueFormValues) => {
     setLoading(true);
     try {
       if (!token || !venue) {

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import VenueSettings, { VenueFormValues } from "@/components/VenueSettings";
+import VenueSettings from "@/components/VenueSettings";
 import { toast } from "sonner";
 import { useAuth } from "@/auth/AuthProvider";
 import { postNewVenueToApi } from "@/service/postNewVenueToApi";
+import { CreateVenueFormValues } from '@/lib/createSchema';
 
 export default function VenueCreation() {
   const [loading, setLoading] = useState(false);
@@ -21,7 +22,7 @@ export default function VenueCreation() {
     }
   }, [user, navigate]);
 
-  const onSubmit = async (values: VenueFormValues) => {
+  const onSubmit = async (values: CreateVenueFormValues) => {
     setLoading(true);
     try {
       if (token) {
