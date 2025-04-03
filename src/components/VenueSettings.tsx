@@ -33,6 +33,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LogoPosition } from "@/service/fetchLoginTokenFromApi";
 import { useAuth } from "@/auth/AuthProvider";
 import LogoWithText from "./LogoWithText";
+import { FormattedMessage } from "react-intl";
 
 // File validation constants
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -88,6 +89,18 @@ const VenueSettings = (props: FormProps) => {
   const { venue, logout } = useAuth();
   const [logoPreview, setLogoPreview] = useState<string | null>(venue?.logo_url || null);
   const { mode, loading, onSubmit } = props;
+
+  const logoPositionText = {
+    [LogoPosition.topLeft]: "Top Left",
+    [LogoPosition.topRight]: "Top Right",
+    [LogoPosition.topCenter]: "Top Center",
+    [LogoPosition.bottomLeft]: "Bottom Left",
+    [LogoPosition.bottomRight]: "Bottom Right",
+    [LogoPosition.bottomCenter]: "Bottom Center",
+    [LogoPosition.centerLeft]: "Center Left",
+    [LogoPosition.centerRight]: "Center Right",
+    [LogoPosition.center]: "Center",
+  }
 
   const form = useForm<VenueFormValues>({
     resolver: zodResolver(formSchema(mode)),
@@ -231,7 +244,7 @@ const VenueSettings = (props: FormProps) => {
                       <SelectContent>
                         {Object.values(LogoPosition).map((position) => (
                           <SelectItem key={position} value={position}>
-                            {position}
+                            {logoPositionText[position]}
                           </SelectItem>
                         ))}
                       </SelectContent>
