@@ -1,12 +1,13 @@
 import axios from "axios";
 import { VenueData } from "./fetchLoginTokenFromApi";
 import { VenueFormValues } from "@/components/VenueSettings";
+import placeholder from "placeholder.png";
 
 export const postNewVenueToApi = async (values: VenueFormValues, token: string) => {
   const formData = new FormData();
   formData.append("name", values.name);
   formData.append("contact_num", values.contact_num);
-  formData.append("venue_logo", values.venue_logo);
+  formData.append("venue_logo", values.venue_logo ?? placeholder);
   formData.append("logo_position", values.logo_position);
   formData.append("logo_ratio", values.logo_ratio.toString());
   formData.append("logo_transparency", values.logo_transparency.toString());

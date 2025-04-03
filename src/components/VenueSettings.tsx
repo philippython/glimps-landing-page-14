@@ -42,9 +42,14 @@ const createFormSchema = z.object({
   name: z.string().min(2, { message: "Venue name must be at least 2 characters." }),
   contact_num: z.string().min(5, { message: "Contact number must be at least 5 characters." }),
   venue_logo: z.instanceof(File, { message: "Logo is required" })
-    .refine(file => file.size <= MAX_FILE_SIZE, "Max file size is 5MB.")
     .refine(
-      file => ACCEPTED_FILE_TYPES.includes(file.type),
+      file => file.size <= import.meta.env.VITE_LOGO_MAX_FILE_SIZE * 1024 * 1024,
+      "Max file size is 5MB."
+    )
+    .refine(
+      file => import.meta.env.VITE_ACCEPTED_LOGO_FILE_TYPES
+        .split(",")
+        .includes(file.type),
       "Only .jpg, .jpeg, and .png formats are supported."
     ),
   logo_position: z.nativeEnum(LogoPosition),
@@ -164,7 +169,7 @@ const VenueSettings = (props: FormProps) => {
               <FormField
                 control={form.control}
                 name="venue_logo"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>Venue Logo</FormLabel>
                     <div className="mt-2 flex items-center gap-4">
