@@ -44,14 +44,16 @@ import { useNavigate } from "react-router-dom";
 import { patchVenueSettingsToApi } from "@/service/patchVenueSettingsToApi";
 import { VenueFormValues } from '@/components/VenueSettings';
 import { toast } from "sonner";
+import { FormattedMessage, useIntl } from "react-intl";
 
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("sessions");
   const [venueUsers, setVenueUsers] = useState<VenueUser[]>([]);
   const [venuePhotos, setVenuePhotos] = useState<VenuePhotos[]>([]);
-  const { user, venue, token, logout, setUserAndVenueAfterCreation } = useAuth();
   const [loading, setLoading] = useState(false);
+  const { user, venue, token, logout, setUserAndVenueAfterCreation } = useAuth();
+  const intl = useIntl();
 
   const navigate = useNavigate();
 
@@ -84,10 +86,26 @@ const VenueDashboard = () => {
   );
 
   const navItems = [
-    { id: "sessions", label: "Photo Sessions", icon: <Camera className="h-4 w-4" /> },
-    { id: "users", label: "Users", icon: <Users className="h-4 w-4" /> },
-    { id: "venue-settings", label: "Venue Settings", icon: <Store className="h-4 w-4" /> },
-    { id: "account-settings", label: "Account Settings", icon: <User className="h-4 w-4" /> },
+    {
+      id: "sessions",
+      label: <FormattedMessage id="venueDashboard.navItems.sessions" />,
+      icon: <Camera className="h-4 w-4" />
+    },
+    {
+      id: "users",
+      label: <FormattedMessage id="venueDashboard.navItems.usersList" />,
+      icon: <Users className="h-4 w-4" />
+    },
+    {
+      id: "venue-settings",
+      label: <FormattedMessage id="venueDashboard.navItems.venueSettings" />,
+      icon: <Store className="h-4 w-4" />
+    },
+    {
+      id: "account-settings",
+      label: <FormattedMessage id="venueDashboard.navItems.accountSettings" />,
+      icon: <User className="h-4 w-4" />
+    },
   ];
 
   const onVenueSettingsSubmit = async (values: VenueFormValues) => {
@@ -98,11 +116,11 @@ const VenueDashboard = () => {
       }
       const res = await patchVenueSettingsToApi(values, token, venue.id);
       if (res.id) {
-        toast.success("Venue settings updated successfully!");
+        toast.success(<FormattedMessage id="venueDashboard.messages.successUpdateVenue" />);
         setUserAndVenueAfterCreation(res);
       }
     } catch (error) {
-      toast.error("Failed to update venue settings. Please try again!");
+      toast.error(<FormattedMessage id="venueDashboard.messages.failedUpdateVenue" />);
     } finally {
       setLoading(false);
     }
@@ -115,7 +133,9 @@ const VenueDashboard = () => {
           <LogoWithText />
 
           <div className="flex-1">
-            <h1 className="text-lg font-semibold">Venue Dashboard</h1>
+            <h1 className="text-lg font-semibold">
+              <FormattedMessage id="common.navbar.venueDashboard" />
+            </h1>
           </div>
 
           <div className="flex items-center gap-4">
@@ -123,7 +143,7 @@ const VenueDashboard = () => {
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
               <Input
                 type="search"
-                placeholder="Search..."
+                placeholder={intl.formatMessage({ id: "venueDashboard.navItems.search" })}
                 className="w-full rounded-full bg-gray-100 pl-9 pr-4"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -135,14 +155,14 @@ const VenueDashboard = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 text-sm font-medium">
-                  The Venue Club
+                  {user && user.username}
                   <ChevronDown className="h-4 w-4" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 bg-white">
                 <div className="flex items-center gap-3 p-3">
                   <img
-                    src="/placeholder.svg"
+                    src={venue?.logo_url && "/placeholder.svg"}
                     alt="User"
                     className="h-10 w-10 rounded-full"
                   />
@@ -154,17 +174,17 @@ const VenueDashboard = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setActiveTab("account-settings")}>
                   <User className="mr-2 h-4 w-4" />
-                  Account Settings
+                  <FormattedMessage id="venueDashboard.navItems.accountSettings" />
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setActiveTab("venue-settings")}>
                   <Store className="mr-2 h-4 w-4" />
-                  Venue Settings
+                  <FormattedMessage id="venueDashboard.navItems.venueSettings" />
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <div onClick={logout} className="flex w-full items-center">
                     <LogOut className="mr-2 h-4 w-4" />
-                    Sign out
+                    <FormattedMessage id="venueDashboard.navItems.signOut" />
                   </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -196,31 +216,37 @@ const VenueDashboard = () => {
           {activeTab === "sessions" && (
             <Card>
               <div className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Photo Sessions</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  <FormattedMessage id="venueDashboard.navItems.sessions" />
+                </h2>
                 <div className="rounded-md border">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="">UUID</TableHead>
+                        <TableHead className="">
+                          <FormattedMessage id="venueDashboard.sessions.UUID" />
+                        </TableHead>
                         <TableHead className="">
                           <div className="flex items-center gap-2">
                             <Phone className="h-4 w-4" />
-                            User UUID
+                            <FormattedMessage id="venueDashboard.sessions.userUUID" />
                           </div>
                         </TableHead>
                         <TableHead className="w-[140px]">
                           <div className="flex items-center gap-2">
                             <MessageSquare className="h-4 w-4" />
-                            Sent to user
+                            <FormattedMessage id="venueDashboard.sessions.sentToUser" />
                           </div>
                         </TableHead>
                         <TableHead className="">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4" />
-                            Timestamp
+                            <FormattedMessage id="venueDashboard.sessions.timestamp" />
                           </div>
                         </TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="text-right">
+                          <FormattedMessage id="venueDashboard.sessions.actions" />
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -229,20 +255,29 @@ const VenueDashboard = () => {
                           <TableRow key={photo.id}>
                             <TableCell className="font-medium">{photo.id}</TableCell>
                             <TableCell>{photo.user_id}</TableCell>
-                            <TableCell>{photo.sent ? "Yes" : "No"}</TableCell>
+                            <TableCell>
+                              <FormattedMessage id={
+                                `venueDashboard.sessions.isPhotoSent.
+                                ${photo.sent ? "yes" : "no"}`
+                              } />
+                            </TableCell>
                             <TableCell>{convertDateTime(photo.created_at)}</TableCell>
                             <TableCell className="text-right">
                               <Dialog>
                                 <DialogTrigger asChild>
                                   <Button variant="outline" size="sm">
-                                    View Photo
+                                    <FormattedMessage id="venueDashboard.sessions.viewPhoto" />
                                   </Button>
                                 </DialogTrigger>
                                 <DialogPortal>
                                   <DialogOverlay className="fixed bg-transparent backdrop-blur-sm" />
                                   <DialogContent className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-lg w-full p-0 bg-transparent overflow-hidden flex items-center justify-center">
-                                    <DialogTitle className="hidden">User photo</DialogTitle>
-                                    <DialogDescription className="hidden">User photo</DialogDescription>
+                                    <DialogTitle className="hidden">
+                                      <FormattedMessage id="venueDashboard.sessions.userPhoto" />
+                                    </DialogTitle>
+                                    <DialogDescription className="hidden">
+                                      <FormattedMessage id="venueDashboard.sessions.userPhoto" />
+                                    </DialogDescription>
                                     <ImageWithFallback
                                       src={photo.photo_url}
                                       alt="User photo"
@@ -258,7 +293,7 @@ const VenueDashboard = () => {
                                 size="sm"
                                 onClick={() => window.open(`/photos/${photo.link_id}`, '_blank')}
                               >
-                                View photo session
+                                <FormattedMessage id="venueDashboard.sessions.viewSession" />
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -266,7 +301,7 @@ const VenueDashboard = () => {
                       ) : (
                         <TableRow>
                           <TableCell colSpan={5} className="h-24 text-center">
-                            No photo sessions found.
+                            <FormattedMessage id="venueDashboard.sessions.noPhotoFound" />
                           </TableCell>
                         </TableRow>
                       )}
@@ -280,37 +315,43 @@ const VenueDashboard = () => {
           {activeTab === "users" && (
             <Card>
               <div className="p-6">
-                <h2 className="text-xl font-semibold mb-4">User List</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  <FormattedMessage id="venueDashboard.navItems.usersList" />
+                </h2>
                 <div className="rounded-md border">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="">UUID</TableHead>
+                        <TableHead className="">
+                          <FormattedMessage id="venueDashboard.usersList.UUID" />
+                        </TableHead>
                         <TableHead className="w-[160px]">
                           <div className="flex items-center gap-2">
                             <Phone className="h-4 w-4" />
-                            Phone Number
+                            <FormattedMessage id="venueDashboard.usersList.phoneNumber" />
                           </div>
                         </TableHead>
                         <TableHead className="w-[140px]">
                           <div className="flex items-center gap-2">
                             <MessageSquare className="h-4 w-4" />
-                            Telegram
+                            <FormattedMessage id="venueDashboard.usersList.telegram" />
                           </div>
                         </TableHead>
                         <TableHead className="w-[180px]">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4" />
-                            Last Session
+                            <FormattedMessage id="venueDashboard.usersList.lastSession" />
                           </div>
                         </TableHead>
                         <TableHead className="w-[180px]">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4" />
-                            Created At
+                            <FormattedMessage id="venueDashboard.usersList.createdAt" />
                           </div>
                         </TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="text-right">
+                          <FormattedMessage id="venueDashboard.usersList.actions" />
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -329,7 +370,10 @@ const VenueDashboard = () => {
                                 onClick={() => window.open(`/photos/${user.photos.at(-1)?.link_id}`, '_blank')}
                                 disabled={user.photos.length === 0}
                               >
-                                {user.photos.length > 0 ? "View Last Photos" : "No Photos"}
+                                {user.photos.length > 0
+                                  ? <FormattedMessage id="venueDashboard.usersList.viewLastPhotos" />
+                                  : <FormattedMessage id="venueDashboard.usersList.noPhotos" />
+                                }
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -337,7 +381,7 @@ const VenueDashboard = () => {
                       ) : (
                         <TableRow>
                           <TableCell colSpan={5} className="h-24 text-center">
-                            No users found.
+                            <FormattedMessage id="venueDashboard.usersList.noUsers" />
                           </TableCell>
                         </TableRow>
                       )}
