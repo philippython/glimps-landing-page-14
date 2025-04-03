@@ -6,7 +6,9 @@
       "pricing": "Pricing",
       "about": "About",
       "login": "Login",
-      "getStarted": "Get Started"
+      "getStarted": "Get Started",
+      "venueDashboard": "Venue Dashboard",
+      "adminDashboard": "Admin Dashboard"
     },
     "submit": "Submit",
     "cancel": "Cancel"
@@ -72,5 +74,44 @@
       "button": "Create account"
     }
   },
-  "venueDashboard": {}
+  "venueDashboard": {
+    "navItems": {
+      "sessions": "Photo Sessions",
+      "usersList": "Users List",
+      "venueSettings": "Vennue Settings",
+      "accountSettings": "Account Settings",
+      "search": "Search...",
+      "signOut": "Sign Out"
+    },
+    "sessions": {
+      "UUID": "UUID",
+      "userUUID": "User UUID",
+      "sentToUser": "Sent to User",
+      "timestamp": "Timestamp",
+      "actions": "Actions",
+      "isPhotoSent": {
+        "yes": "Yes",
+        "no": "No"
+      },
+      "viewPhoto": "View Photo",
+      "userPhoto": "User Photo",
+      "viewSession": "View photo ession",
+      "noPhotoFound": "No photo sessions found."
+    },
+    "usersList": {
+      "UUID": "UUID",
+      "phoneNumber": "Phone Number",
+      "telegram": "Telegram",
+      "lastsession": "Last Session",
+      "createdAt": "Created At",
+      "actions": "Actions",
+      "viewLastPhotos": "View Last Photos",
+      "noPhotos": "No Photos",
+      "noUsers": "No users found."
+    },
+    "messages": {
+      "successUpdateVenue": "Venue settings updated successfully!",
+      "failedUpdateVenue": "Failed to update venue settings. Please try again!"
+    }
+  }
 }
