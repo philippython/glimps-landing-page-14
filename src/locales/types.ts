@@ -7,6 +7,8 @@ export type Messages = {
       about: string;
       login: string;
       getStarted: string;
+      venueDashboard: string;
+      adminDashboard: string;
     };
     submit: string;
     cancel: string;
@@ -69,5 +71,44 @@ export type Messages = {
       button: string;
     };
   };
-  venueDashboard: Record<string, never>;
+  venueDashboard: {
+    navItems: {
+      sessions: string;
+      usersList: string;
+      venueSettings: string;
+      accountSettings: string;
+      search: string;
+      signOut: string;
+    },
+    sessions: {
+      UUID: string;
+      userUUID: string;
+      sentToUser: string;
+      timestamp: string;
+      actions: string;
+      isPhotoSent: {
+        yes: string;
+        no: string;
+      },
+      viewPhoto: string;
+      userPhoto: string;
+      viewSession: string;
+      noPhotoFound: string;
+    },
+    usersList: {
+      UUID: string;
+      phoneNumber: string;
+      telegram: string;
+      lastsession: string;
+      createdAt: string;
+      actions: string;
+      viewLastPhotos: string;
+      noPhotos: string;
+      noUsers: string;
+    },
+    messages: {
+      successUpdateVenue: string;
+      failedUpdateVenue: string;
+    }
+  }
 };
