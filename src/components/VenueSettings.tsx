@@ -33,11 +33,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LogoPosition } from "@/service/fetchLoginTokenFromApi";
 import { useAuth } from "@/auth/AuthProvider";
 import LogoWithText from "./LogoWithText";
-import { FormattedMessage } from "react-intl";
-
-// File validation constants
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg"];
+import { FormattedMessage, useIntl } from "react-intl";
 
 const createFormSchema = z.object({
   name: z.string().min(2, { message: "Venue name must be at least 2 characters." }),
@@ -62,9 +58,14 @@ const editFormSchema = z.object({
   name: z.string().min(2, { message: "Venue name must be at least 2 characters." }),
   contact_num: z.string().min(5, { message: "Contact number must be at least 5 characters." }),
   venue_logo: z.instanceof(File, { message: "Logo must be a valid file" })
-    .refine(file => file.size <= MAX_FILE_SIZE, "Max file size is 5MB.")
     .refine(
-      file => ACCEPTED_FILE_TYPES.includes(file.type),
+      file => file.size <= import.meta.env.VITE_LOGO_MAX_FILE_SIZE * 1024 * 1024
+      , "Max file size is 5MB."
+    )
+    .refine(
+      file => import.meta.env.VITE_ACCEPTED_LOGO_FILE_TYPES
+        .split(",")
+        .includes(file.type),
       "Only .jpg, .jpeg, and .png formats are supported."
     )
     .optional(),
@@ -89,6 +90,7 @@ const VenueSettings = (props: FormProps) => {
   const { venue, logout } = useAuth();
   const [logoPreview, setLogoPreview] = useState<string | null>(venue?.logo_url || null);
   const { mode, loading, onSubmit } = props;
+  const inlt = useIntl();
 
   const logoPositionText = {
     [LogoPosition.topLeft]: "Top Left",
