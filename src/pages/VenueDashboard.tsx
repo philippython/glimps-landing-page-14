@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   Users,
@@ -162,7 +161,7 @@ const VenueDashboard = () => {
               <DropdownMenuContent align="end" className="w-56 bg-white">
                 <div className="flex items-center gap-3 p-3">
                   <img
-                    src={venue?.logo_url && "/placeholder.svg"}
+                    src={venue?.logo_url}
                     alt="User"
                     className="h-10 w-10 rounded-full"
                   />
