@@ -15,10 +15,31 @@ export const patchVenueSettingsToApi = async (values: VenueFormValues, token: st
           "Authorization": `Bearer ${token}`,
         },
       }
-    )
+    );
 
     if (venue_logo) {
-      console.log("Uploading logo to API");
+      const formData = new FormData();
+      formData.append("venue_logo", venue_logo);
+      const logoRes = await axios.patch<VenueData>(
+        `${import.meta.env.VITE_API_URL}/venue/update-logo/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.status !== 200) {
+        throw new Error("Failed to update venue settings");
+      }
+
+      if (logoRes.status !== 200) {
+        throw new Error("Failed to update logo");
+      }
+      return res.data;
     }
 
     return res.data;
