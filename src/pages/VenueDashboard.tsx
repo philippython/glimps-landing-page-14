@@ -256,8 +256,7 @@ const VenueDashboard = () => {
                             <TableCell>{photo.user_id}</TableCell>
                             <TableCell>
                               <FormattedMessage id={
-                                `venueDashboard.sessions.isPhotoSent.
-                                ${photo.sent ? "yes" : "no"}`
+                                `venueDashboard.sessions.isPhotoSent.${photo.sent ? "yes" : "no"}`
                               } />
                             </TableCell>
                             <TableCell>{convertDateTime(photo.created_at)}</TableCell>

@@ -102,12 +102,77 @@
       "UUID": "UUID",
       "phoneNumber": "Phone Number",
       "telegram": "Telegram",
-      "lastsession": "Last Session",
+      "lastSession": "Last Session",
       "createdAt": "Created At",
       "actions": "Actions",
       "viewLastPhotos": "View Last Photos",
       "noPhotos": "No Photos",
       "noUsers": "No users found."
+    },
+    "venueSettings": {
+      "title": {
+        "create": "Create your venue",
+        "edit": "Venue Settings"
+      },
+      "description": "Configure your venue booth appearance and contact information",
+      "form": {
+        "venueName": {
+          "label": "Venue Name",
+          "placeholder": "Enter your venue name"
+        },
+        "contactNumber": {
+          "label": "Contact Number",
+          "placeholder": "Enter your contact number"
+        },
+        "venue_logo": {
+          "label": "Venue Logo",
+          "button": "Upload Logo",
+          "helper": "Recommended: 512x512px, PNG, JPG, JPEG and SVG (Max 5MB)"
+        },
+        "logoPosition": {
+          "label": "Logo Position",
+          "placeholder": "Select logo position"
+        },
+        "logoRatio": {
+          "label": "Logo Size Ratio",
+          "helper": {
+            "max": "Large",
+            "min": "Small"
+          },
+          "description": "Adjust the size of your logo relative to the photo"
+        },
+        "logoTransparency": {
+          "label": "Logo Transparency",
+          "helper": {
+            "max": "Solid",
+            "min": "Transparent"
+          },
+          "description": "Adjust the transparency of your logo overlay"
+        },
+        "button": {
+          "create": "Submit",
+          "edit": "Save Settings",
+          "signout": "Sign Out"
+        }
+      },
+      "messages": {
+        "venueNameTooShort": "Venue name must be at least 2 characters.",
+        "contactNumberTooShort": "Contact number must be at least 5 digits.",
+        "missingLogo": "Logo is required",
+        "exceededLogoSize": "Max file size is 5MB.",
+        "invalidLogoType": "Invalid file type. Only PNG, JPG, JPEG, SVG are supported."
+      },
+      "logoPosition": {
+        "topLeft": "Top Left",
+        "topRight": "Top Right",
+        "topCenter": "Top Center",
+        "bottomLeft": "Bottom Left",
+        "bottomRight": "Bottom Right",
+        "bottomCenter": "Bottom Center",
+        "centerLeft": "Center Left",
+        "centerRight": "Center Right",
+        "center": "Center"
+      }
     },
     "messages": {
       "successUpdateVenue": "Venue settings updated successfully!",
