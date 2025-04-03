@@ -26,7 +26,10 @@ export type Messages = {
       username: string;
       usernameTips: string;
       password: string;
-      button: string;
+      button: {
+        signIn: string,
+        loading: string
+      }
     };
   };
   notFound: {
@@ -105,6 +108,71 @@ export type Messages = {
       viewLastPhotos: string;
       noPhotos: string;
       noUsers: string;
+    },
+    venueSettings: {
+      title: {
+        create: string;
+        edit: string;
+      },
+      description: string;
+      form: {
+        venueName: {
+          label: string;
+          placeholder: string;
+        },
+        contactNumber: {
+          label: string;
+          placeholder: string;
+        },
+        venue_logo: {
+          label: string;
+          button: string;
+          helper: string;
+        },
+        logoPosition: {
+          label: string;
+          placeholder: string;
+        },
+        logoRatio: {
+          label: string;
+          helper: {
+            max: string;
+            min: string;
+          },
+          description: string;
+        },
+        logoTransparency: {
+          label: string;
+          helper: {
+            max: string;
+            min: string;
+          },
+          description: string;
+        },
+        button: {
+          create: string;
+          edit: string;
+          signout: string;
+        }
+      },
+      messages: {
+        venueNameTooShort: string;
+        contactNumberTooShort: string;
+        missingLogo: string;
+        exceededLogoSize: string;
+        invalidLogoType: string;
+      },
+      logoPosition: {
+        topLeft: string;
+        topRight: string;
+        topCenter: string;
+        bottomLeft: string;
+        bottomRight: string;
+        bottomCenter: string;
+        centerLeft: string;
+        centerRight: string;
+        center: string;
+      }
     },
     messages: {
       successUpdateVenue: string;

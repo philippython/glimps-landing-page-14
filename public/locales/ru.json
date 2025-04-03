@@ -6,7 +6,9 @@
       "pricing": "Цены",
       "about": "Онас",
       "login": "Войти",
-      "getStarted": "Начать"
+      "getStarted": "Начать",
+      "venueDashboard": "Панель управления местом",
+      "adminDashboard": "Панель администратора"
     },
     "submit": "Отправить",
     "cancel": "Отмена"
@@ -72,5 +74,109 @@
       "button": "Создать аккаунт"
     }
   },
-  "venueDashboard": {}
+  "venueDashboard": {
+    "navItems": {
+      "sessions": "Фотосессии",
+      "usersList": "Список пользователей",
+      "venueSettings": "Настройки площадки",
+      "accountSettings": "Настройки аккаунта",
+      "search": "Поиск...",
+      "signOut": "Выйти"
+    },
+    "sessions": {
+      "UUID": "UUID",
+      "userUUID": "UUID пользователя",
+      "sentToUser": "Отправлено пользователю",
+      "timestamp": "Временная метка",
+      "actions": "Действия",
+      "isPhotoSent": {
+        "yes": "Да",
+        "no": "Нет"
+      },
+      "viewPhoto": "Просмотреть фото",
+      "userPhoto": "Фото пользователя",
+      "viewSession": "Просмотр фотосессии",
+      "noPhotoFound": "Фотосессии не найдены."
+    },
+    "usersList": {
+      "UUID": "UUID",
+      "phoneNumber": "Номер телефона",
+      "telegram": "Telegram",
+      "lastSession": "Последняя сессия",
+      "createdAt": "Дата создания",
+      "actions": "Действия",
+      "viewLastPhotos": "Посмотреть последние фото",
+      "noPhotos": "Нет фото",
+      "noUsers": "Пользователи не найдены."
+    },
+    "venueSettings": {
+      "title": {
+        "create": "Создание площадки",
+        "edit": "Настройки площадки"
+      },
+      "description": "Настройте внешний вид фотозоны и контактную информацию",
+      "form": {
+        "venueName": {
+          "label": "Название площадки",
+          "placeholder": "Введите название площадки"
+        },
+        "contactNumber": {
+          "label": "Контактный номер",
+          "placeholder": "Введите контактный номер"
+        },
+        "venue_logo": {
+          "label": "Логотип площадки",
+          "button": "Загрузить логотип",
+          "helper": "Рекомендуется: 512x512px, PNG, JPG, JPEG или SVG (макс. 5MB)"
+        },
+        "logoPosition": {
+          "label": "Позиция логотипа",
+          "placeholder": "Выберите позицию логотипа"
+        },
+        "logoRatio": {
+          "label": "Размер логотипа",
+          "helper": {
+            "max": "Большой",
+            "min": "Маленький"
+          },
+          "description": "Настройте размер логотипа относительно фото"
+        },
+        "logoTransparency": {
+          "label": "Прозрачность логотипа",
+          "helper": {
+            "max": "Непрозрачный",
+            "min": "Прозрачный"
+          },
+          "description": "Настройте прозрачность наложения логотипа"
+        },
+        "button": {
+          "create": "Создать",
+          "edit": "Сохранить настройки",
+          "signout": "Выйти"
+        }
+      },
+      "messages": {
+        "venueNameTooShort": "Название площадки должно содержать минимум 2 символа.",
+        "contactNumberTooShort": "Контактный номер должен содержать минимум 5 цифр.",
+        "missingLogo": "Логотип обязателен",
+        "exceededLogoSize": "Максимальный размер файла - 5MB.",
+        "invalidLogoType": "Недопустимый формат файла. Поддерживаются только PNG, JPG, JPEG, SVG."
+      },
+      "logoPosition": {
+        "topLeft": "Сверху слева",
+        "topRight": "Сверху справа",
+        "topCenter": "Сверху по центру",
+        "bottomLeft": "Снизу слева",
+        "bottomRight": "Снизу справа",
+        "bottomCenter": "Снизу по центру",
+        "centerLeft": "По центру слева",
+        "centerRight": "По центру справа",
+        "center": "По центру"
+      }
+    },
+    "messages": {
+      "successUpdateVenue": "Настройки площадки успешно обновлены!",
+      "failedUpdateVenue": "Не удалось обновить настройки площадки. Пожалуйста, попробуйте снова!"
+    }
+  }
 }
