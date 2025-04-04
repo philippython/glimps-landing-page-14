@@ -1,4 +1,5 @@
 
+import { FormattedMessage } from "react-intl";
 import { NavLink } from "react-router-dom";
 
 const Footer = () => {
@@ -10,10 +11,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
             <div className="flex flex-col space-y-4">
-              <h3 className="text-xl font-semibold text-glimps-900">Glimps</h3>
+              <h3 className="text-xl font-semibold text-glimps-900">
+                <FormattedMessage id="common.glimps" />
+              </h3>
               <p className="text-glimps-600 max-w-xs">
-                Elevate your venue experience with premium photo booth technology 
-                that customers love and remember.
+                <FormattedMessage id="common.footer.quote" />
               </p>
             </div>
           </div>
@@ -21,20 +23,23 @@ const Footer = () => {
           <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
             <div className="flex flex-col space-y-3">
               <h4 className="text-sm uppercase tracking-wider text-glimps-400 font-medium mb-2">
-                Menu
+                <FormattedMessage id="common.footer.menu" />
               </h4>
               <NavLink to="/" className="text-glimps-600 hover:text-glimps-accent transition-colors">
-                Home
+                <FormattedMessage id="common.navbar.home" />
               </NavLink>
               <NavLink to="/pricing" className="text-glimps-600 hover:text-glimps-accent transition-colors">
-                Pricing
+                <FormattedMessage id="common.navbar.pricing" />
               </NavLink>
               <NavLink to="/about" className="text-glimps-600 hover:text-glimps-accent transition-colors">
-                About Us
+                <FormattedMessage id="common.navbar.about" />
+              </NavLink>
+              <NavLink to="/login" className="text-glimps-600 hover:text-glimps-accent transition-colors">
+                <FormattedMessage id="common.navbar.userDashboard" />
               </NavLink>
             </div>
 
-            <div className="flex flex-col space-y-3">
+            {/* <div className="flex flex-col space-y-3">
               <h4 className="text-sm uppercase tracking-wider text-glimps-400 font-medium mb-2">
                 Legal
               </h4>
@@ -47,20 +52,26 @@ const Footer = () => {
               <a href="#" className="text-glimps-600 hover:text-glimps-accent transition-colors">
                 Cookie Policy
               </a>
-            </div>
+            </div> */}
 
             <div className="flex flex-col space-y-3">
               <h4 className="text-sm uppercase tracking-wider text-glimps-400 font-medium mb-2">
-                Contact
+                <FormattedMessage id="common.footer.contactUs" />
               </h4>
-              <a href="mailto:info@glimps.com" className="text-glimps-600 hover:text-glimps-accent transition-colors">
-                info@glimps.com
+              <a
+                href={`mailto:${<FormattedMessage id="common.footer.email" />}`}
+                className="text-glimps-600 hover:text-glimps-accent transition-colors"
+              >
+                <FormattedMessage id="common.footer.email" />
               </a>
-              <a href="tel:+1234567890" className="text-glimps-600 hover:text-glimps-accent transition-colors">
-                +1 (234) 567-890
+              <a
+                href={`tel:${<FormattedMessage id="common.footer.phoneNoSpace" />}`}
+                className="text-glimps-600 hover:text-glimps-accent transition-colors"
+              >
+                <FormattedMessage id="common.footer.phone" />
               </a>
               <address className="text-glimps-600 not-italic">
-                123 Photo Lane, Entertainment District
+                <FormattedMessage id="common.footer.address" />
               </address>
             </div>
           </div>
@@ -68,7 +79,7 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-glimps-500 text-sm">
-            © {currentYear} Glimps. All rights reserved.
+            © {currentYear} <FormattedMessage id="common.footer.trademark" />
           </p>
 
           <div className="flex space-x-6">

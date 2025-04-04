@@ -1,6 +1,6 @@
 {
   "common": {
-    "glimps": "Глимпс",
+    "glimps": "Glimps",
     "navbar": {
       "home": "Главная",
       "pricing": "Цены",
@@ -8,14 +8,25 @@
       "login": "Войти",
       "getStarted": "Начать",
       "venueDashboard": "Панель управления местом",
-      "adminDashboard": "Панель администратора"
+      "adminDashboard": "Панель администратора",
+      "userDashboard": "Панель пользователя"
+    },
+    "footer": {
+      "trademark": "Glimps. Все права защищены.",
+      "quote": "Поднимите уровень вашего заведения с помощью премиальной фотобудки, которую клиенты любят и запоминают.",
+      "menu": "Меню",
+      "contactUs": "Связаться с нами",
+      "email": "daniil.sapozhnikov@outlook.com",
+      "phone": "+(358) 46 631 4162",
+      "phoneNoSpace": "+358466314162",
+      "address": "Москва, Россия"
     },
     "submit": "Отправить",
     "cancel": "Отмена"
   },
-  "about": {},
-  "adminDashboard": {},
   "index": {},
+  "pricing": {},
+  "about": {},
   "login": {
     "title": "Войдите в свой аккаунт",
     "optionalTitle": {
@@ -60,7 +71,6 @@
       "message": "Фото доступны в течение 30 дней с даты события."
     }
   },
-  "pricing": {},
   "register": {
     "title": "Создайте свой аккаунт",
     "optionalTitle": {
@@ -243,5 +253,6 @@
       "successUpdateVenue": "Настройки площадки успешно обновлены!",
       "failedUpdateVenue": "Не удалось обновить настройки площадки. Пожалуйста, попробуйте снова!"
     }
-  }
+  },
+  "adminDashboard": {}
 }

@@ -9,13 +9,24 @@ export type Messages = {
       getStarted: string;
       venueDashboard: string;
       adminDashboard: string;
-    };
+      userDashboard: string;
+    },
+    footer: {
+      trademark: string;
+      quote: string;
+      menu: string;
+      contactUs: string;
+      email: string;
+      phone: string;
+      phoneNoSpace: string;
+      address: string;
+    },
     submit: string;
     cancel: string;
   };
-  about: Record<string, never>; // Empty object
-  adminDashboard: Record<string, never>;
   index: Record<string, never>;
+  pricing: Record<string, never>;
+  about: Record<string, never>;
   login: {
     title: string;
     optionalTitle: {
@@ -60,7 +71,6 @@ export type Messages = {
       message: string;
     };
   };
-  pricing: Record<string, never>;
   register: {
     title: string;
     optionalTitle: {
@@ -98,7 +108,7 @@ export type Messages = {
       accountCreated: string;
       failed: string;
     };
-  }
+  };
   venueDashboard: {
     navItems: {
       sessions: string;
@@ -243,5 +253,6 @@ export type Messages = {
       successUpdateVenue: string;
       failedUpdateVenue: string;
     }
-  }
+  };
+  adminDashboard: Record<string, never>;
 }
