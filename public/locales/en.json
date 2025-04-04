@@ -24,7 +24,107 @@
     "submit": "Submit",
     "cancel": "Cancel"
   },
-  "index": {},
+  "index": {
+    "hero": {
+      "tagline": "For Venue Owners",
+      "title": {
+        "first": "Turn Moments Into ",
+        "highlight": "Memories",
+        "last": " Your Customers Will Share"
+      },
+      "description": "Elevate your venue with Glimps photo booths—a premium amenity that increases customer engagement, dwell time, and generates social media exposure.",
+      "links": {
+        "viewPricing": "View Pricing",
+        "learnMore": "Learn More"
+      },
+      "footer": "Trusted by 200+ venues and entertainment spots nationwide"
+    },
+    "features": {
+      "title": "Why Venue Owners Love Glimps",
+      "description": "Our premium photo booths are designed specifically for venues in the hospitality and entertainment industry.",
+      "preiumExperience": {
+        "title": "Premium Photo Experience",
+        "description": "High-quality cameras and professional lighting ensure your customers get magazine-worthy photos every time."
+      },
+      "customerEngagement": {
+        "title": "Increased Customer Engagement",
+        "description": "Create memorable experiences that keep customers in your venue longer and coming back for more."
+      },
+      "revenueGeneration": {
+        "title": "Revenue Generation",
+        "description": "An additional revenue stream with flexible pricing models to suit your business."
+      },
+      "socialMedia": {
+        "title": "Social Media Amplification",
+        "description": "Instant social sharing with your branded templates increases visibility and attracts new customers."
+      }
+    },
+    "howItWorks": {
+      "tagline": "Simple Process",
+      "title": "How Glimps Works for Your Venue",
+      "keyPoints": {
+        "1": {
+          "number": "1",
+          "title": "Seamless Installation",
+          "description": "Our team handles the complete setup of your custom-branded photo booth in a spot that maximizes visibility and usage."
+        },
+        "2": {
+          "number": "2",
+          "title": "Customer Engagement",
+          "description": "Guests use the intuitive touchscreen interface to take photos, apply filters, and instantly share branded content to their social networks."
+        },
+        "3": {
+          "number": "3",
+          "title": "Analytics & Growth",
+          "description": "Access real-time data on usage, popular times, and social sharing reach to measure ROI and optimize your marketing."
+        }
+      },
+      "cta": "Get Started Today"
+    },
+    "testimonials": {
+      "title": "What Venue Owners Are Saying",
+      "description": "Join hundreds of satisfied venue owners who've transformed their customer experience with Glimps.",
+      "1": {
+        "author": "Kaari",
+        "position": "Venue Manager",
+        "quote": "Since installing Glimps, our weekend revenue has increased by 22%. Customers love it and many come specifically for the photo experience."
+      },
+      "2": {
+        "author": "Jani",
+        "position": "Manager",
+        "quote": "The team at Glimps made setup incredibly easy. Their responsive support and regular updates keep the system running smoothly."
+      },
+      "3": {
+        "author": "Mika",
+        "position": "Owner",
+        "quote": "Our customers spend an average of 40 minutes longer in our venue when using the Glimps booth. It's been a game-changer for our business."
+      }
+    },
+    "stats": {
+      "title": "The Glimps Impact",
+      "description": "Real results from venues using our photo booths.",
+      "increaseCustomerDwellTime": {
+        "value": "27%",
+        "label": "Average increase in customer dwell time"
+      },
+      "increaseSales": {
+        "value": "18%",
+        "label": "Increase in sales"
+      },
+      "mediaImpressions": {
+        "value": "3000+",
+        "label": "Average monthly social media impressions"
+      }
+    },
+    "cta": {
+      "title": "Ready to Transform Your Venue?",
+      "description": "Join the Glimps family and elevate your customer experience.",
+      "links": {
+        "seePricing": "See Pricing",
+        "learnMore": "Learn More"
+      }
+    }
+  },
   "pricing": {},
   "about": {},
   "login": {

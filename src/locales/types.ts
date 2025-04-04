@@ -24,7 +24,97 @@ export type Messages = {
     submit: string;
     cancel: string;
   };
-  index: Record<string, never>;
+  index: {
+    hero: {
+      tagline: string;
+      title: {
+        first: string;
+        highlight: string;
+        last: string;
+      };
+      description: string;
+      links: {
+        viewPricing: string;
+        learnMore: string;
+      };
+      footer: string;
+    };
+    features: {
+      title: string;
+      description: string;
+      preiumExperience: {
+        title: string;
+        description: string;
+      };
+      customerEngagement: {
+        title: string;
+        description: string;
+      };
+      revenueGeneration: {
+        title: string;
+        description: string;
+      };
+      socialMedia: {
+        title: string;
+        description: string;
+      };
+    };
+    howItWorks: {
+      tagline: string;
+      title: string;
+      keyPoints: {
+        "1": {
+          number: string;
+          title: string;
+          description: string;
+        };
+        "2": {
+          number: string;
+          title: string;
+          description: string;
+        };
+        "3": {
+          number: string;
+          title: string;
+          description: string;
+        };
+      };
+      cta: string;
+    };
+    testimonials: {
+      title: string;
+      description: string;
+      [key: string]: {
+        author: string;
+        position: string;
+        quote: string;
+      } | string;
+    };
+    stats: {
+      title: string;
+      description: string;
+      increaseCustomerDwellTime: {
+        value: string;
+        label: string;
+      };
+      increaseSales: {
+        value: string;
+        label: string;
+      };
+      mediaImpressions: {
+        value: string;
+        label: string;
+      };
+    };
+    cta: {
+      title: string;
+      description: string;
+      links: {
+        seePricing: string;
+        learnMore: string;
+      };
+    };
+  };
   pricing: Record<string, never>;
   about: Record<string, never>;
   login: {

@@ -1,4 +1,5 @@
 
+import { FormattedMessage } from "react-intl";
 import { NavLink } from "react-router-dom";
 
 const CallToAction = () => {
@@ -7,23 +8,23 @@ const CallToAction = () => {
       <div className="container mx-auto py-16 md:py-24">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            Ready to Transform Your Venue Experience?
+            <FormattedMessage id="index.cta.title" />
           </h2>
           <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join hundreds of venue owners who have increased customer satisfaction and revenue with Glimps photobooths.
+            <FormattedMessage id="index.cta.description" />
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <NavLink
               to="/pricing"
               className="inline-flex h-12 items-center justify-center rounded-md bg-white px-8 text-base font-medium text-glimps-900 transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-glimps-accent focus:ring-offset-2"
             >
-              See Pricing
+              <FormattedMessage id="index.cta.links.seePricing" />
             </NavLink>
             <NavLink
               to="/about"
               className="inline-flex h-12 items-center justify-center rounded-md border border-white px-8 text-base font-medium text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-glimps-900"
             >
-              Learn More
+              <FormattedMessage id="index.cta.links.learnMore" />
             </NavLink>
           </div>
         </div>
