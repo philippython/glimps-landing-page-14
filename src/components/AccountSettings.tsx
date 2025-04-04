@@ -18,7 +18,7 @@ import { useState } from "react";
 import { patchAccountInfoToApi, patchPasswordToApi } from "@/service/patchUserSettingsToApi";
 import { toast } from "sonner";
 import { PasswordFormValues, ProfileFormValues, passwordFormSchema, profileFormSchema } from "@/lib/createSchema";
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const AccountSettings = () => {
   const [loading, setLoading] = useState(false);
@@ -47,11 +47,11 @@ const AccountSettings = () => {
       }
       const res = await patchAccountInfoToApi(values, token, user);
       if (res.id) {
-        toast.success("Your profile has been updated successfully.");
+        toast.success(<FormattedMessage id="venueDashboard.accountSettings.messages.profileUpdated" />);
         setUserAndVenueAfterCreation(res.venue);
       }
     } catch (error) {
-      toast.error("Failed to update profile.");
+      toast.error(<FormattedMessage id="venueDashboard.accountSettings.messages.profileUpdateFailed" />);
       console.error("Error updating profile:", error);
     } finally {
       setLoading(false);
@@ -66,11 +66,11 @@ const AccountSettings = () => {
       }
       const res = await patchPasswordToApi(values, token, user);
       if (res.id) {
-        toast.success("Your password has been changed successfully.");
+        toast.success(<FormattedMessage id="venueDashboard.accountSettings.messages.passwordUpdated" />);
         setUserAndVenueAfterCreation(res.venue);
       }
     } catch (error) {
-      toast.error("Failed to change password.");
+      toast.error(<FormattedMessage id="venueDashboard.accountSettings.messages.passwordUpdateFailed" />);
       console.error("Error changing password:", error);
     } finally {
       setLoading(false);
@@ -80,7 +80,9 @@ const AccountSettings = () => {
   return (
     <div className="space-y-8">
       <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-6">Account Information</h2>
+        <h2 className="text-xl font-semibold mb-6">
+          <FormattedMessage id="venueDashboard.accountSettings.title" />
+        </h2>
 
         <Form {...profileForm}>
           <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
@@ -89,20 +91,22 @@ const AccountSettings = () => {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>
+                    <FormattedMessage id="venueDashboard.accountSettings.form.username.label" />
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                       <Input
                         className="pl-10"
                         {...field}
-                        placeholder="Enter your username"
+                        placeholder={intl.formatMessage({ id: "venueDashboard.accountSettings.form.username.placeholder" })}
                         disabled={loading}
                       />
                     </div>
                   </FormControl>
                   <FormDescription>
-                    This is your user name.
+                    <FormattedMessage id="venueDashboard.accountSettings.form.username.description" />
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -114,20 +118,22 @@ const AccountSettings = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>
+                    <FormattedMessage id="venueDashboard.accountSettings.form.email.label" />
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                       <Input
                         className="pl-10"
                         {...field}
-                        placeholder="Enter your email"
+                        placeholder={intl.formatMessage({ id: "venueDashboard.accountSettings.form.email.placeholder" })}
                         disabled={loading}
                       />
                     </div>
                   </FormControl>
                   <FormDescription>
-                    We'll use this email for notifications.
+                    <FormattedMessage id="venueDashboard.accountSettings.form.email.description" />
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -135,14 +141,19 @@ const AccountSettings = () => {
             />
 
             <Button type="submit" className="mt-4">
-              {loading ? "Updating profile..." : "Update Profile"}
+              {loading
+                ? <FormattedMessage id="venueDashboard.accountSettings.form.buttons.updatingProfile" />
+                : <FormattedMessage id="venueDashboard.accountSettings.form.buttons.updateProfile" />
+              }
             </Button>
           </form>
         </Form>
       </Card>
 
       <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-6">Change Password</h2>
+        <h2 className="text-xl font-semibold mb-6">
+          <FormattedMessage id="venueDashboard.accountSettings.changePasswordTitle" />
+        </h2>
 
         <Form {...passwordForm}>
           <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-6">
@@ -151,14 +162,16 @@ const AccountSettings = () => {
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>
+                    <FormattedMessage id="venueDashboard.accountSettings.form.newPassword.label" />
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                       <Input
                         className="pl-10"
                         type={showPassword ? "text" : "password"}
-                        placeholder="*********"
+                        placeholder={intl.formatMessage({ id: "venueDashboard.accountSettings.form.newPassword.placeholder" })}
                         disabled={loading}
                         {...field}
                       />
@@ -187,14 +200,16 @@ const AccountSettings = () => {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm New Password</FormLabel>
+                  <FormLabel>
+                    <FormattedMessage id="venueDashboard.accountSettings.form.confirmPassword.label" />
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                       <Input
                         className="pl-10"
                         type={showConfirmPassword ? "text" : "password"}
-                        placeholder="*********"
+                        placeholder={intl.formatMessage({ id: "venueDashboard.accountSettings.form.confirmPassword.placeholder" })}
                         disabled={loading}
                         {...field}
                       />
@@ -219,7 +234,10 @@ const AccountSettings = () => {
             />
 
             <Button type="submit" className="mt-4">
-              {loading ? "Changing password..." : "Change Password"}
+              {loading
+                ? <FormattedMessage id="venueDashboard.accountSettings.form.buttons.updatingPassword" />
+                : <FormattedMessage id="venueDashboard.accountSettings.form.buttons.updatePassword" />
+              }
             </Button>
           </form>
         </Form>

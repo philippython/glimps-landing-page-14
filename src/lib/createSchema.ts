@@ -98,10 +98,10 @@ export const registerFormSchema = (intl: IntlShape) => {
 export const profileFormSchema = (intl: IntlShape) => {
   return z.object({
     username: z.string().min(5, {
-      message: "Username must be at least 2 characters.",
+      message: intl.formatMessage({ id: "venueDashboard.accountSettings.message.usernameTooShort" }),
     }),
     email: z.string().email({
-      message: "Please enter a valid email address.",
+      message: intl.formatMessage({ id: "venueDashboard.accountSettings.message.emailInvalid" }),
     }),
   })
 };
@@ -109,11 +109,11 @@ export const profileFormSchema = (intl: IntlShape) => {
 export const passwordFormSchema = (intl: IntlShape) => {
   return z.object({
     newPassword: z.string().min(8, {
-      message: "Password must be at least 8 characters.",
+      message: intl.formatMessage({ id: "venueDashboard.accountSettings.messages.passwordTooShort" }),
     }),
     confirmPassword: z.string(),
   }).refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: intl.formatMessage({ id: "venueDashboard.accountSettings.messages.passwordMismatch" }),
     path: ["confirmPassword"],
   })
 };

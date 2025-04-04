@@ -199,6 +199,46 @@
         "center": "Center"
       }
     },
+    "accountSettings": {
+      "title": "Account Information",
+      "changePasswordTitle": "Change Password",
+      "form": {
+        "username": {
+          "label": "Username",
+          "placeholder": "Enter your username",
+          "description": "Your user name will be visible to others."
+        },
+        "email": {
+          "label": "Email address",
+          "placeholder": "Enter your email",
+          "description": "We'll use this email for notifications."
+        },
+        "newPassword": {
+          "label": "New Password",
+          "placeholder": "••••••••"
+        },
+        "confirmPassword": {
+          "label": "Confirm New Password",
+          "placeholder": "••••••••"
+        },
+        "buttons": {
+          "updateProfile": "Update Profile",
+          "updatingProfile": "Updating profile...",
+          "updatePassword": "Update Password",
+          "updatingPassword": "Updating password..."
+        }
+      },
+      "message": {
+        "usernameTooShort": "Username must be at least 5 characters.",
+        "emailInvalid": "Please enter a valid email address.",
+        "passwordTooShort": "Password must be at least 8 characters.",
+        "passwordMismatch": "Passwords do not match.",
+        "profileUpdated": "Your profile has been updated successfully.",
+        "profileUpdateFailed": "Failed to update your profile. Please try again.",
+        "passwordUpdated": "Your password has been changed successfully.",
+        "passwordUpdateFailed": "Failed to change your password. Please try again."
+      }
+    },
     "messages": {
       "successUpdateVenue": "Venue settings updated successfully!",
       "failedUpdateVenue": "Failed to update venue settings. Please try again!"

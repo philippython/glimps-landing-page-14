@@ -199,6 +199,46 @@ export type Messages = {
         center: string;
       }
     },
+    accountSettings: {
+      title: string;
+      changePasswordTitle: string;
+      form: {
+        username: {
+          label: string;
+          placeholder: string;
+          description: string;
+        };
+        email: {
+          label: string;
+          placeholder: string;
+          description: string;
+        };
+        newPassword: {
+          label: string;
+          placeholder: string;
+        };
+        confirmPassword: {
+          label: string;
+          placeholder: string;
+        };
+        buttons: {
+          updateProfile: string;
+          updatingProfile: string;
+          updatePassword: string;
+          updatingPassword: string;
+        };
+      };
+      message: {
+        usernameTooShort: string;
+        emailInvalid: string;
+        passwordTooShort: string;
+        passwordMismatch: string;
+        profileUpdated: string;
+        profileUpdateFailed: string;
+        passwordUpdated: string;
+        passwordUpdateFailed: string;
+      }
+    }
     messages: {
       successUpdateVenue: string;
       failedUpdateVenue: string;

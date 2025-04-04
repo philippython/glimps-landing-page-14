@@ -199,6 +199,46 @@
         "center": "По центру"
       }
     },
+    "accountSettings": {
+      "title": "Информация об аккаунте",
+      "changePasswordTitle": "Изменить пароль",
+      "form": {
+        "username": {
+          "label": "Имя пользователя",
+          "placeholder": "Введите ваше имя пользователя",
+          "description": "Ваше имя пользователя будет видно другим."
+        },
+        "email": {
+          "label": "Электронная почта",
+          "placeholder": "Введите ваш email",
+          "description": "Мы будем использовать этот email для уведомлений."
+        },
+        "newPassword": {
+          "label": "Новый пароль",
+          "placeholder": "••••••••"
+        },
+        "confirmPassword": {
+          "label": "Подтвердите новый пароль",
+          "placeholder": "••••••••"
+        },
+        "buttons": {
+          "updateProfile": "Обновить профиль",
+          "updatingProfile": "Обновление профиля...",
+          "updatePassword": "Обновить пароль",
+          "updatingPassword": "Обновление пароля..."
+        }
+      },
+      "message": {
+        "usernameTooShort": "Имя пользователя должно содержать минимум 5 символов.",
+        "emailInvalid": "Пожалуйста, введите корректный email.",
+        "passwordTooShort": "Пароль должен содержать минимум 8 символов.",
+        "passwordMismatch": "Пароли не совпадают.",
+        "profileUpdated": "Ваш профиль успешно обновлён.",
+        "profileUpdateFailed": "Не удалось обновить профиль. Пожалуйста, попробуйте снова.",
+        "passwordUpdated": "Ваш пароль успешно изменён.",
+        "passwordUpdateFailed": "Не удалось изменить пароль. Пожалуйста, попробуйте снова."
+      }
+    },
     "messages": {
       "successUpdateVenue": "Настройки площадки успешно обновлены!",
       "failedUpdateVenue": "Не удалось обновить настройки площадки. Пожалуйста, попробуйте снова!"
