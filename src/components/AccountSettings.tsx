@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { User, Mail, KeyRound } from "lucide-react";
 import {
   Form,
@@ -18,35 +17,16 @@ import { useAuth } from "@/auth/AuthProvider";
 import { useState } from "react";
 import { patchAccountInfoToApi, patchPasswordToApi } from "@/service/patchUserSettingsToApi";
 import { toast } from "sonner";
-
-const profileFormSchema = z.object({
-  username: z.string().min(5, {
-    message: "Username must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-});
-
-const passwordFormSchema = z.object({
-  newPassword: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
-
-export type ProfileFormValues = z.infer<typeof profileFormSchema>;
-export type PasswordFormValues = z.infer<typeof passwordFormSchema>;
+import { PasswordFormValues, ProfileFormValues, passwordFormSchema, profileFormSchema } from "@/lib/createSchema";
+import { useIntl } from 'react-intl';
 
 const AccountSettings = () => {
   const [loading, setLoading] = useState(false);
   const { user, token, setUserAndVenueAfterCreation } = useAuth();
+  const intl = useIntl();
 
   const profileForm = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
+    resolver: zodResolver(profileFormSchema(intl)),
     defaultValues: {
       username: user?.username || "",
       email: user?.email || "",
@@ -54,7 +34,7 @@ const AccountSettings = () => {
   });
 
   const passwordForm = useForm<PasswordFormValues>({
-    resolver: zodResolver(passwordFormSchema),
+    resolver: zodResolver(passwordFormSchema(intl)),
   });
 
   const onProfileSubmit = async (values: ProfileFormValues) => {
@@ -111,7 +91,12 @@ const AccountSettings = () => {
                   <FormControl>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                      <Input className="pl-10" {...field} />
+                      <Input
+                        className="pl-10"
+                        {...field}
+                        placeholder="Enter your username"
+                        disabled={loading}
+                      />
                     </div>
                   </FormControl>
                   <FormDescription>
@@ -131,7 +116,12 @@ const AccountSettings = () => {
                   <FormControl>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                      <Input className="pl-10" {...field} />
+                      <Input
+                        className="pl-10"
+                        {...field}
+                        placeholder="Enter your email"
+                        disabled={loading}
+                      />
                     </div>
                   </FormControl>
                   <FormDescription>
@@ -143,7 +133,7 @@ const AccountSettings = () => {
             />
 
             <Button type="submit" className="mt-4">
-              Update Profile
+              {loading ? "Updating profile..." : "Update Profile"}
             </Button>
           </form>
         </Form>
@@ -163,7 +153,13 @@ const AccountSettings = () => {
                   <FormControl>
                     <div className="relative">
                       <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                      <Input className="pl-10" type="password" {...field} />
+                      <Input
+                        className="pl-10"
+                        type="password"
+                        placeholder="*********"
+                        disabled={loading}
+                        {...field}
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -180,7 +176,13 @@ const AccountSettings = () => {
                   <FormControl>
                     <div className="relative">
                       <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                      <Input className="pl-10" type="password" {...field} />
+                      <Input
+                        className="pl-10"
+                        type="password"
+                        placeholder="*********"
+                        disabled={loading}
+                        {...field}
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -189,7 +191,7 @@ const AccountSettings = () => {
             />
 
             <Button type="submit" className="mt-4">
-              Change Password
+              {loading ? "Changing password..." : "Change Password"}
             </Button>
           </form>
         </Form>

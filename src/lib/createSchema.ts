@@ -95,6 +95,31 @@ export const registerFormSchema = (intl: IntlShape) => {
   })
 };
 
+export const profileFormSchema = (intl: IntlShape) => {
+  return z.object({
+    username: z.string().min(5, {
+      message: "Username must be at least 2 characters.",
+    }),
+    email: z.string().email({
+      message: "Please enter a valid email address.",
+    }),
+  })
+};
+
+export const passwordFormSchema = (intl: IntlShape) => {
+  return z.object({
+    newPassword: z.string().min(8, {
+      message: "Password must be at least 8 characters.",
+    }),
+    confirmPassword: z.string(),
+  }).refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  })
+};
+
 export type CreateVenueFormValues = z.infer<ReturnType<typeof createVenueSchema>>;
 export type EditVenueFormValues = z.infer<ReturnType<typeof editVenueSchema>>;
 export type RegisterFormValues = z.infer<ReturnType<typeof registerFormSchema>>;
+export type ProfileFormValues = z.infer<ReturnType<typeof profileFormSchema>>;
+export type PasswordFormValues = z.infer<ReturnType<typeof passwordFormSchema>>;
