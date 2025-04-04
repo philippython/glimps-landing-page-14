@@ -67,7 +67,7 @@ const Navbar = () => {
             <FormattedMessage id="common.navbar.login" />
           </NavLink>
           <NavLink
-            to="/register"
+            to="/pricing"
             className="inline-flex h-10 items-center justify-center rounded-md bg-glimps-900 px-6 text-sm font-medium text-white transition-colors hover:bg-glimps-800 focus:outline-none focus:ring-2 focus:ring-glimps-accent focus:ring-offset-2"
           >
             <FormattedMessage id="common.navbar.getStarted" />
@@ -120,7 +120,7 @@ const Navbar = () => {
               <FormattedMessage id="common.navbar.login" />
             </NavLink>
             <NavLink
-              to="/register"
+              to="/pricing"
               className="mt-4 w-full inline-flex h-12 items-center justify-center rounded-md bg-glimps-900 px-6 text-base font-medium text-white transition-colors hover:bg-glimps-800 focus:outline-none"
               onClick={() => setIsOpen(false)}
             >
