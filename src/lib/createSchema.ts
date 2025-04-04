@@ -2,8 +2,8 @@ import { LogoPosition } from "@/service/fetchLoginTokenFromApi";
 import { IntlShape } from "react-intl";
 import { z } from "zod";
 
-export const createSchema = (intl: IntlShape) => {
-  const createFormSchema = z.object({
+export const createVenueSchema = (intl: IntlShape) => {
+  return z.object({
     name: z.string().min(2, {
       message: intl.formatMessage({
         id: "venueDashboard.venueSettings.messages.venueNameTooShort"
@@ -36,9 +36,11 @@ export const createSchema = (intl: IntlShape) => {
     logo_position: z.nativeEnum(LogoPosition),
     logo_ratio: z.array(z.number().min(1).max(100)),
     logo_transparency: z.array(z.number().min(16).max(255)),
-  });
+  })
+};
 
-  const editFormSchema = z.object({
+export const editVenueSchema = (intl: IntlShape) => {
+  return z.object({
     name: z.string().min(2, {
       message: intl.formatMessage({
         id: "venueDashboard.venueSettings.messages.venueNameTooShort"
@@ -72,10 +74,27 @@ export const createSchema = (intl: IntlShape) => {
     logo_position: z.nativeEnum(LogoPosition),
     logo_ratio: z.array(z.number().min(1).max(100)),
     logo_transparency: z.array(z.number().min(16).max(255)),
-  });
+  })
+};
 
-  return { createFormSchema, editFormSchema }
-}
+export const registerFormSchema = (intl: IntlShape) => {
+  return z.object({
+    username: z.string().min(5, {
+      message: "Username must be at least 5 characters.",
+    }),
+    email: z.string().email({
+      message: "Please enter a valid email address.",
+    }),
+    password: z.string().min(8, {
+      message: "Password must be at least 8 characters.",
+    }),
+    confirmPassword: z.string(),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  })
+};
 
-export type CreateVenueFormValues = z.infer<ReturnType<typeof createSchema>["createFormSchema"]>;
-export type EditVenueFormValues = z.infer<ReturnType<typeof createSchema>["editFormSchema"]>;
+export type CreateVenueFormValues = z.infer<ReturnType<typeof createVenueSchema>>;
+export type EditVenueFormValues = z.infer<ReturnType<typeof editVenueSchema>>;
+export type RegisterFormValues = z.infer<ReturnType<typeof registerFormSchema>>;

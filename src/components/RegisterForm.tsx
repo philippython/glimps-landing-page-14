@@ -18,28 +18,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import LogoWithText from "@/components/LogoWithText";
-import { z } from "zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-const formSchema = z.object({
-  username: z.string().min(5, {
-    message: "Username must be at least 5 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
-
-export type RegisterFormValues = z.infer<typeof formSchema>;
+import { RegisterFormValues, registerFormSchema } from "@/lib/createSchema";
+import { useIntl } from "react-intl";
 
 type RegisterFormProps = {
   loading: boolean;
@@ -49,9 +32,10 @@ type RegisterFormProps = {
 export default function RegisterForm(props: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const intl = useIntl();
 
   const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(registerFormSchema(intl)),
     defaultValues: {
       username: "",
       email: "",

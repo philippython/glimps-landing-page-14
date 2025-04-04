@@ -33,7 +33,7 @@ import { LogoPosition } from "@/service/fetchLoginTokenFromApi";
 import { useAuth } from "@/auth/AuthProvider";
 import LogoWithText from "./LogoWithText";
 import { FormattedMessage, useIntl } from "react-intl";
-import { CreateVenueFormValues, EditVenueFormValues, createSchema } from "@/lib/createSchema";
+import { CreateVenueFormValues, EditVenueFormValues, createVenueSchema, editVenueSchema } from "@/lib/createSchema";
 import { z } from "zod";
 
 type Mode = "create" | "edit";
@@ -55,9 +55,8 @@ const VenueSettings = (props: FormProps) => {
   const [logoPreview, setLogoPreview] = useState<string | null>(venue?.logo_url || null);
   const { mode, loading, onSubmit } = props;
   const intl = useIntl();
-  const { createFormSchema, editFormSchema } = createSchema(intl);
 
-  const formSchema = mode === "create" ? createFormSchema : editFormSchema;
+  const formSchema = mode === "create" ? createVenueSchema(intl) : editVenueSchema(intl);
 
   const logoPositionText = {
     [LogoPosition.topLeft]: <FormattedMessage id="venueDashboard.venueSettings.logoPosition.topLeft" />,

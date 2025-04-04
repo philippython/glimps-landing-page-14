@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { postNewUserToApi } from "@/service/postNewUserToApi";
-import RegisterForm, { RegisterFormValues } from "@/components/RegisterForm";
+import RegisterForm from "@/components/RegisterForm";
 import { useAuth } from "@/auth/AuthProvider";
+import { RegisterFormValues } from "@/lib/createSchema";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
