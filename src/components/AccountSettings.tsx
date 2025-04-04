@@ -2,8 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { User, Mail, KeyRound } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-
 import {
   Form,
   FormControl,
@@ -17,6 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/auth/AuthProvider";
+import { useState } from "react";
+import { patchAccountInfoToApi, patchPasswordToApi } from "@/service/patchUserSettingsToApi";
+import { toast } from "sonner";
 
 const profileFormSchema = z.object({
   username: z.string().min(5, {
@@ -41,8 +42,8 @@ export type ProfileFormValues = z.infer<typeof profileFormSchema>;
 export type PasswordFormValues = z.infer<typeof passwordFormSchema>;
 
 const AccountSettings = () => {
-  const { toast } = useToast();
-  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { user, token, setUserAndVenueAfterCreation } = useAuth();
 
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -56,24 +57,42 @@ const AccountSettings = () => {
     resolver: zodResolver(passwordFormSchema),
   });
 
-  const onProfileSubmit = (data: ProfileFormValues) => {
-    toast({
-      title: "Profile updated",
-      description: "Your profile has been updated successfully.",
-    });
-    console.log(data);
+  const onProfileSubmit = async (values: ProfileFormValues) => {
+    setLoading(true);
+    try {
+      if (!token || !user) {
+        throw new Error("User not authenticated");
+      }
+      const res = await patchAccountInfoToApi(values, token, user);
+      if (res.id) {
+        toast.success("Your profile has been updated successfully.");
+        setUserAndVenueAfterCreation(res.venue);
+      }
+    } catch (error) {
+      toast.error("Failed to update profile.");
+      console.error("Error updating profile:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const onPasswordSubmit = (data: PasswordFormValues) => {
-    toast({
-      title: "Password updated",
-      description: "Your password has been changed successfully.",
-    });
-    console.log(data);
-    passwordForm.reset({
-      newPassword: "",
-      confirmPassword: "",
-    });
+  const onPasswordSubmit = async (values: PasswordFormValues) => {
+    setLoading(true);
+    try {
+      if (!token || !user) {
+        throw new Error("User not authenticated");
+      }
+      const res = await patchPasswordToApi(values, token, user);
+      if (res.id) {
+        toast.success("Your password has been changed successfully.");
+        setUserAndVenueAfterCreation(res.venue);
+      }
+    } catch (error) {
+      toast.error("Failed to change password.");
+      console.error("Error changing password:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
