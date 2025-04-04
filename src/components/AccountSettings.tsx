@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { User, Mail, KeyRound } from "lucide-react";
+import { User, Mail, KeyRound, EyeOff, Eye } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -22,6 +22,8 @@ import { useIntl } from 'react-intl';
 
 const AccountSettings = () => {
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { user, token, setUserAndVenueAfterCreation } = useAuth();
   const intl = useIntl();
 
@@ -155,11 +157,24 @@ const AccountSettings = () => {
                       <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                       <Input
                         className="pl-10"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         placeholder="*********"
                         disabled={loading}
                         {...field}
                       />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent hover:text-gray-500"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -178,11 +193,24 @@ const AccountSettings = () => {
                       <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                       <Input
                         className="pl-10"
-                        type="password"
+                        type={showConfirmPassword ? "text" : "password"}
                         placeholder="*********"
                         disabled={loading}
                         {...field}
                       />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent hover:text-gray-500"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
                     </div>
                   </FormControl>
                   <FormMessage />

@@ -5,6 +5,7 @@ import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/auth/AuthProvider";
 import { FormattedMessage } from "react-intl";
 import LogoWithText from "@/components/LogoWithText";
+import { Button } from "@/components/ui/button";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -108,9 +109,11 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
                 />
-                <button
+                <Button
                   type="button"
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-glimps-400"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent hover:text-gray-500"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
@@ -118,7 +121,7 @@ const Login = () => {
                   ) : (
                     <Eye className="h-4 w-4" />
                   )}
-                </button>
+                </Button>
               </div>
               {/* <p className="mt-1 text-xs text-gray-500">
                 Use any password (this is a demo)
