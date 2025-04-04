@@ -1,9 +1,9 @@
 import axios from "axios";
 import { VenueData } from "./fetchLoginTokenFromApi";
-import { VenueFormValues } from "@/components/VenueSettings";
 import placeholder from "/placeholder.svg";
+import { CreateVenueFormValues } from "@/lib/createSchema";
 
-export const postNewVenueToApi = async (values: VenueFormValues, token: string) => {
+export const postNewVenueToApi = async (values: CreateVenueFormValues, token: string) => {
   const formData = new FormData();
   formData.append("name", values.name);
   formData.append("contact_num", values.contact_num);

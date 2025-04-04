@@ -1,8 +1,8 @@
 import axios from "axios";
-import { VenueFormValues } from "@/components/VenueSettings";
 import { VenueData } from "./fetchLoginTokenFromApi";
+import { EditVenueFormValues } from "@/lib/createSchema";
 
-export const patchVenueSettingsToApi = async (values: VenueFormValues, token: string, id: string) => {
+export const patchVenueSettingsToApi = async (values: EditVenueFormValues, token: string, id: string) => {
   const { name, contact_num, logo_position, logo_ratio, logo_transparency, venue_logo } = values;
   try {
     const res = await axios.patch<VenueData>(
