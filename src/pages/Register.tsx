@@ -5,6 +5,7 @@ import { postNewUserToApi } from "@/service/postNewUserToApi";
 import RegisterForm from "@/components/RegisterForm";
 import { useAuth } from "@/auth/AuthProvider";
 import { RegisterFormValues } from "@/lib/createSchema";
+import { FormattedMessage } from "react-intl";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -31,12 +32,12 @@ const Register = () => {
     try {
       const res = await postNewUserToApi(values.username, values.email, values.password);
       if (res.username) {
-        toast.success("Account created successfully! Logging in...");
+        toast.success(<FormattedMessage id="register.messages.accountCreated" />);
 
         const res = await login(values.username, values.password);
       }
     } catch (error) {
-      toast.error("Registration failed. Please try again.");
+      toast.error(<FormattedMessage id="register.messages.failed" />);
     } finally {
       setLoading(false);
     }

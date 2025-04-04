@@ -65,7 +65,7 @@
     "title": "Create your account",
     "optionalTitle": {
       "or": "Already have an account?",
-      "sign in": "Sign in"
+      "login": "Sign in"
     },
     "form": {
       "username": {

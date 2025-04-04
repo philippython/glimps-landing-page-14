@@ -65,7 +65,7 @@ export type Messages = {
     title: string;
     optionalTitle: {
       or: string;
-      signIn: string;
+      login: string;
     };
     form: {
       username: {

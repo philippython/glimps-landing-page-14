@@ -65,7 +65,7 @@
     "title": "Создайте свой аккаунт",
     "optionalTitle": {
       "or": "Уже есть аккаунт?",
-      "sign in": "Войти"
+      "login": "Войти"
     },
     "form": {
       "username": {

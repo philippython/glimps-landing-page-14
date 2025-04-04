@@ -80,17 +80,17 @@ export const editVenueSchema = (intl: IntlShape) => {
 export const registerFormSchema = (intl: IntlShape) => {
   return z.object({
     username: z.string().min(5, {
-      message: "Username must be at least 5 characters.",
+      message: intl.formatMessage({ id: "register.messages.usernameTooShort" }),
     }),
     email: z.string().email({
-      message: "Please enter a valid email address.",
+      message: intl.formatMessage({ id: "register.messages.emailInvalid" }),
     }),
     password: z.string().min(8, {
-      message: "Password must be at least 8 characters.",
+      message: intl.formatMessage({ id: "register.messages.passwordTooShort" }),
     }),
     confirmPassword: z.string(),
   }).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: intl.formatMessage({ id: "register.messages.passwordMismatch" }),
     path: ["confirmPassword"],
   })
 };

@@ -22,7 +22,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RegisterFormValues, registerFormSchema } from "@/lib/createSchema";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 type RegisterFormProps = {
   loading: boolean;
@@ -49,15 +49,15 @@ export default function RegisterForm(props: RegisterFormProps) {
       <CardHeader className="text-center">
         <LogoWithText />
         <CardTitle className="mt-6 text-3xl font-bold tracking-tight text-glimps-900">
-          Create your account
+          <FormattedMessage id="register.title" />
         </CardTitle>
         <CardDescription className="mt-2 text-sm text-glimps-600">
-          Already have an account?{" "}
+          <FormattedMessage id="register.optionalTitle.or" />{" "}
           <NavLink
             to="/login"
             className="font-medium text-glimps-accent hover:text-glimps-accent/90"
           >
-            Sign in
+            <FormattedMessage id="register.optionalTitle.login" />
           </NavLink>
         </CardDescription>
       </CardHeader>
@@ -69,10 +69,14 @@ export default function RegisterForm(props: RegisterFormProps) {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>
+                    <FormattedMessage id="register.form.username.label" />
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="johndoe"
+                      placeholder={intl.formatMessage({
+                        id: "register.form.username.placeholder",
+                      })}
                       {...field}
                       disabled={props.loading}
                     />
@@ -87,10 +91,14 @@ export default function RegisterForm(props: RegisterFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>
+                    <FormattedMessage id="register.form.email.label" />
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="johndoe@example.com"
+                      placeholder={intl.formatMessage({
+                        id: "register.form.email.placeholder",
+                      })}
                       {...field}
                       disabled={props.loading}
                     />
@@ -105,12 +113,17 @@ export default function RegisterForm(props: RegisterFormProps) {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>
+                    <FormattedMessage id="register.form.password.label" />
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
                         type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
+                        placeholder={intl.formatMessage({
+                          id: "register.form.password.placeholder"
+                        })
+                        }
                         {...field}
                         disabled={props.loading}
                       />
@@ -139,12 +152,17 @@ export default function RegisterForm(props: RegisterFormProps) {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel>
+                    <FormattedMessage id="register.form.confirmPassword.label" />
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
                         type={showConfirmPassword ? "text" : "password"}
-                        placeholder="••••••••"
+                        placeholder={intl.formatMessage({
+                          id: "register.form.confirmPassword.placeholder"
+                        })
+                        }
                         {...field}
                         disabled={props.loading}
                       />
@@ -176,12 +194,12 @@ export default function RegisterForm(props: RegisterFormProps) {
               {props.loading ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Creating account...
+                  <FormattedMessage id="register.form.button.loading" />
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
                   <UserPlus className="h-4 w-4" />
-                  Create account
+                  <FormattedMessage id="register.form.button.createAccount" />
                 </span>
               )}
             </Button>
