@@ -1,5 +1,3 @@
-
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -18,9 +16,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/auth/AuthProvider";
 
 const profileFormSchema = z.object({
-  username: z.string().min(2, {
+  username: z.string().min(5, {
     message: "Username must be at least 2 characters.",
   }),
   email: z.string().email({
@@ -29,44 +28,32 @@ const profileFormSchema = z.object({
 });
 
 const passwordFormSchema = z.object({
-  currentPassword: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
   newPassword: z.string().min(8, {
     message: "Password must be at least 8 characters.",
   }),
-  confirmPassword: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
+  confirmPassword: z.string(),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],
 });
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
-type PasswordFormValues = z.infer<typeof passwordFormSchema>;
+export type ProfileFormValues = z.infer<typeof profileFormSchema>;
+export type PasswordFormValues = z.infer<typeof passwordFormSchema>;
 
 const AccountSettings = () => {
   const { toast } = useToast();
-  
-  // Initialize form with mock data
-  const defaultValues: Partial<ProfileFormValues> = {
-    username: "John Smith",
-    email: "john@thevenueclub.com",
-  };
+  const { user } = useAuth();
 
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: {
+      username: user?.username || "",
+      email: user?.email || "",
+    },
   });
 
   const passwordForm = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordFormSchema),
-    defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    },
   });
 
   const onProfileSubmit = (data: ProfileFormValues) => {
@@ -84,7 +71,6 @@ const AccountSettings = () => {
     });
     console.log(data);
     passwordForm.reset({
-      currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     });
@@ -94,7 +80,7 @@ const AccountSettings = () => {
     <div className="space-y-8">
       <Card className="p-6">
         <h2 className="text-xl font-semibold mb-6">Account Information</h2>
-        
+
         <Form {...profileForm}>
           <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
             <FormField
@@ -110,13 +96,13 @@ const AccountSettings = () => {
                     </div>
                   </FormControl>
                   <FormDescription>
-                    This is your public display name.
+                    This is your user name.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={profileForm.control}
               name="email"
@@ -136,36 +122,19 @@ const AccountSettings = () => {
                 </FormItem>
               )}
             />
-            
+
             <Button type="submit" className="mt-4">
               Update Profile
             </Button>
           </form>
         </Form>
       </Card>
-      
+
       <Card className="p-6">
         <h2 className="text-xl font-semibold mb-6">Change Password</h2>
-        
+
         <Form {...passwordForm}>
           <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-6">
-            <FormField
-              control={passwordForm.control}
-              name="currentPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Current Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                      <Input className="pl-10" type="password" {...field} />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
             <FormField
               control={passwordForm.control}
               name="newPassword"
@@ -182,7 +151,7 @@ const AccountSettings = () => {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={passwordForm.control}
               name="confirmPassword"
@@ -199,7 +168,7 @@ const AccountSettings = () => {
                 </FormItem>
               )}
             />
-            
+
             <Button type="submit" className="mt-4">
               Change Password
             </Button>
