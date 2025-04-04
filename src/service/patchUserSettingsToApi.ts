@@ -1,13 +1,13 @@
 import axios from "axios";
 import { UserData, VenueData } from "./fetchLoginTokenFromApi";
-import { ProfileFormValues } from "@/components/AccountSettings";
+import { PasswordFormValues, ProfileFormValues } from "@/components/AccountSettings";
 
 export type PatchUserSettingsToApiResponse = {
   "id": string,
   "venue": VenueData,
 }
 
-export const patchUserSettingsToApi = async (values: ProfileFormValues, token: string, user: UserData) => {
+export const patchAccountInfoToApi = async (values: ProfileFormValues, token: string, user: UserData) => {
   try {
     const res = await axios.patch<PatchUserSettingsToApiResponse>(
       `${import.meta.env.VITE_API_URL}/auth-user/${user.id}`,
@@ -25,10 +25,35 @@ export const patchUserSettingsToApi = async (values: ProfileFormValues, token: s
         },
       }
     );
-
     return res.data;
   } catch (error) {
     console.error("Error updating user data to API", error);
+    throw error;
+  }
+}
+
+export const patchPasswordToApi = async (values: PasswordFormValues, token: string, user: UserData) => {
+  try {
+    const res = await axios.patch<PatchUserSettingsToApiResponse>(
+      `${import.meta.env.VITE_API_URL}/auth-user/${user.id}`,
+      {
+        "email": user.email,
+        "password": values.newPassword,
+        "username": user.username,
+        "role": user.role,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error("Error updating user password to API", error);
     throw error;
   }
 }
