@@ -68,10 +68,35 @@
       "sign in": "Sign in"
     },
     "form": {
-      "username": "Username",
-      "usernameTips": "Can be username or email address",
-      "password": "Password",
-      "button": "Create account"
+      "username": {
+        "label": "Username",
+        "placeholder": "johndoe"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "johndoe@example.com"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "••••••••"
+      },
+      "confirmPassword": {
+        "label": "Confirm Password",
+        "placeholder": "••••••••"
+      },
+      "button": {
+        "createAccount": "Create Account",
+        "loading": "Creating account..."
+      }
+    },
+    "messages": {
+      "usernameTooShort": "Username must be at least 5 characters.",
+      "emailInvalid": "Please enter a valid email address.",
+      "passwordTooShort": "Password must be at least 8 characters.",
+      "passwordMismatch": "Passwords do not match.",
+      "failedToCreateAccount": "Failed to create account. Please try again!",
+      "accountCreated": "Account created successfully! Logging in...",
+      "failed": "Registration failed. Please try again."
     }
   },
   "venueDashboard": {

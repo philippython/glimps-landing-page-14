@@ -62,16 +62,41 @@
   },
   "pricing": {},
   "register": {
-    "title": "Создайте аккаунт",
+    "title": "Создайте свой аккаунт",
     "optionalTitle": {
       "or": "Уже есть аккаунт?",
       "sign in": "Войти"
     },
     "form": {
-      "username": "Имя пользователя",
-      "usernameTips": "Можно использовать имя пользователя или email",
-      "password": "Пароль",
-      "button": "Создать аккаунт"
+      "username": {
+        "label": "Имя пользователя",
+        "placeholder": "ivanov"
+      },
+      "email": {
+        "label": "Электронная почта",
+        "placeholder": "ivanov@example.com"
+      },
+      "password": {
+        "label": "Пароль",
+        "placeholder": "••••••••"
+      },
+      "confirmPassword": {
+        "label": "Подтвердите пароль",
+        "placeholder": "••••••••"
+      },
+      "button": {
+        "createAccount": "Создать аккаунт",
+        "loading": "Создание аккаунта..."
+      }
+    },
+    "messages": {
+      "usernameTooShort": "Имя пользователя должно содержать минимум 5 символов.",
+      "emailInvalid": "Пожалуйста, введите корректный email.",
+      "passwordTooShort": "Пароль должен содержать минимум 8 символов.",
+      "passwordMismatch": "Пароли не совпадают.",
+      "failedToCreateAccount": "Не удалось создать аккаунт. Пожалуйста, попробуйте снова!",
+      "accountCreated": "Аккаунт успешно создан! Выполняется вход...",
+      "failed": "Ошибка регистрации. Пожалуйста, попробуйте снова."
     }
   },
   "venueDashboard": {

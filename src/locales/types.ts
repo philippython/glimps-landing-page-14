@@ -68,12 +68,37 @@ export type Messages = {
       signIn: string;
     };
     form: {
-      username: string;
-      usernameTips: string;
-      password: string;
-      button: string;
+      username: {
+        label: string;
+        placeholder: string;
+      };
+      email: {
+        label: string;
+        placeholder: string;
+      };
+      password: {
+        label: string;
+        placeholder: string;
+      };
+      confirmPassword: {
+        label: string;
+        placeholder: string;
+      };
+      button: {
+        createAccount: string;
+        loading: string;
+      };
     };
-  };
+    messages: {
+      usernameTooShort: string;
+      emailInvalid: string;
+      passwordTooShort: string;
+      passwordMismatch: string;
+      failedToCreateAccount: string;
+      accountCreated: string;
+      failed: string;
+    };
+  }
   venueDashboard: {
     navItems: {
       sessions: string;
@@ -179,4 +204,4 @@ export type Messages = {
       failedUpdateVenue: string;
     }
   }
-};
+}
