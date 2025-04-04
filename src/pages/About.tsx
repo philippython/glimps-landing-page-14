@@ -1,5 +1,3 @@
-
-import { NavLink } from "react-router-dom";
 import CallToAction from "../components/CallToAction";
 import ImageWithFallback from "../components/ImageWithFallback";
 
@@ -57,7 +55,7 @@ const About = () => {
               We're revolutionizing the venue experience through innovative photo technology that creates memories and drives business growth.
             </p>
           </div>
-          
+
           <div className="mt-10 rounded-xl overflow-hidden glimps-shadow">
             <ImageWithFallback
               src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
@@ -75,20 +73,20 @@ const About = () => {
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-6">Our Story</h2>
             </div>
-            
+
             <div className="prose prose-lg max-w-none text-glimps-700">
               <p>
                 Glimps was born in 2018 when our founder, Alex Rivera, noticed a problem at his downtown entertainment venue. Customers were constantly asking staff to take photos of them, disrupting service and often resulting in poor-quality images that didn't capture the premium experience of the venue.
               </p>
-              
+
               <p>
                 Working with a team of photography and software experts, Alex developed a prototype photo booth specifically designed for upscale venues. The results were immediate: customers loved the experience, spent more time in the venue, and enthusiastically shared their photos on social media, driving new business.
               </p>
-              
+
               <p>
                 Since then, Glimps has expanded to serve hundreds of venues across the country, from intimate lounges to large nightclubs, restaurants, event spaces, and more. Our mission remains the same: to create memorable experiences for guests while driving measurable business results for venue owners.
               </p>
-              
+
               <p>
                 Today, our team of 35 passionate individuals continues to innovate at the intersection of hospitality, entertainment, photography, and technology. We're proud to be trusted by some of the most respected establishments in the industry and are constantly evolving our product based on partner feedback and emerging trends.
               </p>
@@ -106,7 +104,7 @@ const About = () => {
               These core principles guide everything we do at Glimps.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-8">
             {values.map((value, index) => (
               <div
@@ -130,7 +128,7 @@ const About = () => {
               The passionate people behind Glimps who make it all happen.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {team.map((member, index) => (
               <div
@@ -165,11 +163,11 @@ const About = () => {
                 Interested in learning more about how Glimps can transform your venue? We'd love to hear from you.
               </p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-10">
               <div>
                 <h3 className="text-xl font-semibold mb-6">Contact Information</h3>
-                
+
                 <div className="space-y-4">
                   <div>
                     <p className="text-glimps-500 mb-1">Email</p>
@@ -177,14 +175,14 @@ const About = () => {
                       hello@glimps.com
                     </a>
                   </div>
-                  
+
                   <div>
                     <p className="text-glimps-500 mb-1">Phone</p>
                     <a href="tel:+18001234567" className="text-glimps-900 hover:text-glimps-accent transition-colors">
                       (800) 123-4567
                     </a>
                   </div>
-                  
+
                   <div>
                     <p className="text-glimps-500 mb-1">Office</p>
                     <address className="text-glimps-900 not-italic">
@@ -192,7 +190,7 @@ const About = () => {
                       San Francisco, CA 94103
                     </address>
                   </div>
-                  
+
                   <div>
                     <p className="text-glimps-500 mb-1">Hours</p>
                     <p className="text-glimps-900">
@@ -201,10 +199,10 @@ const About = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="text-xl font-semibold mb-6">Send Us a Message</h3>
-                
+
                 <form className="space-y-4">
                   <div>
                     <label htmlFor="name" className="block text-glimps-700 mb-2">
@@ -217,7 +215,7 @@ const About = () => {
                       placeholder="Your name"
                     />
                   </div>
-                  
+
                   <div>
                     <label htmlFor="email" className="block text-glimps-700 mb-2">
                       Email
@@ -229,7 +227,7 @@ const About = () => {
                       placeholder="Your email"
                     />
                   </div>
-                  
+
                   <div>
                     <label htmlFor="venue" className="block text-glimps-700 mb-2">
                       Venue Name
@@ -241,7 +239,7 @@ const About = () => {
                       placeholder="Your venue name"
                     />
                   </div>
-                  
+
                   <div>
                     <label htmlFor="message" className="block text-glimps-700 mb-2">
                       Message
@@ -253,7 +251,7 @@ const About = () => {
                       placeholder="Tell us about your venue and requirements"
                     ></textarea>
                   </div>
-                  
+
                   <button
                     type="submit"
                     className="inline-flex h-12 items-center justify-center rounded-md bg-glimps-900 px-8 text-base font-medium text-white transition-colors hover:bg-glimps-800 focus:outline-none focus:ring-2 focus:ring-glimps-accent focus:ring-offset-2"

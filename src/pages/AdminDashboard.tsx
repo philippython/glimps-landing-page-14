@@ -33,7 +33,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -516,7 +515,7 @@ const AdminDashboard = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => setSelectedVenue(venue)}
+                              // onClick={() => setSelectedVenue(venue)}
                               >
                                 <Edit className="h-4 w-4 mr-1" />
                                 Edit
@@ -547,7 +546,7 @@ const AdminDashboard = () => {
               >
                 ← Back to Venues
               </Button>
-              <VenueSettings />
+              {/* <VenueSettings /> */}
             </div>
           )}
 

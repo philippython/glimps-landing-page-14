@@ -34,43 +34,22 @@ const App = () => {
           <BrowserRouter>
             <div className="flex flex-col min-h-screen">
               <Routes>
-                {/* Public routes with navbar and footer */}
-                <Route
-                  path="/"
-                  element={
-                    <>
-                      <Navbar />
-                      <main className="flex-grow">
-                        <Index />
-                      </main>
-                      <Footer />
-                    </>
-                  }
-                />
-                <Route
-                  path="/pricing"
-                  element={
-                    <>
-                      <Navbar />
-                      <main className="flex-grow">
-                        <Pricing />
-                      </main>
-                      <Footer />
-                    </>
-                  }
-                />
-                <Route
-                  path="/about"
-                  element={
-                    <>
-                      <Navbar />
-                      <main className="flex-grow">
-                        <About />
-                      </main>
-                      <Footer />
-                    </>
-                  }
-                />
+                {/* public routes */}
+                <Route path="/*" element={
+                  <>
+                    < Navbar />
+                    <main className="flex-grow">
+                      {/* Public routes with navbar and footer */}
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/pricing" element={<Pricing />} />
+                        <Route path="/about" element={<About />} />
+                      </Routes>
+                    </main>
+                    <Footer />
+                  </>
+                }>
+                </Route>
 
                 {/* Authentication routes */}
                 <Route path="/login" element={<Login />} />
@@ -106,7 +85,7 @@ const App = () => {
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
-    </LocaleProvider>
+    </LocaleProvider >
   )
 };
 

@@ -2,6 +2,7 @@ import { flattenMessages } from '@/lib/utils';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { IntlProvider } from 'react-intl';
 import { Messages } from './types';
+import message from '@/components/ui/message';
 
 type locales = {
   "code": string,
@@ -40,6 +41,10 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const setLocale = (locale: string) => {
     setCurrentLocale(locale);
   };
+
+  useEffect(() => {
+    console.info(message());
+  }, []);
 
   if (!messages.common || !availableLocales) return null;
 
