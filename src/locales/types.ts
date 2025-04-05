@@ -63,17 +63,17 @@ export type Messages = {
       tagline: string;
       title: string;
       keyPoints: {
-        "1": {
+        1: {
           number: string;
           title: string;
           description: string;
         };
-        "2": {
+        2: {
           number: string;
           title: string;
           description: string;
         };
-        "3": {
+        3: {
           number: string;
           title: string;
           description: string;
@@ -116,7 +116,39 @@ export type Messages = {
     };
   };
   pricing: Record<string, never>;
-  about: Record<string, never>;
+  about: {
+    title: string;
+    description: string;
+    ourStory: {
+      title: string;
+      description: {
+        description1: string;
+        description2: string;
+        description3: string;
+        description4: string;
+      };
+    };
+    ourValues: {
+      title: string;
+      description: string;
+      quality: {
+        title: string;
+        description: string;
+      };
+      partnerSuccess: {
+        title: string;
+        description: string;
+      };
+      innovation: {
+        title: string;
+        description: string;
+      };
+      service: {
+        title: string;
+        description: string;
+      };
+    };
+  };
   login: {
     title: string;
     optionalTitle: {

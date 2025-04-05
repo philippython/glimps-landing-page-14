@@ -126,7 +126,39 @@
     }
   },
   "pricing": {},
-  "about": {},
+  "about": {
+    "title": "About Glimps",
+    "description": "We're revolutionizing the venue experience through innovative photo technology that creates memories and drives business growth.",
+    "ourStory": {
+      "title": "Our Story",
+      "description": {
+        "description1": "Glimps was born in 2018 when our founder, Alex Rivera, noticed a problem at his downtown entertainment venue. Customers were constantly asking staff to take photos of them, disrupting service and often resulting in poor-quality images that didn't capture the premium experience of the venue.",
+        "description2": "Working with a team of photography and software experts, Alex developed a prototype photo booth specifically designed for upscale venues. The results were immediate: customers loved the experience, spent more time in the venue, and enthusiastically shared their photos on social media, driving new business.",
+        "description3": "Since then, Glimps has expanded to serve hundreds of venues across the country, from intimate lounges to large nightclubs, restaurants, event spaces, and more. Our mission remains the same: to create memorable experiences for guests while driving measurable business results for venue owners.",
+        "description4": "Today, our team of 35 passionate individuals continues to innovate at the intersection of hospitality, entertainment, photography, and technology. We're proud to be trusted by some of the most respected establishments in the industry and are constantly evolving our product based on partner feedback and emerging trends."
+      }
+    },
+    "ourValues": {
+      "title": "Our Values",
+      "description": "These core principles guide everything we do at Glimps.",
+      "quality": {
+        "title": "Quality Above All",
+        "description": "We never compromise on the quality of our hardware, software, or customer experience."
+      },
+      "partnerSuccess": {
+        "title": "Partner Success",
+        "description": "Your success is our success. We're committed to helping your business grow with our solution."
+      },
+      "innovation": {
+        "title": "Continuous Innovation",
+        "description": "We constantly evolve our technology to stay ahead of trends and customer expectations."
+      },
+      "service": {
+        "title": "Exceptional Service",
+        "description": "We provide responsive, helpful support to ensure your photo booth always performs at its best."
+      }
+    }
+  },
   "login": {
     "title": "Sign in to your account",
     "optionalTitle": {

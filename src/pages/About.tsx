@@ -1,44 +1,45 @@
+import { FormattedMessage } from "react-intl";
 import CallToAction from "../components/CallToAction";
 import ImageWithFallback from "../components/ImageWithFallback";
 
 const About = () => {
-  const team = [
-    {
-      name: "Daniil",
-      role: "Founder & CEO",
-      bio: "Sales and Strategic Planning person | Passionate about Driving Business Growth and Efficiency | Experienced in B2B Sales, CRM, and Strategic Planning According to MBTI have ESTJ-T type of personality",
-      image: "/placeholder.svg",
-    },
-    {
-      name: "Taylor Chen",
-      role: "Head of Technology",
-      bio: "With 15+ years in photography tech, Taylor leads our R&D team and ensures Glimps booths deliver premium photo quality.",
-      image: "/placeholder.svg",
-    },
-    {
-      name: "Morgan Williams",
-      role: "Customer Success Manager",
-      bio: "Morgan works directly with venue owners to ensure they get maximum value from their Glimps investment.",
-      image: "/placeholder.svg",
-    },
-  ];
+  // const team = [
+  //   {
+  //     name: "Daniil",
+  //     role: "Founder & CEO",
+  //     bio: "Sales and Strategic Planning person | Passionate about Driving Business Growth and Efficiency | Experienced in B2B Sales, CRM, and Strategic Planning According to MBTI have ESTJ-T type of personality",
+  //     image: "/placeholder.svg",
+  //   },
+  //   {
+  //     name: "Taylor Chen",
+  //     role: "Head of Technology",
+  //     bio: "With 15+ years in photography tech, Taylor leads our R&D team and ensures Glimps booths deliver premium photo quality.",
+  //     image: "/placeholder.svg",
+  //   },
+  //   {
+  //     name: "Morgan Williams",
+  //     role: "Customer Success Manager",
+  //     bio: "Morgan works directly with venue owners to ensure they get maximum value from their Glimps investment.",
+  //     image: "/placeholder.svg",
+  //   },
+  // ];
 
   const values = [
     {
-      title: "Quality Above All",
-      description: "We never compromise on the quality of our hardware, software, or customer experience.",
+      title: <FormattedMessage id="about.ourValues.quality.title" />,
+      description: <FormattedMessage id="about.ourValues.quality.description" />,
     },
     {
-      title: "Partner Success",
-      description: "Your success is our success. We're committed to helping your business grow with our solution.",
+      title: <FormattedMessage id="about.ourValues.partnerSuccess.title" />,
+      description: <FormattedMessage id="about.ourValues.partnerSuccess.description" />,
     },
     {
-      title: "Continuous Innovation",
-      description: "We constantly evolve our technology to stay ahead of trends and customer expectations.",
+      title: <FormattedMessage id="about.ourValues.innovation.title" />,
+      description: <FormattedMessage id="about.ourValues.innovation.description" />,
     },
     {
-      title: "Exceptional Service",
-      description: "We provide responsive, helpful support to ensure your photo booth always performs at its best.",
+      title: <FormattedMessage id="about.ourValues.service.title" />,
+      description: <FormattedMessage id="about.ourValues.service.description" />,
     },
   ];
 
@@ -49,10 +50,10 @@ const About = () => {
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              About Glimps
+              <FormattedMessage id="about.title" />
             </h1>
             <p className="text-xl text-glimps-600 mb-10 max-w-2xl mx-auto">
-              We're revolutionizing the venue experience through innovative photo technology that creates memories and drives business growth.
+              <FormattedMessage id="about.description" />
             </p>
           </div>
 
@@ -71,24 +72,23 @@ const About = () => {
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-6">Our Story</h2>
+              <h2 className="text-3xl font-bold mb-6">
+                <FormattedMessage id="about.ourStory.title" />
+              </h2>
             </div>
 
             <div className="prose prose-lg max-w-none text-glimps-700">
               <p>
-                Glimps was born in 2018 when our founder, Alex Rivera, noticed a problem at his downtown entertainment venue. Customers were constantly asking staff to take photos of them, disrupting service and often resulting in poor-quality images that didn't capture the premium experience of the venue.
+                <FormattedMessage id="about.ourStory.description.description1" />
               </p>
-
               <p>
-                Working with a team of photography and software experts, Alex developed a prototype photo booth specifically designed for upscale venues. The results were immediate: customers loved the experience, spent more time in the venue, and enthusiastically shared their photos on social media, driving new business.
+                <FormattedMessage id="about.ourStory.description.description2" />
               </p>
-
               <p>
-                Since then, Glimps has expanded to serve hundreds of venues across the country, from intimate lounges to large nightclubs, restaurants, event spaces, and more. Our mission remains the same: to create memorable experiences for guests while driving measurable business results for venue owners.
+                <FormattedMessage id="about.ourStory.description.description3" />
               </p>
-
               <p>
-                Today, our team of 35 passionate individuals continues to innovate at the intersection of hospitality, entertainment, photography, and technology. We're proud to be trusted by some of the most respected establishments in the industry and are constantly evolving our product based on partner feedback and emerging trends.
+                <FormattedMessage id="about.ourStory.description.description4" />
               </p>
             </div>
           </div>
@@ -99,9 +99,11 @@ const About = () => {
       <section>
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-6">Our Values</h2>
+            <h2 className="text-3xl font-bold mb-6">
+              <FormattedMessage id="about.ourValues.title" />
+            </h2>
             <p className="text-lg text-glimps-600 max-w-2xl mx-auto">
-              These core principles guide everything we do at Glimps.
+              <FormattedMessage id="about.ourValues.description" />
             </p>
           </div>
 
@@ -120,7 +122,7 @@ const About = () => {
       </section>
 
       {/* Team Section */}
-      <section className="bg-glimps-50">
+      {/* <section className="bg-glimps-50">
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-6">Meet Our Team</h2>
@@ -151,7 +153,7 @@ const About = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Contact Section */}
       {/* <section>
