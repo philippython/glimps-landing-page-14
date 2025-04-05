@@ -15,7 +15,7 @@ const CallToAction = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <NavLink
-              to="/pricing"
+              to="/register"
               className="inline-flex h-12 items-center justify-center rounded-md bg-white px-8 text-base font-medium text-glimps-900 transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-glimps-accent focus:ring-offset-2"
             >
               <FormattedMessage id="index.cta.links.seePricing" />

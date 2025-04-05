@@ -4,9 +4,9 @@ import ImageWithFallback from "../components/ImageWithFallback";
 const About = () => {
   const team = [
     {
-      name: "Alex Rivera",
+      name: "Daniil",
       role: "Founder & CEO",
-      bio: "Former venue manager turned tech entrepreneur. Alex created Glimps after noticing the need for better social experiences in hospitality and entertainment venues.",
+      bio: "Sales and Strategic Planning person | Passionate about Driving Business Growth and Efficiency | Experienced in B2B Sales, CRM, and Strategic Planning According to MBTI have ESTJ-T type of personality",
       image: "/placeholder.svg",
     },
     {
@@ -154,7 +154,7 @@ const About = () => {
       </section>
 
       {/* Contact Section */}
-      <section>
+      {/* <section>
         <div className="container mx-auto">
           <div className="max-w-4xl mx-auto bg-white rounded-xl p-8 md:p-12 glimps-shadow">
             <div className="text-center mb-10">
@@ -263,7 +263,7 @@ const About = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <CallToAction />
     </div>

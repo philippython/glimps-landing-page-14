@@ -70,10 +70,10 @@ const Index = () => {
               </p>
               <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <NavLink
-                  to="/pricing"
+                  to="/resgister"
                   className="inline-flex h-12 items-center justify-center rounded-md bg-glimps-900 px-8 text-base font-medium text-white transition-colors hover:bg-glimps-800 focus:outline-none focus:ring-2 focus:ring-glimps-accent focus:ring-offset-2"
                 >
-                  <FormattedMessage id="index.hero.links.viewPricing" />
+                  <FormattedMessage id="index.hero.links.getStarted" />
                 </NavLink>
                 <NavLink
                   to="/about"
@@ -192,7 +192,7 @@ const Index = () => {
 
               <div className="pt-4">
                 <NavLink
-                  to="/pricing"
+                  to="/resgister"
                   className="inline-flex h-12 items-center justify-center rounded-md bg-glimps-900 px-8 text-base font-medium text-white transition-colors hover:bg-glimps-800 focus:outline-none focus:ring-2 focus:ring-glimps-accent focus:ring-offset-2"
                 >
                   <FormattedMessage id="index.howItWorks.cta" />
