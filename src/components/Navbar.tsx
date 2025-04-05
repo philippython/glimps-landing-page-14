@@ -66,12 +66,12 @@ const Navbar = () => {
           >
             <FormattedMessage id="common.navbar.login" />
           </NavLink>
-          {/* <NavLink
-            to="/pricing"
+          <NavLink
+            to="/register"
             className="inline-flex h-10 items-center justify-center rounded-md bg-glimps-900 px-6 text-sm font-medium text-white transition-colors hover:bg-glimps-800 focus:outline-none focus:ring-2 focus:ring-glimps-accent focus:ring-offset-2"
           >
             <FormattedMessage id="common.navbar.getStarted" />
-          </NavLink> */}
+          </NavLink>
         </div>
 
         {/* Mobile Navigation Toggle */}
