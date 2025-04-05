@@ -34,8 +34,8 @@ export const createVenueSchema = (intl: IntlShape) => {
         })
       ),
     logo_position: z.nativeEnum(LogoPosition),
-    logo_ratio: z.array(z.number().min(1).max(100)),
-    logo_transparency: z.array(z.number().min(16).max(255)),
+    logo_ratio: z.array(z.number().min(10).max(100)),
+    logo_transparency: z.array(z.number().min(15).max(255)),
   })
 };
 
