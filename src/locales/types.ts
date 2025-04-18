@@ -184,6 +184,11 @@ export type Messages = {
     };
     title: string;
     photos: string;
+    download: {
+      downloadOne: string;
+      downloadAll: string;
+      downloadFailed: string;
+    },
     buttons: {
       downloadAll: string;
       download: string;

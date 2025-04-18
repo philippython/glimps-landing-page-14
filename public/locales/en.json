@@ -194,6 +194,11 @@
     },
     "title": "Your Glimps Photos",
     "photos": "photos",
+    "download": {
+      "downloadOne": "Downloaded",
+      "downloadAll": "Downloaded all photos",
+      "downloadFailed": "Failed to download"
+    },
     "buttons": {
       "downloadAll": "Download All",
       "download": "Download"

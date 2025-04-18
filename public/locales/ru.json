@@ -194,6 +194,11 @@
     },
     "title": "Ваши фото Глимпс",
     "photos": "фото",
+    "download": {
+      "downloadOne": "Скачано",
+      "downloadAll": "Скачано все фото",
+      "downloadFailed": "Ошибка загрузки"
+    },
     "buttons": {
       "downloadAll": "Скачать все",
       "download": "Скачать"

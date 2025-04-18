@@ -9,7 +9,7 @@ import ImageWithFallback from "@/components/ImageWithFallback";
 import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
 import { convertDateTime, convertOnlyDate } from "@/lib/utils";
 import LogoWithText from "@/components/LogoWithText";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import LanguagePicker from "@/components/LanguagePicker";
 
 type Photo = {
@@ -32,6 +32,7 @@ const PhotoGallery = () => {
     queryFn: () => fetchPhotosFromApi(uuid || ""),
     enabled: !!uuid,
   });
+  const intl = useIntl();
 
   const photoName = (index: number) => `${data && convertOnlyDate(data.created_at)} (${index + 1})`;
 
@@ -49,7 +50,11 @@ const PhotoGallery = () => {
         window.URL.revokeObjectURL(blobUrl);
       })
       .catch(() => {
-        toast.error(`Failed to download ${name}`);
+        toast.error(`
+        ${intl.formatMessage({ id: "photoGallery.download.downloadFailed" })} 
+        ${" "}
+        ${name}
+      `);
       });
   };
 
@@ -113,7 +118,7 @@ const PhotoGallery = () => {
                         handleDownload(photo.photo_url, photoName(index));
                       }, 300);
                     });
-                    toast.success("Downloaded all photos");
+                    toast.success(intl.formatMessage({ id: "photoGallery.download.downloadAll" }));
                   }
                 }}
                 disabled={isLoading || !data}
@@ -157,7 +162,11 @@ const PhotoGallery = () => {
                     size="sm"
                     onClick={() => {
                       handleDownload(photo.photo_url, photoName(index));
-                      toast.success(`Downloaded ${photoName(index)}`);
+                      toast.success(`
+                        ${intl.formatMessage({ id: "photoGallery.download.downloadOne" })}
+                        ${""}
+                        ${photoName(index)}
+                      `);
                     }}
                     className="transition-all"
                   >
