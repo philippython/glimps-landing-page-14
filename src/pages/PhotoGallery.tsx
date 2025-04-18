@@ -86,8 +86,8 @@ const PhotoGallery = () => {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <header className="bg-white border-b">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-6">
+          <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
               <LogoWithText />
               {data && (
                 <div>
