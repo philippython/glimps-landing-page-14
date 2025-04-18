@@ -47,7 +47,6 @@ const PhotoGallery = () => {
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(blobUrl);
-        toast.success(`Downloaded ${name}`);
       })
       .catch(() => {
         toast.error(`Failed to download ${name}`);
@@ -114,7 +113,7 @@ const PhotoGallery = () => {
                         handleDownload(photo.photo_url, photoName(index));
                       }, 300);
                     });
-                    toast.success("Downloading all photos");
+                    toast.success("Downloaded all photos");
                   }
                 }}
                 disabled={isLoading || !data}
@@ -153,10 +152,13 @@ const PhotoGallery = () => {
                   />
                 </div>
                 <div className="p-4 flex justify-between items-center">
-                  <p className="font-medium">{photoName(index)}</p>
+                  <p className="font-medium">{ }</p>
                   <Button
                     size="sm"
-                    onClick={() => handleDownload(photo.photo_url, photoName(index))}
+                    onClick={() => {
+                      handleDownload(photo.photo_url, photoName(index));
+                      toast.success(`Downloaded ${photoName(index)}`);
+                    }}
                     className="transition-all"
                   >
                     <Download className="h-4 w-4 mr-2" />
