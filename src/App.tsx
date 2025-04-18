@@ -29,8 +29,6 @@ const App = () => {
     <LocaleProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
           <BrowserRouter>
             <div className="flex flex-col min-h-screen">
               <Routes>
@@ -83,6 +81,8 @@ const App = () => {
               </Routes>
             </div>
           </BrowserRouter>
+          <Toaster />
+          <Sonner />
         </TooltipProvider>
       </QueryClientProvider>
     </LocaleProvider >
