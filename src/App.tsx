@@ -42,6 +42,18 @@ const App = () => {
                         <Route path="/" element={<Index />} />
                         {/* <Route path="/pricing" element={<Pricing />} /> */}
                         <Route path="/about" element={<About />} />
+                        <Route
+                          path="*"
+                          element={
+                            <>
+                              <Navbar />
+                              <main className="flex-grow">
+                                <NotFound />
+                              </main>
+                              <Footer />
+                            </>
+                          }
+                        />
                       </Routes>
                     </main>
                     <Footer />
