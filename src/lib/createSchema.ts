@@ -9,11 +9,14 @@ export const createVenueSchema = (intl: IntlShape) => {
         id: "venueDashboard.venueSettings.messages.venueNameTooShort"
       })
     }),
-    contact_num: z.string().min(5, {
-      message: intl.formatMessage({
-        id: "venueDashboard.venueSettings.messages.contactNumberTooShort"
-      })
-    }),
+    contact_num: z.string()
+      .transform(val => val.startsWith('+') ? val.substring(1) : val)
+      .transform(val => val.startsWith('0') ? val.substring(1) : val)
+      .pipe(z.string().min(5, {
+        message: intl.formatMessage({
+          id: "venueDashboard.venueSettings.messages.contactNumberTooShort"
+        })
+      })),
     venue_logo: z.instanceof(File, {
       message: intl.formatMessage({
         id: "venueDashboard.venueSettings.messages.missingLogo"
@@ -46,11 +49,14 @@ export const editVenueSchema = (intl: IntlShape) => {
         id: "venueDashboard.venueSettings.messages.venueNameTooShort"
       })
     }),
-    contact_num: z.string().min(5, {
-      message: intl.formatMessage({
-        id: "venueDashboard.venueSettings.messages.contactNumberTooShort"
-      })
-    }),
+    contact_num: z.string()
+      .transform(val => val.startsWith('+') ? val.substring(1) : val)
+      .transform(val => val.startsWith('0') ? val.substring(1) : val)
+      .pipe(z.string().min(5, {
+        message: intl.formatMessage({
+          id: "venueDashboard.venueSettings.messages.contactNumberTooShort"
+        })
+      })),
     venue_logo: z.instanceof(File, {
       message: intl.formatMessage({
         id: "venueDashboard.venueSettings.messages.missingLogo"
