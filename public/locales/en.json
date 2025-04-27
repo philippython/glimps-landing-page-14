@@ -253,7 +253,8 @@
       "venueSettings": "Vennue Settings",
       "accountSettings": "Account Settings",
       "search": "Search...",
-      "signOut": "Sign Out"
+      "signOut": "Sign Out",
+      "analytics": "Analytics"
     },
     "sessions": {
       "UUID": "UUID",
@@ -384,6 +385,14 @@
         "profileUpdateFailed": "Failed to update your profile. Please try again.",
         "passwordUpdated": "Your password has been changed successfully.",
         "passwordUpdateFailed": "Failed to change your password. Please try again."
+      }
+    },
+    "analytics": {
+      "title": "Your Venue Analytics",
+      "description": "Showing total photos taken and users",
+      "chart": {
+        "photo": "Total photos taken",
+        "user": "Total users"
       }
     },
     "messages": {

@@ -1,6 +1,7 @@
 import { VenuePhotos } from "@/service/fetchVenuePhotosFromApi";
 import { VenueUser } from "@/service/fetchVenueUsersFromApi";
 import * as React from "react"
+import { FormattedMessage, useIntl } from "react-intl"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import {
   Card,
@@ -22,6 +23,7 @@ type AnalyticsInfoProps = {
 }
 
 export default function AnalyticsInfo(props: AnalyticsInfoProps) {
+  const intl = useIntl();
   const chartData = React.useMemo(() => {
     const counts: Record<string, { photo: number; user: number }> = {};
     props.venuePhotos.forEach(photo => {
@@ -41,11 +43,11 @@ export default function AnalyticsInfo(props: AnalyticsInfoProps) {
 
   const chartConfig = {
     photo: {
-      label: "Total photos taken",
+      label: intl.formatMessage({ id: "venueDashboard.analytics.chart.photo" }),
       color: "black",
     },
     user: {
-      label: "Total users",
+      label: intl.formatMessage({ id: "venueDashboard.analytics.chart.user" }),
       color: "black",
     },
   } satisfies ChartConfig
@@ -64,9 +66,9 @@ export default function AnalyticsInfo(props: AnalyticsInfoProps) {
     <Card>
       <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <CardTitle>Your venue Analytics</CardTitle>
+          <CardTitle><FormattedMessage id="venueDashboard.analytics.title" /></CardTitle>
           <CardDescription>
-            Showing total photos taken and users
+            <FormattedMessage id="venueDashboard.analytics.description" />
           </CardDescription>
         </div>
         <div className="flex flex-1">

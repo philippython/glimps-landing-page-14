@@ -244,6 +244,7 @@ export type Messages = {
       accountSettings: string;
       search: string;
       signOut: string;
+      analytics: string;
     },
     sessions: {
       UUID: string;
@@ -375,7 +376,15 @@ export type Messages = {
         passwordUpdated: string;
         passwordUpdateFailed: string;
       }
-    }
+    },
+    analytics: {
+      title: string;
+      description: string;
+      chart: {
+        photo: string;
+        user: string;
+      };
+    },
     messages: {
       successUpdateVenue: string;
       failedUpdateVenue: string;
