@@ -10,6 +10,7 @@ import {
   Store,
   User,
   LogOut,
+  ChartNoAxesCombined,
 } from "lucide-react";
 import {
   Table,
@@ -44,6 +45,7 @@ import { patchVenueSettingsToApi } from "@/service/patchVenueSettingsToApi";
 import { toast } from "sonner";
 import { FormattedMessage, useIntl } from "react-intl";
 import { EditVenueFormValues } from "@/lib/createSchema";
+import AnalyticsInfo from "@/components/AnalyticsInfo";
 
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,7 +72,7 @@ const VenueDashboard = () => {
         .then((data) => setVenuePhotos(data))
         .catch((error) => console.error("Error fetching venue photos", error));
     }
-  }, [venue, token]);
+  }, [venue, token, user, navigate]);
 
   const filteredVenuePhotos = venuePhotos.filter(
     photo =>
@@ -85,6 +87,11 @@ const VenueDashboard = () => {
   );
 
   const navItems = [
+    {
+      id: "analytics",
+      label: <FormattedMessage id="venueDashboard.navItems.analytics" />,
+      icon: <ChartNoAxesCombined className="h-4 w-4" />
+    },
     {
       id: "sessions",
       label: <FormattedMessage id="venueDashboard.navItems.sessions" />,
@@ -396,6 +403,10 @@ const VenueDashboard = () => {
 
           {activeTab === "account-settings" && (
             <AccountSettings />
+          )}
+
+          {activeTab === "analytics" && (
+            <AnalyticsInfo venueUsers={venueUsers} venuePhotos={venuePhotos} />
           )}
         </div>
       </main>
