@@ -49,7 +49,7 @@ import AnalyticsInfo from "@/components/AnalyticsInfo";
 
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState("sessions");
+  const [activeTab, setActiveTab] = useState("analytics");
   const [venueUsers, setVenueUsers] = useState<VenueUser[]>([]);
   const [venuePhotos, setVenuePhotos] = useState<VenuePhotos[]>([]);
   const [loading, setLoading] = useState(false);
