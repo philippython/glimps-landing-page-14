@@ -44,17 +44,21 @@ const PhotoGallery = () => {
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = blobUrl;
-        a.download = name + '.jpg';
+        a.download = `${name}.jpg`;
         document.body.appendChild(a);
-        a.click();
+        // Use download attribute if supported, otherwise open in new tab
+        if ('download' in HTMLAnchorElement.prototype) {
+          a.click();
+        } else {
+          window.open(blobUrl, '_blank');
+        }
         window.URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(a);
       })
       .catch(() => {
-        toast.error(`
-        ${intl.formatMessage({ id: "photoGallery.download.downloadFailed" })} 
-        ${" "}
-        ${name}
-      `);
+        toast.error(
+          `${intl.formatMessage({ id: 'photoGallery.download.downloadFailed' })} ${name}`
+        );
       });
   };
 
