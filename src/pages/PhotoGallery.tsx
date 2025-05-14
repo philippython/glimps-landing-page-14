@@ -37,6 +37,7 @@ const PhotoGallery = () => {
   const photoName = (index: number) => `${data && convertOnlyDate(data.created_at)} (${index + 1})`;
 
   const handleDownload = (url: string, name: string) => {
+    // First try direct download method
     fetch(url)
       .then(response => response.blob())
       .then(blob => {
@@ -56,9 +57,18 @@ const PhotoGallery = () => {
         document.body.removeChild(a);
       })
       .catch(() => {
-        toast.error(
-          `${intl.formatMessage({ id: 'photoGallery.download.downloadFailed' })} ${name}`
-        );
+        // If direct fetch fails due to CORS, try opening in a new tab
+        // which may work for viewing, though not for downloading
+        try {
+          window.open(url, '_blank');
+          toast.info(
+            `${intl.formatMessage({ id: 'photoGallery.download.downloadFailed' })} - Opened in new tab`
+          );
+        } catch (e) {
+          toast.error(
+            `${intl.formatMessage({ id: 'photoGallery.download.downloadFailed' })} ${name}`
+          );
+        }
       });
   };
 
