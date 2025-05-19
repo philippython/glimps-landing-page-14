@@ -119,26 +119,29 @@ const PhotoGallery = () => {
                 </div>
               )}
             </div>
-            <div className="flex items-center space-x-3">
-              {/* Language Dropdown */}
-              <LanguagePicker />
+            <div className="flex flex-col items-center md:items-end gap-1">
+              <div className="flex items-center space-x-3">
+                {/* Language Dropdown */}
+                <LanguagePicker />
 
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (data?.photos) {
-                    data.photos.forEach((photo, index) => {
-                      setTimeout(() => {
-                        handleDownload(photo.photo_url, photoName(index));
-                      }, 300);
-                    });
-                    toast.success(intl.formatMessage({ id: "photoGallery.download.downloadAll" }));
-                  }
-                }}
-                disabled={isLoading || !data}
-              >
-                <FormattedMessage id="photoGallery.buttons.downloadAll" />
-              </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    if (data?.photos) {
+                      data.photos.forEach((photo, index) => {
+                        setTimeout(() => {
+                          handleDownload(photo.photo_url, photoName(index));
+                        }, 300);
+                      });
+                      toast.success(intl.formatMessage({ id: "photoGallery.download.downloadAll" }));
+                    }
+                  }}
+                  disabled={isLoading || !data}
+                >
+                  <FormattedMessage id="photoGallery.buttons.downloadAll" />
+                </Button>
+              </div>
+              <p className="text-red-500 text-md font-semibold text-center">Чтобы скачать фото, зажмите фотографию, и в открывшемся меню нажмите скачать</p>
             </div>
           </div>
         </div>
