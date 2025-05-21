@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   Users,
@@ -7,7 +6,7 @@ import {
   ChevronDown,
   Phone,
   MessageSquare,
-  Calendar,
+  CalendarIcon,
   Store,
   User,
   LogOut,
@@ -378,7 +377,7 @@ const VenueDashboard = () => {
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
-                            <Calendar className="mr-2 h-4 w-4" />
+                            <CalendarIcon className="mr-2 h-4 w-4" />
                             {dateFrom ? (
                               format(dateFrom, "PPP")
                             ) : (
@@ -390,7 +389,7 @@ const VenueDashboard = () => {
                           <Calendar
                             mode="single"
                             selected={dateFrom}
-                            onSelect={setDateFrom}
+                            onSelect={(date) => setDateFrom(date)}
                             initialFocus
                             className="p-3 pointer-events-auto"
                           />
@@ -402,7 +401,7 @@ const VenueDashboard = () => {
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
-                            <Calendar className="mr-2 h-4 w-4" />
+                            <CalendarIcon className="mr-2 h-4 w-4" />
                             {dateTo ? (
                               format(dateTo, "PPP")
                             ) : (
@@ -414,7 +413,7 @@ const VenueDashboard = () => {
                           <Calendar
                             mode="single"
                             selected={dateTo}
-                            onSelect={setDateTo}
+                            onSelect={(date) => setDateTo(date)}
                             initialFocus
                             className="p-3 pointer-events-auto"
                           />
@@ -449,7 +448,7 @@ const VenueDashboard = () => {
                         </TableHead>
                         <TableHead className="">
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
+                            <CalendarIcon className="h-4 w-4" />
                             <FormattedMessage id="venueDashboard.sessions.timestamp" />
                           </div>
                         </TableHead>
@@ -555,7 +554,7 @@ const VenueDashboard = () => {
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
-                            <Calendar className="mr-2 h-4 w-4" />
+                            <CalendarIcon className="mr-2 h-4 w-4" />
                             {dateFrom ? (
                               format(dateFrom, "PPP")
                             ) : (
@@ -567,7 +566,7 @@ const VenueDashboard = () => {
                           <Calendar
                             mode="single"
                             selected={dateFrom}
-                            onSelect={setDateFrom}
+                            onSelect={(date) => setDateFrom(date)}
                             initialFocus
                             className="p-3 pointer-events-auto"
                           />
@@ -579,7 +578,7 @@ const VenueDashboard = () => {
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
-                            <Calendar className="mr-2 h-4 w-4" />
+                            <CalendarIcon className="mr-2 h-4 w-4" />
                             {dateTo ? (
                               format(dateTo, "PPP")
                             ) : (
@@ -591,7 +590,7 @@ const VenueDashboard = () => {
                           <Calendar
                             mode="single"
                             selected={dateTo}
-                            onSelect={setDateTo}
+                            onSelect={(date) => setDateTo(date)}
                             initialFocus
                             className="p-3 pointer-events-auto"
                           />
@@ -626,13 +625,13 @@ const VenueDashboard = () => {
                         </TableHead>
                         <TableHead className="w-[180px]">
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
+                            <CalendarIcon className="h-4 w-4" />
                             <FormattedMessage id="venueDashboard.usersList.lastSession" />
                           </div>
                         </TableHead>
                         <TableHead className="w-[180px]">
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
+                            <CalendarIcon className="h-4 w-4" />
                             <FormattedMessage id="venueDashboard.usersList.createdAt" />
                           </div>
                         </TableHead>
