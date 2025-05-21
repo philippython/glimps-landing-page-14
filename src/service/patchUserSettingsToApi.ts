@@ -1,6 +1,7 @@
+
 import axios from "axios";
 import { UserData, VenueData } from "./fetchLoginTokenFromApi";
-import { PasswordFormValues, ProfileFormValues } from "@/components/AccountSettings";
+import { PasswordFormValues, ProfileFormValues } from "@/lib/createSchema";
 
 export type PatchUserSettingsToApiResponse = {
   "id": string,
