@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   Users,
@@ -140,7 +139,7 @@ const VenueDashboard = () => {
   const filteredVenueUsers = venueUsers.filter(
     user =>
       (user.id.toLowerCase().trim().includes(userSearchTerm.toLowerCase().trim()) ||
-      (user.phone_number && user.phone_number.includes(userSearchTerm)) ||
+      (user.phone_number && user.phone_number.toString().includes(userSearchTerm)) ||
       (user.telegram_username && user.telegram_username.toLowerCase().trim().includes(userSearchTerm.toLowerCase().trim()))) &&
       filterByDate(user.created_at)
   );
@@ -726,7 +725,7 @@ const VenueDashboard = () => {
           )}
 
           {activeTab === "venue-settings" && (
-            <VenueSettings loading={loading} onSubmit={onVenueSettingsSubmit} />
+            <VenueSettings mode="edit" loading={loading} onSubmit={onVenueSettingsSubmit} />
           )}
 
           {activeTab === "account-settings" && (

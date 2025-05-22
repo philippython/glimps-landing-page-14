@@ -5,6 +5,7 @@ import { FormattedMessage } from "react-intl";
 import ImageWithFallback from "./ImageWithFallback";
 
 type AdSize = "BANNER" | "FULLSCREEN";
+type AdStatus = "ACTIVE" | "EXPIRED" | "SCHEDULED";
 
 interface Advertisement {
   id: string;
@@ -13,6 +14,7 @@ interface Advertisement {
   ads_size: AdSize;
   start_date?: string;
   expiry_date?: string;
+  status?: AdStatus;
 }
 
 interface PhotoAdvertisementProps {
@@ -30,43 +32,63 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
     const fetchAds = async () => {
       if (!venueId) return;
       
-      // Mock data for demonstration
-      const mockBannerAd = {
-        id: "1",
-        campaign_name: "Summer Special",
-        media_url: "https://placekitten.com/800/200",
-        ads_size: "BANNER" as AdSize,
-        start_date: new Date().toISOString(),
-        expiry_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
-      };
-      
-      const mockFullscreenAd = {
-        id: "2",
-        campaign_name: "Special Event",
-        media_url: "https://placekitten.com/1200/800",
-        ads_size: "FULLSCREEN" as AdSize,
-        start_date: new Date().toISOString(),
-        expiry_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
-      };
-      
-      // Randomly decide whether to show banner or fullscreen ad or both
-      const showBanner = Math.random() > 0.3;
-      const showFullscreen = Math.random() > 0.5;
-      
-      if (showBanner) {
-        setBannerAd(mockBannerAd);
-      }
-      
-      if (showFullscreen) {
-        setFullscreenAd(mockFullscreenAd);
-        // Show fullscreen ad after a delay so user can see the content first
-        setTimeout(() => {
-          setShowFullscreenAd(true);
-          // Make close button active after 5 seconds
+      try {
+        // In a real application, this would be an API call to get the venue's ads
+        // For now, we'll just simulate an empty response since the user requested no dummy ads
+        
+        // Set to empty arrays/null - representing a venue with no ads
+        setBannerAd(null);
+        setFullscreenAd(null);
+        
+        /*
+        // Example of how real ad data would be processed:
+        
+        // For each ad, determine the status based on dates
+        const processedAds = ads.map(ad => {
+          const now = new Date();
+          const startDate = ad.start_date ? new Date(ad.start_date) : null;
+          const expiryDate = ad.expiry_date ? new Date(ad.expiry_date) : null;
+          
+          let status: AdStatus = "ACTIVE";
+          
+          if (startDate && now < startDate) {
+            status = "SCHEDULED";
+          } else if (expiryDate && now > expiryDate) {
+            status = "EXPIRED";
+          }
+          
+          return {
+            ...ad,
+            status
+          };
+        });
+        
+        // Filter for active ads only
+        const activeAds = processedAds.filter(ad => ad.status === "ACTIVE");
+        
+        // Set banner and fullscreen ads if available
+        const activeBanner = activeAds.find(ad => ad.ads_size === "BANNER") || null;
+        const activeFullscreen = activeAds.find(ad => ad.ads_size === "FULLSCREEN") || null;
+        
+        setBannerAd(activeBanner);
+        setFullscreenAd(activeFullscreen);
+        
+        // If there's a fullscreen ad, show it after a delay
+        if (activeFullscreen) {
           setTimeout(() => {
-            setCanCloseFullscreenAd(true);
-          }, 5000);
-        }, 10000); // Show after 10 seconds to ensure user has time to see photos are loaded
+            setShowFullscreenAd(true);
+            // Make close button active after 5 seconds
+            setTimeout(() => {
+              setCanCloseFullscreenAd(true);
+            }, 5000);
+          }, 10000); // Show after 10 seconds to ensure user has time to see photos are loaded
+        }
+        */
+      } catch (error) {
+        console.error("Failed to fetch ads:", error);
+        // Reset states in case of error
+        setBannerAd(null);
+        setFullscreenAd(null);
       }
     };
     
