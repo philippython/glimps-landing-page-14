@@ -19,16 +19,37 @@ const ImageWithFallback = ({
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    // Reset states when src changes
+    setLoading(true);
+    setError(false);
+    
+    // Handle empty or invalid src
+    if (!src) {
+      setImgSrc(fallbackSrc);
+      setLoading(false);
+      setError(true);
+      return;
+    }
+
     const img = new Image();
     img.src = src;
+    
     img.onload = () => {
       setImgSrc(src);
       setLoading(false);
     };
+    
     img.onerror = () => {
+      console.warn(`Failed to load image: ${src}, using fallback`);
       setImgSrc(fallbackSrc);
       setLoading(false);
       setError(true);
+    };
+    
+    // Clean up
+    return () => {
+      img.onload = null;
+      img.onerror = null;
     };
   }, [src, fallbackSrc]);
 
