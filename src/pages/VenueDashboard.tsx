@@ -726,7 +726,7 @@ const VenueDashboard = () => {
           )}
 
           {activeTab === "venue-settings" && (
-            <VenueSettings loading={loading} onVenueSettingsSubmit={onVenueSettingsSubmit} />
+            <VenueSettings loading={loading} onSubmit={onVenueSettingsSubmit} />
           )}
 
           {activeTab === "account-settings" && (
@@ -734,7 +734,7 @@ const VenueDashboard = () => {
           )}
           
           {activeTab === "analytics" && (
-            <AnalyticsInfo />
+            <AnalyticsInfo venueUsers={venueUsers} venuePhotos={venuePhotos} />
           )}
           
           {activeTab === "advertising" && (

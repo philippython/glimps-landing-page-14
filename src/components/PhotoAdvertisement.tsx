@@ -11,6 +11,8 @@ interface Advertisement {
   campaign_name: string;
   media_url: string;
   ads_size: AdSize;
+  start_date?: string;
+  expiry_date?: string;
 }
 
 interface PhotoAdvertisementProps {
@@ -33,14 +35,18 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
         id: "1",
         campaign_name: "Summer Special",
         media_url: "https://placekitten.com/800/200",
-        ads_size: "BANNER" as AdSize
+        ads_size: "BANNER" as AdSize,
+        start_date: new Date().toISOString(),
+        expiry_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
       };
       
       const mockFullscreenAd = {
         id: "2",
         campaign_name: "Special Event",
         media_url: "https://placekitten.com/1200/800",
-        ads_size: "FULLSCREEN" as AdSize
+        ads_size: "FULLSCREEN" as AdSize,
+        start_date: new Date().toISOString(),
+        expiry_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
       };
       
       // Randomly decide whether to show banner or fullscreen ad or both
@@ -53,14 +59,14 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
       
       if (showFullscreen) {
         setFullscreenAd(mockFullscreenAd);
-        // Show fullscreen ad after a delay
+        // Show fullscreen ad after a delay so user can see the content first
         setTimeout(() => {
           setShowFullscreenAd(true);
           // Make close button active after 5 seconds
           setTimeout(() => {
             setCanCloseFullscreenAd(true);
           }, 5000);
-        }, 3000);
+        }, 10000); // Show after 10 seconds to ensure user has time to see photos are loaded
       }
     };
     

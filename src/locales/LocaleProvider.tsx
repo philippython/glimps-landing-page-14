@@ -63,7 +63,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
           common: {
             loading: 'Loading...',
             error: 'An error occurred'
-          }
+          } as any
         });
       } finally {
         setIsLoading(false);
