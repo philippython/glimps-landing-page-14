@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
-import { CalendarIcon, Plus, Eye, Trash2, PenLine, UploadCloud } from "lucide-react";
+import { CalendarIcon, Plus, Eye, Trash2, PenLine } from "lucide-react";
 import { toast } from "sonner";
 import {
   Popover,
@@ -20,8 +19,6 @@ import { useAuth } from "@/auth/AuthProvider";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -49,6 +46,7 @@ const AdvertisingManager = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [adToShow, setAdToShow] = useState<Advertisement | null>(null);
   const [previewMode, setPreviewMode] = useState<AdSize>("BANNER");
+  const [activeTab, setActiveTab] = useState("list");
   const { venue, token } = useAuth();
   const intl = useIntl();
   
@@ -60,31 +58,9 @@ const AdvertisingManager = () => {
   const [adSize, setAdSize] = useState<AdSize>("BANNER");
 
   useEffect(() => {
-    // Mock data for demonstration - replace with actual API call
-    const mockAds: Advertisement[] = [
-      {
-        id: "1",
-        campaign_name: "Summer Promotion",
-        media_url: "https://placekitten.com/800/400",
-        start_date: "2025-05-22T00:00:00Z",
-        expiry_date: "2025-06-22T00:00:00Z",
-        ads_size: "BANNER",
-        venue_id: venue?.id || "",
-        created_at: "2025-05-15T00:00:00Z"
-      },
-      {
-        id: "2",
-        campaign_name: "Special Event",
-        media_url: "https://placekitten.com/1200/800",
-        start_date: "2025-06-01T00:00:00Z",
-        expiry_date: "2025-06-15T00:00:00Z",
-        ads_size: "FULLSCREEN",
-        venue_id: venue?.id || "",
-        created_at: "2025-05-10T00:00:00Z"
-      }
-    ];
-    
-    setAds(mockAds);
+    // This would be replaced with an actual API call in production
+    // Leave ads empty for now as requested by user
+    setAds([]);
   }, [venue]);
 
   const handleCreateAd = () => {
@@ -115,6 +91,7 @@ const AdvertisingManager = () => {
       setStartDate(new Date());
       setExpiryDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
       setAdSize("BANNER");
+      setActiveTab("list");
       
       // Show success message
       toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.createSuccess" }));
@@ -154,7 +131,7 @@ const AdvertisingManager = () => {
         <CardDescription><FormattedMessage id="venueDashboard.advertising.description" /></CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="list">
+        <Tabs defaultValue="list" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-4">
             <TabsTrigger value="list">Ads List</TabsTrigger>
             <TabsTrigger value="create">Create New Ad</TabsTrigger>
@@ -164,7 +141,7 @@ const AdvertisingManager = () => {
             {ads.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 mb-4"><FormattedMessage id="venueDashboard.advertising.noAds" /></p>
-                <Button variant="outline" onClick={() => document.getElementById('create-tab')?.click()}>
+                <Button variant="outline" onClick={() => setActiveTab("create")}>
                   <Plus className="h-4 w-4 mr-2" />
                   <FormattedMessage id="venueDashboard.advertising.createAd" />
                 </Button>
@@ -272,7 +249,7 @@ const AdvertisingManager = () => {
             )}
           </TabsContent>
           
-          <TabsContent value="create" id="create-tab">
+          <TabsContent value="create">
             <div className="space-y-6">
               <div className="grid gap-4">
                 <div className="grid gap-2">
@@ -291,19 +268,13 @@ const AdvertisingManager = () => {
                   <Label htmlFor="media-url">
                     <FormattedMessage id="venueDashboard.advertising.mediaUrl" />
                   </Label>
-                  <div className="flex gap-2">
-                    <Input 
-                      id="media-url" 
-                      value={mediaUrl} 
-                      onChange={(e) => setMediaUrl(e.target.value)} 
-                      placeholder="https://example.com/ad-image.jpg"
-                      className="flex-1"
-                    />
-                    <Button variant="outline" className="w-auto">
-                      <UploadCloud className="h-4 w-4 mr-2" />
-                      <FormattedMessage id="venueDashboard.advertising.uploadMedia" />
-                    </Button>
-                  </div>
+                  <Input 
+                    id="media-url" 
+                    value={mediaUrl} 
+                    onChange={(e) => setMediaUrl(e.target.value)} 
+                    placeholder="https://example.com/ad-image.jpg"
+                    className="flex-1"
+                  />
                   <p className="text-sm text-muted-foreground">
                     <FormattedMessage id="venueDashboard.advertising.uploadMediaHelper" />
                   </p>
@@ -382,25 +353,28 @@ const AdvertisingManager = () => {
                   </RadioGroup>
                 </div>
               </div>
+
+              <div className="flex justify-end mt-6">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setActiveTab("list")} 
+                  className="mr-2"
+                >
+                  <FormattedMessage id="common.cancel" />
+                </Button>
+                <Button 
+                  onClick={handleCreateAd} 
+                  disabled={isLoading || !campaignName || !mediaUrl} 
+                >
+                  <FormattedMessage id="venueDashboard.advertising.submit" />
+                </Button>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
       </CardContent>
       
-      <CardFooter className="flex justify-between">
-        <div></div> {/* Empty div for spacing */}
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => document.getElementById('list-tab')?.click()}>
-            <FormattedMessage id="common.cancel" />
-          </Button>
-          <Button 
-            onClick={handleCreateAd} 
-            disabled={isLoading || !campaignName || !mediaUrl} 
-          >
-            <FormattedMessage id="venueDashboard.advertising.submit" />
-          </Button>
-        </div>
-      </CardFooter>
+      {/* Remove the CardFooter with buttons since they're now in the create tab content */}
     </Card>
   );
 };
