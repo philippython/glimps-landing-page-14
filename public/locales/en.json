@@ -254,7 +254,14 @@
       "accountSettings": "Account Settings",
       "search": "Search...",
       "signOut": "Sign Out",
-      "analytics": "Analytics"
+      "analytics": "Analytics",
+      "advertising": "Advertising"
+    },
+    "filters": {
+      "dateFrom": "Date from",
+      "dateTo": "Date to",
+      "reset": "Reset filters",
+      "search": "Search users..."
     },
     "sessions": {
       "UUID": "UUID",
@@ -394,6 +401,40 @@
         "photo": "Total photos taken",
         "user": "Total users"
       }
+    },
+    "advertising": {
+      "title": "Advertising Management",
+      "description": "Create and manage advertisements for your venue",
+      "createAd": "Create New Ad",
+      "campaignName": "Campaign Name",
+      "mediaUrl": "Media URL",
+      "startDate": "Start Date",
+      "expiryDate": "Expiry Date",
+      "adsSize": "Ad Size",
+      "adsSizeOptions": {
+        "banner": "Banner",
+        "fullscreen": "Fullscreen"
+      },
+      "submit": "Submit Ad",
+      "edit": "Edit",
+      "delete": "Delete",
+      "preview": "Preview",
+      "messages": {
+        "createSuccess": "Advertisement created successfully!",
+        "createError": "Failed to create advertisement. Please try again.",
+        "updateSuccess": "Advertisement updated successfully!",
+        "updateError": "Failed to update advertisement. Please try again.",
+        "deleteSuccess": "Advertisement deleted successfully!",
+        "deleteError": "Failed to delete advertisement. Please try again."
+      },
+      "closeAd": "Close Advertisement",
+      "status": "Status",
+      "active": "Active",
+      "scheduled": "Scheduled",
+      "expired": "Expired",
+      "noAds": "No advertisements found. Create your first ad campaign!",
+      "uploadMedia": "Upload Media",
+      "uploadMediaHelper": "Recommended: JPG, PNG or MP4 (Max 10MB)"
     },
     "messages": {
       "successUpdateVenue": "Venue settings updated successfully!",

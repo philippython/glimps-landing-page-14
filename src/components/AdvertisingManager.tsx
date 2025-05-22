@@ -1,0 +1,408 @@
+
+import { useState, useEffect } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { FormattedMessage, useIntl } from "react-intl";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { format } from "date-fns";
+import { CalendarIcon, Plus, Eye, Trash2, PenLine, UploadCloud } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useAuth } from "@/auth/AuthProvider";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import ImageWithFallback from "./ImageWithFallback";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+// Types for advertisements
+type AdSize = "BANNER" | "FULLSCREEN";
+
+interface Advertisement {
+  id: string;
+  campaign_name: string;
+  media_url: string;
+  start_date: string;
+  expiry_date: string;
+  ads_size: AdSize;
+  venue_id: string;
+  created_at: string;
+}
+
+const AdvertisingManager = () => {
+  const [ads, setAds] = useState<Advertisement[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [adToShow, setAdToShow] = useState<Advertisement | null>(null);
+  const [previewMode, setPreviewMode] = useState<AdSize>("BANNER");
+  const { venue, token } = useAuth();
+  const intl = useIntl();
+  
+  // Form state
+  const [campaignName, setCampaignName] = useState("");
+  const [mediaUrl, setMediaUrl] = useState("");
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [expiryDate, setExpiryDate] = useState<Date>(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)); // +30 days
+  const [adSize, setAdSize] = useState<AdSize>("BANNER");
+
+  useEffect(() => {
+    // Mock data for demonstration - replace with actual API call
+    const mockAds: Advertisement[] = [
+      {
+        id: "1",
+        campaign_name: "Summer Promotion",
+        media_url: "https://placekitten.com/800/400",
+        start_date: "2025-05-22T00:00:00Z",
+        expiry_date: "2025-06-22T00:00:00Z",
+        ads_size: "BANNER",
+        venue_id: venue?.id || "",
+        created_at: "2025-05-15T00:00:00Z"
+      },
+      {
+        id: "2",
+        campaign_name: "Special Event",
+        media_url: "https://placekitten.com/1200/800",
+        start_date: "2025-06-01T00:00:00Z",
+        expiry_date: "2025-06-15T00:00:00Z",
+        ads_size: "FULLSCREEN",
+        venue_id: venue?.id || "",
+        created_at: "2025-05-10T00:00:00Z"
+      }
+    ];
+    
+    setAds(mockAds);
+  }, [venue]);
+
+  const handleCreateAd = () => {
+    setIsLoading(true);
+    
+    // Create new ad object
+    const newAd: Omit<Advertisement, "id" | "created_at"> = {
+      campaign_name: campaignName,
+      media_url: mediaUrl,
+      start_date: startDate.toISOString(),
+      expiry_date: expiryDate.toISOString(),
+      ads_size: adSize,
+      venue_id: venue?.id || ""
+    };
+    
+    // Mock API call - replace with actual API integration
+    setTimeout(() => {
+      // Add the new ad to the list with mock id and created_at
+      setAds([...ads, {
+        ...newAd,
+        id: Math.random().toString(36).substr(2, 9),
+        created_at: new Date().toISOString()
+      }]);
+      
+      // Reset form
+      setCampaignName("");
+      setMediaUrl("");
+      setStartDate(new Date());
+      setExpiryDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
+      setAdSize("BANNER");
+      
+      // Show success message
+      toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.createSuccess" }));
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  const handleDeleteAd = (id: string) => {
+    setIsLoading(true);
+    
+    // Mock API call - replace with actual API integration
+    setTimeout(() => {
+      setAds(ads.filter(ad => ad.id !== id));
+      toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.deleteSuccess" }));
+      setIsLoading(false);
+    }, 500);
+  };
+  
+  const getAdStatus = (ad: Advertisement) => {
+    const now = new Date();
+    const start = new Date(ad.start_date);
+    const expiry = new Date(ad.expiry_date);
+    
+    if (now < start) {
+      return "scheduled";
+    } else if (now > expiry) {
+      return "expired";
+    } else {
+      return "active";
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle><FormattedMessage id="venueDashboard.advertising.title" /></CardTitle>
+        <CardDescription><FormattedMessage id="venueDashboard.advertising.description" /></CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="list">
+          <TabsList className="mb-4">
+            <TabsTrigger value="list">Ads List</TabsTrigger>
+            <TabsTrigger value="create">Create New Ad</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="list">
+            {ads.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-4"><FormattedMessage id="venueDashboard.advertising.noAds" /></p>
+                <Button variant="outline" onClick={() => document.getElementById('create-tab')?.click()}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  <FormattedMessage id="venueDashboard.advertising.createAd" />
+                </Button>
+              </div>
+            ) : (
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead><FormattedMessage id="venueDashboard.advertising.campaignName" /></TableHead>
+                      <TableHead><FormattedMessage id="venueDashboard.advertising.adsSize" /></TableHead>
+                      <TableHead><FormattedMessage id="venueDashboard.advertising.startDate" /></TableHead>
+                      <TableHead><FormattedMessage id="venueDashboard.advertising.expiryDate" /></TableHead>
+                      <TableHead><FormattedMessage id="venueDashboard.advertising.status" /></TableHead>
+                      <TableHead className="text-right"><FormattedMessage id="venueDashboard.sessions.actions" /></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {ads.map(ad => (
+                      <TableRow key={ad.id}>
+                        <TableCell className="font-medium">{ad.campaign_name}</TableCell>
+                        <TableCell>
+                          <FormattedMessage 
+                            id={`venueDashboard.advertising.adsSizeOptions.${ad.ads_size === "BANNER" ? "banner" : "fullscreen"}`} 
+                          />
+                        </TableCell>
+                        <TableCell>{format(new Date(ad.start_date), "PPP")}</TableCell>
+                        <TableCell>{format(new Date(ad.expiry_date), "PPP")}</TableCell>
+                        <TableCell>
+                          <span
+                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                              ${getAdStatus(ad) === "active" ? "bg-green-100 text-green-800" : ""}
+                              ${getAdStatus(ad) === "scheduled" ? "bg-blue-100 text-blue-800" : ""}
+                              ${getAdStatus(ad) === "expired" ? "bg-gray-100 text-gray-800" : ""}
+                            `}
+                          >
+                            <FormattedMessage id={`venueDashboard.advertising.${getAdStatus(ad)}`} />
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right space-x-2">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" size="sm" onClick={() => {
+                                setAdToShow(ad);
+                                setPreviewMode(ad.ads_size);
+                              }}>
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className={previewMode === "FULLSCREEN" ? "max-w-screen-xl p-0" : ""}>
+                              {previewMode === "BANNER" ? (
+                                <div className="w-full">
+                                  <div className="w-full p-2 bg-white border-b flex justify-between items-center">
+                                    <div className="flex-1">
+                                      <h3 className="font-semibold">Your Glimps Photos</h3>
+                                      <p className="text-sm text-gray-500">5 photos</p>
+                                    </div>
+                                    <div className="flex space-x-2">
+                                      <Button variant="outline" size="sm" disabled>Download All</Button>
+                                    </div>
+                                  </div>
+                                  <div className="w-full p-4">
+                                    <ImageWithFallback src={adToShow?.media_url || ""} alt={adToShow?.campaign_name || ""} className="w-full h-20 object-cover" />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="relative">
+                                  <div className="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center p-6">
+                                    <div className="bg-white rounded-lg overflow-hidden max-w-lg w-full">
+                                      <div className="p-4">
+                                        <ImageWithFallback src={adToShow?.media_url || ""} alt={adToShow?.campaign_name || ""} className="w-full aspect-video object-cover" />
+                                      </div>
+                                      <div className="p-4 bg-gray-50 flex justify-between">
+                                        <p className="font-semibold">{adToShow?.campaign_name}</p>
+                                        <Button variant="ghost" size="sm">
+                                          <FormattedMessage id="venueDashboard.advertising.closeAd" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="w-full h-[70vh] opacity-20">
+                                    {/* Blurred mock content */}
+                                    <div className="flex flex-wrap gap-3 p-6">
+                                      {[1, 2, 3, 4, 5].map(i => (
+                                        <div key={i} className="w-64 h-64 bg-gray-200 rounded-lg"></div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </DialogContent>
+                          </Dialog>
+                          <Button variant="ghost" size="sm" disabled>
+                            <PenLine className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleDeleteAd(ad.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="create" id="create-tab">
+            <div className="space-y-6">
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="campaign-name">
+                    <FormattedMessage id="venueDashboard.advertising.campaignName" />
+                  </Label>
+                  <Input 
+                    id="campaign-name" 
+                    value={campaignName} 
+                    onChange={(e) => setCampaignName(e.target.value)} 
+                    placeholder="Summer Promotion 2025"
+                  />
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="media-url">
+                    <FormattedMessage id="venueDashboard.advertising.mediaUrl" />
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      id="media-url" 
+                      value={mediaUrl} 
+                      onChange={(e) => setMediaUrl(e.target.value)} 
+                      placeholder="https://example.com/ad-image.jpg"
+                      className="flex-1"
+                    />
+                    <Button variant="outline" className="w-auto">
+                      <UploadCloud className="h-4 w-4 mr-2" />
+                      <FormattedMessage id="venueDashboard.advertising.uploadMedia" />
+                    </Button>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    <FormattedMessage id="venueDashboard.advertising.uploadMediaHelper" />
+                  </p>
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label>
+                    <FormattedMessage id="venueDashboard.advertising.startDate" />
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="justify-start text-left font-normal"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {startDate ? format(startDate, "PPP") : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={(date) => date && setStartDate(date)}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label>
+                    <FormattedMessage id="venueDashboard.advertising.expiryDate" />
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="justify-start text-left font-normal"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {expiryDate ? format(expiryDate, "PPP") : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={expiryDate}
+                        onSelect={(date) => date && setExpiryDate(date)}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                        disabled={(date) => date < startDate}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label>
+                    <FormattedMessage id="venueDashboard.advertising.adsSize" />
+                  </Label>
+                  <RadioGroup value={adSize} onValueChange={(value) => setAdSize(value as AdSize)}>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="BANNER" id="banner" />
+                      <Label htmlFor="banner">
+                        <FormattedMessage id="venueDashboard.advertising.adsSizeOptions.banner" />
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="FULLSCREEN" id="fullscreen" />
+                      <Label htmlFor="fullscreen">
+                        <FormattedMessage id="venueDashboard.advertising.adsSizeOptions.fullscreen" />
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+      
+      <CardFooter className="flex justify-between">
+        <div></div> {/* Empty div for spacing */}
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => document.getElementById('list-tab')?.click()}>
+            <FormattedMessage id="common.cancel" />
+          </Button>
+          <Button 
+            onClick={handleCreateAd} 
+            disabled={isLoading || !campaignName || !mediaUrl} 
+          >
+            <FormattedMessage id="venueDashboard.advertising.submit" />
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+};
+
+export default AdvertisingManager;

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import {
   Users,
@@ -11,6 +12,7 @@ import {
   User,
   LogOut,
   ChartNoAxesCombined,
+  Megaphone
 } from "lucide-react";
 import {
   Table,
@@ -58,6 +60,7 @@ import {
 import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import AdvertisingManager from "@/components/AdvertisingManager";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -67,6 +70,7 @@ const VenueDashboard = () => {
   const [venueUsers, setVenueUsers] = useState<VenueUser[]>([]);
   const [venuePhotos, setVenuePhotos] = useState<VenuePhotos[]>([]);
   const [loading, setLoading] = useState(false);
+  const [userSearchTerm, setUserSearchTerm] = useState("");
   const { user, venue, token, logout, setUserAndVenueAfterCreation } = useAuth();
   const intl = useIntl();
 
@@ -100,7 +104,7 @@ const VenueDashboard = () => {
   useEffect(() => {
     setCurrentPhotoPage(1);
     setCurrentUserPage(1);
-  }, [searchTerm, dateFrom, dateTo]);
+  }, [searchTerm, dateFrom, dateTo, userSearchTerm]);
 
   // Filter functions with date filtering
   const filterByDate = (date: string | undefined) => {
@@ -135,7 +139,9 @@ const VenueDashboard = () => {
 
   const filteredVenueUsers = venueUsers.filter(
     user =>
-      user.id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim()) &&
+      (user.id.toLowerCase().trim().includes(userSearchTerm.toLowerCase().trim()) ||
+      (user.phone_number && user.phone_number.includes(userSearchTerm)) ||
+      (user.telegram_username && user.telegram_username.toLowerCase().trim().includes(userSearchTerm.toLowerCase().trim()))) &&
       filterByDate(user.created_at)
   );
 
@@ -245,6 +251,11 @@ const VenueDashboard = () => {
       id: "users",
       label: <FormattedMessage id="venueDashboard.navItems.usersList" />,
       icon: <Users className="h-4 w-4" />
+    },
+    {
+      id: "advertising",
+      label: <FormattedMessage id="venueDashboard.navItems.advertising" />,
+      icon: <Megaphone className="h-4 w-4" />
     },
     {
       id: "venue-settings",
@@ -604,6 +615,20 @@ const VenueDashboard = () => {
                   </div>
                 </div>
                 
+                {/* User search input */}
+                <div className="mb-4">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                    <Input
+                      type="search"
+                      placeholder={intl.formatMessage({ id: "venueDashboard.filters.search" })}
+                      className="w-full pl-9 pr-4"
+                      value={userSearchTerm}
+                      onChange={(e) => setUserSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
                 <div className="rounded-md border">
                   <Table>
                     <TableHeader>
@@ -701,15 +726,19 @@ const VenueDashboard = () => {
           )}
 
           {activeTab === "venue-settings" && (
-            <VenueSettings mode="edit" loading={loading} onSubmit={onVenueSettingsSubmit} />
+            <VenueSettings loading={loading} onVenueSettingsSubmit={onVenueSettingsSubmit} />
           )}
 
           {activeTab === "account-settings" && (
             <AccountSettings />
           )}
-
+          
           {activeTab === "analytics" && (
-            <AnalyticsInfo venueUsers={venueUsers} venuePhotos={venuePhotos} />
+            <AnalyticsInfo />
+          )}
+          
+          {activeTab === "advertising" && (
+            <AdvertisingManager />
           )}
         </div>
       </main>

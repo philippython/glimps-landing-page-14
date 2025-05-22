@@ -22,7 +22,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   // Set a default locale explicitly rather than relying on the env variable
   const defaultLocale = import.meta.env.VITE_DEFAULT_LOCALE || 'en';
   const [currentLocale, setCurrentLocale] = useState(defaultLocale);
-  const [messages, setMessages] = useState<Messages>({} as Messages);
+  const [messages, setMessages] = useState<Partial<Messages>>({});
   const [availableLocales, setAvailableLocales] = useState<locales[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,7 +55,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
           throw new Error(`Failed to load locale: ${localeToLoad}`);
         }
         const data = await response.json();
-        setMessages(data);
+        setMessages(data as Partial<Messages>);
       } catch (error) {
         console.error('Failed to load messages:', error);
         // Set some basic fallback messages
@@ -64,7 +64,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
             loading: 'Loading...',
             error: 'An error occurred'
           }
-        } as Messages);
+        });
       } finally {
         setIsLoading(false);
       }
@@ -95,7 +95,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <LocaleContext.Provider value={{ setLocale, availableLocales, currentLocale }}>
-      <IntlProvider locale={currentLocale} messages={flattenMessages(messages)}>
+      <IntlProvider locale={currentLocale} messages={flattenMessages(messages as Messages)}>
         {children}
       </IntlProvider>
     </LocaleContext.Provider>
