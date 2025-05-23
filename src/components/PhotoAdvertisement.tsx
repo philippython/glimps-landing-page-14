@@ -72,11 +72,13 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
             status = "SCHEDULED";
           } else if (expiryDate && now > expiryDate) {
             status = "EXPIRED";
-          } else {
-            status = "ACTIVE"; // Explicitly set to ACTIVE if today is the start date
+          } else if (startDate && expiryDate && now >= startDate && now <= expiryDate) {
+            status = "ACTIVE"; // Active if today is between start and expiry dates (inclusive)
+          } else if (startDate && !expiryDate && now >= startDate) {
+            status = "ACTIVE"; // Active if today is on or after start date and no expiry
           }
           
-          console.log(`Ad ${ad.campaign_name} status: ${status}, start: ${startDate?.toISOString()}, now: ${now.toISOString()}`);
+          console.log(`Ad ${ad.campaign_name} status: ${status}, start: ${startDate?.toISOString()}, expiry: ${expiryDate?.toISOString()}, now: ${now.toISOString()}`);
           
           return {
             ...ad,
@@ -88,7 +90,7 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
         const activeAds = processedAds.filter(ad => ad.status === "ACTIVE");
         console.log(`Found ${activeAds.length} active ads out of ${processedAds.length} total`);
         
-        // Set banner and fullscreen ads if available
+        // Only show the first active ad of each type (to ensure only one active ad at a time)
         const activeBanner = activeAds.find(ad => ad.ads_size === "BANNER") || null;
         const activeFullscreen = activeAds.find(ad => ad.ads_size === "FULLSCREEN") || null;
         

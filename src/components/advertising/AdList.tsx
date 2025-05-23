@@ -42,6 +42,11 @@ const AdList = ({ ads, isLoading, onEdit, onDelete, onCreateNew }: AdListProps) 
     const start = new Date(ad.start_date);
     const expiry = new Date(ad.expiry_date);
     
+    // Reset time portion for accurate date comparison
+    now.setHours(0, 0, 0, 0);
+    start.setHours(0, 0, 0, 0);
+    expiry.setHours(0, 0, 0, 0);
+    
     if (now < start) {
       return "scheduled";
     } else if (now > expiry) {

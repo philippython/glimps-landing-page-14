@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -96,8 +95,41 @@ const AdvertisingManager = () => {
     setAdToEdit(null);
   };
 
+  const checkForActiveAdConflict = (newStartDate: Date, newExpiryDate: Date, newAdSize: AdSize, excludeAdId?: string) => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    
+    return ads.some(ad => {
+      // Skip the ad being edited
+      if (excludeAdId && ad.id === excludeAdId) return false;
+      
+      // Only check ads of the same size
+      if (ad.ads_size !== newAdSize) return false;
+      
+      const adStartDate = new Date(ad.start_date);
+      const adExpiryDate = new Date(ad.expiry_date);
+      adStartDate.setHours(0, 0, 0, 0);
+      adExpiryDate.setHours(0, 0, 0, 0);
+      
+      // Check if the ad is currently active or will be active
+      const isCurrentlyActive = now >= adStartDate && now <= adExpiryDate;
+      const willBeActive = adExpiryDate >= now;
+      
+      if (!isCurrentlyActive && !willBeActive) return false;
+      
+      // Check for date overlap
+      return (newStartDate <= adExpiryDate && newExpiryDate >= adStartDate);
+    });
+  };
+
   const handleCreateAd = async () => {
     if (!venue || !token) return;
+    
+    // Check for active ad conflict
+    if (checkForActiveAdConflict(startDate, expiryDate, adSize)) {
+      toast.error(`There is already an active ${adSize.toLowerCase()} ad during this time period. Only one active ad per type is allowed at a time.`);
+      return;
+    }
     
     setIsLoading(true);
     
@@ -147,6 +179,12 @@ const AdvertisingManager = () => {
 
   const handleUpdateAd = async () => {
     if (!venue || !adToEdit || !token) return;
+    
+    // Check for active ad conflict (excluding the current ad being edited)
+    if (checkForActiveAdConflict(startDate, expiryDate, adSize, adToEdit.id)) {
+      toast.error(`There is already an active ${adSize.toLowerCase()} ad during this time period. Only one active ad per type is allowed at a time.`);
+      return;
+    }
     
     setIsLoading(true);
     
@@ -239,6 +277,11 @@ const AdvertisingManager = () => {
     const now = new Date();
     const start = new Date(ad.start_date);
     const expiry = new Date(ad.expiry_date);
+    
+    // Reset time portion for accurate date comparison
+    now.setHours(0, 0, 0, 0);
+    start.setHours(0, 0, 0, 0);
+    expiry.setHours(0, 0, 0, 0);
     
     if (now < start) {
       return "scheduled";
