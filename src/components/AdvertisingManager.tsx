@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format } from "date-fns";
+import { format, isAfter } from "date-fns";
 import { CalendarIcon, Plus, Eye, Trash2, PenLine } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -45,6 +45,7 @@ const AdvertisingManager = () => {
   const [ads, setAds] = useState<Advertisement[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [adToShow, setAdToShow] = useState<Advertisement | null>(null);
+  const [adToEdit, setAdToEdit] = useState<Advertisement | null>(null);
   const [previewMode, setPreviewMode] = useState<AdSize>("BANNER");
   const [activeTab, setActiveTab] = useState("list");
   const { venue, token } = useAuth();
@@ -58,56 +59,181 @@ const AdvertisingManager = () => {
   const [adSize, setAdSize] = useState<AdSize>("BANNER");
 
   useEffect(() => {
-    // This would be replaced with an actual API call in production
-    // Leave ads empty for now as requested by user
-    setAds([]);
+    fetchAds();
   }, [venue]);
 
-  const handleCreateAd = () => {
+  const fetchAds = async () => {
+    if (!venue || !token) return;
+    
+    setIsLoading(true);
+    try {
+      // This would be replaced with an actual API call in production
+      // For now, we'll just use the existing ads state
+      // Example API call would be:
+      // const response = await fetch(`${process.env.API_URL}/ads/${venue.id}`, {
+      //   headers: { Authorization: `Bearer ${token}` }
+      // });
+      // const data = await response.json();
+      // setAds(data);
+      
+      // For now, we'll keep using the existing ads state
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch ads:", error);
+      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.fetchError" }));
+      setIsLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setCampaignName("");
+    setMediaUrl("");
+    setStartDate(new Date());
+    setExpiryDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
+    setAdSize("BANNER");
+    setAdToEdit(null);
+  };
+
+  const handleCreateAd = async () => {
+    if (!venue) return;
+    
     setIsLoading(true);
     
-    // Create new ad object
-    const newAd: Omit<Advertisement, "id" | "created_at"> = {
+    // Create ad payload
+    const adPayload = {
       campaign_name: campaignName,
       media_url: mediaUrl,
       start_date: startDate.toISOString(),
       expiry_date: expiryDate.toISOString(),
-      ads_size: adSize,
-      venue_id: venue?.id || ""
+      ads_size: adSize
     };
     
-    // Mock API call - replace with actual API integration
-    setTimeout(() => {
-      // Add the new ad to the list with mock id and created_at
-      setAds([...ads, {
-        ...newAd,
-        id: Math.random().toString(36).substr(2, 9),
-        created_at: new Date().toISOString()
-      }]);
+    try {
+      // Mock API call - this would be replaced with actual API integration
+      // const response = await fetch(`${intl.formatMessage({ id: "api_url" })}/ads/create`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "Authorization": `Bearer ${token}`
+      //   },
+      //   body: JSON.stringify(adPayload)
+      // });
+      // 
+      // const data = await response.json();
+      // if (!response.ok) throw new Error(data.message || "Failed to create ad");
       
-      // Reset form
-      setCampaignName("");
-      setMediaUrl("");
-      setStartDate(new Date());
-      setExpiryDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
-      setAdSize("BANNER");
+      // Mock success response
+      const mockResponse = {
+        ...adPayload,
+        id: Math.random().toString(36).substr(2, 9),
+        venue_id: venue.id,
+        created_at: new Date().toISOString()
+      };
+      
+      // Add the new ad to the list
+      setAds([...ads, mockResponse]);
+      
+      // Reset form and switch to list view
+      resetForm();
       setActiveTab("list");
       
       // Show success message
       toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.createSuccess" }));
+    } catch (error) {
+      console.error("Failed to create ad:", error);
+      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.createError" }));
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
-  const handleDeleteAd = (id: string) => {
+  const handleUpdateAd = async () => {
+    if (!venue || !adToEdit) return;
+    
     setIsLoading(true);
     
-    // Mock API call - replace with actual API integration
-    setTimeout(() => {
-      setAds(ads.filter(ad => ad.id !== id));
-      toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.deleteSuccess" }));
+    // Create ad payload
+    const adPayload = {
+      campaign_name: campaignName,
+      media_url: mediaUrl,
+      start_date: startDate.toISOString(),
+      expiry_date: expiryDate.toISOString(),
+      ads_size: adSize
+    };
+    
+    try {
+      // Mock API call - this would be replaced with actual API integration
+      // const response = await fetch(`${intl.formatMessage({ id: "api_url" })}/ads/update/${adToEdit.id}`, {
+      //   method: "PUT",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "Authorization": `Bearer ${token}`
+      //   },
+      //   body: JSON.stringify(adPayload)
+      // });
+      // 
+      // const data = await response.json();
+      // if (!response.ok) throw new Error(data.message || "Failed to update ad");
+      
+      // Update the ad in the list
+      setAds(ads.map(ad => 
+        ad.id === adToEdit.id ? 
+        { ...ad, ...adPayload } : 
+        ad
+      ));
+      
+      // Reset form and switch to list view
+      resetForm();
+      setActiveTab("list");
+      
+      // Show success message
+      toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.updateSuccess" }));
+    } catch (error) {
+      console.error("Failed to update ad:", error);
+      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.updateError" }));
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
+  };
+
+  const handleDeleteAd = async (id: string) => {
+    setIsLoading(true);
+    
+    try {
+      // Mock API call - this would be replaced with actual API integration
+      // const response = await fetch(`${intl.formatMessage({ id: "api_url" })}/ads/delete/${id}`, {
+      //   method: "DELETE",
+      //   headers: {
+      //     "Authorization": `Bearer ${token}`
+      //   }
+      // });
+      // 
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   throw new Error(errorData.message || "Failed to delete ad");
+      // }
+      
+      // Remove the ad from the list
+      setAds(ads.filter(ad => ad.id !== id));
+      
+      // Show success message
+      toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.deleteSuccess" }));
+    } catch (error) {
+      console.error("Failed to delete ad:", error);
+      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.deleteError" }));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleEditClick = (ad: Advertisement) => {
+    setAdToEdit(ad);
+    setCampaignName(ad.campaign_name);
+    setMediaUrl(ad.media_url);
+    setStartDate(new Date(ad.start_date));
+    setExpiryDate(new Date(ad.expiry_date));
+    setAdSize(ad.ads_size);
+    setActiveTab("create");
   };
   
   const getAdStatus = (ad: Advertisement) => {
@@ -134,14 +260,17 @@ const AdvertisingManager = () => {
         <Tabs defaultValue="list" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-4">
             <TabsTrigger value="list">Ads List</TabsTrigger>
-            <TabsTrigger value="create">Create New Ad</TabsTrigger>
+            <TabsTrigger value="create">{adToEdit ? "Edit Ad" : "Create New Ad"}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="list">
             {ads.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 mb-4"><FormattedMessage id="venueDashboard.advertising.noAds" /></p>
-                <Button variant="outline" onClick={() => setActiveTab("create")}>
+                <Button variant="outline" onClick={() => {
+                  resetForm();
+                  setActiveTab("create");
+                }}>
                   <Plus className="h-4 w-4 mr-2" />
                   <FormattedMessage id="venueDashboard.advertising.createAd" />
                 </Button>
@@ -234,7 +363,11 @@ const AdvertisingManager = () => {
                               )}
                             </DialogContent>
                           </Dialog>
-                          <Button variant="ghost" size="sm" disabled>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleEditClick(ad)}
+                          >
                             <PenLine className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="sm" onClick={() => handleDeleteAd(ad.id)}>
@@ -301,6 +434,15 @@ const AdvertisingManager = () => {
                         onSelect={(date) => date && setStartDate(date)}
                         initialFocus
                         className="p-3 pointer-events-auto"
+                        disabled={(date) => {
+                          // If editing an existing ad and the original start date is in the past, allow it
+                          if (adToEdit && new Date(adToEdit.start_date) < new Date() && 
+                              date && date.toDateString() === new Date(adToEdit.start_date).toDateString()) {
+                            return false;
+                          }
+                          // Otherwise, disable past dates
+                          return date < new Date(new Date().setHours(0, 0, 0, 0));
+                        }}
                       />
                     </PopoverContent>
                   </Popover>
@@ -357,24 +499,29 @@ const AdvertisingManager = () => {
               <div className="flex justify-end mt-6">
                 <Button 
                   variant="outline" 
-                  onClick={() => setActiveTab("list")} 
+                  onClick={() => {
+                    resetForm();
+                    setActiveTab("list");
+                  }} 
                   className="mr-2"
                 >
                   <FormattedMessage id="common.cancel" />
                 </Button>
                 <Button 
-                  onClick={handleCreateAd} 
+                  onClick={adToEdit ? handleUpdateAd : handleCreateAd} 
                   disabled={isLoading || !campaignName || !mediaUrl} 
                 >
-                  <FormattedMessage id="venueDashboard.advertising.submit" />
+                  {adToEdit ? (
+                    <FormattedMessage id="venueDashboard.advertising.update" />
+                  ) : (
+                    <FormattedMessage id="venueDashboard.advertising.submit" />
+                  )}
                 </Button>
               </div>
             </div>
           </TabsContent>
         </Tabs>
       </CardContent>
-      
-      {/* Remove the CardFooter with buttons since they're now in the create tab content */}
     </Card>
   );
 };

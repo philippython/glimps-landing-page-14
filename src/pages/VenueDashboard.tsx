@@ -725,7 +725,11 @@ const VenueDashboard = () => {
           )}
 
           {activeTab === "venue-settings" && (
-            <VenueSettings mode="edit" loading={loading} onSubmit={onVenueSettingsSubmit} />
+            <VenueSettings 
+              mode="edit" 
+              loading={loading} 
+              onSubmit={onVenueSettingsSubmit} 
+            />
           )}
 
           {activeTab === "account-settings" && (

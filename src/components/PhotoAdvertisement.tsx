@@ -28,20 +28,24 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
   const [canCloseFullscreenAd, setCanCloseFullscreenAd] = useState(false);
   
   useEffect(() => {
-    // This would be replaced with an actual API call in production
+    if (!venueId) return;
+    
     const fetchAds = async () => {
-      if (!venueId) return;
-      
       try {
-        // In a real application, this would be an API call to get the venue's ads
-        // For now, we'll just simulate an empty response since the user requested no dummy ads
+        // This would be replaced with an actual API call in production
+        // Example API call:
+        // const response = await fetch(`${api_url}/ads/${venueId}`);
+        // const ads = await response.json();
         
-        // Set to empty arrays/null - representing a venue with no ads
-        setBannerAd(null);
-        setFullscreenAd(null);
+        // For now, we'll simulate an empty response
+        const ads: Advertisement[] = [];
         
-        /*
-        // Example of how real ad data would be processed:
+        // If there are no ads, return early
+        if (ads.length === 0) {
+          setBannerAd(null);
+          setFullscreenAd(null);
+          return;
+        }
         
         // For each ad, determine the status based on dates
         const processedAds = ads.map(ad => {
@@ -83,7 +87,6 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
             }, 5000);
           }, 10000); // Show after 10 seconds to ensure user has time to see photos are loaded
         }
-        */
       } catch (error) {
         console.error("Failed to fetch ads:", error);
         // Reset states in case of error
