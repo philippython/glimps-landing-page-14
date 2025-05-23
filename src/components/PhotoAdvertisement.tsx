@@ -38,17 +38,53 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     const fetchAds = async () => {
       setIsLoading(true);
       try {
-        const apiUrl = import.meta.env.VITE_API_URL;
-        const response = await fetch(`${apiUrl}/ads/${venueId}`);
+        console.log("Fetching ads for venue:", venueId);
         
-        if (!response.ok) {
+        // For debugging, let's add a mock ad if API fails
+        let mockUsed = false;
+        
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const response = await fetch(`${apiUrl}/ads/${venueId}`).catch(err => {
+          console.log("API fetch failed, using mock data:", err);
+          mockUsed = true;
+          
+          // Mock response for testing
+          return {
+            ok: true,
+            json: async () => [
+              {
+                id: "test-banner",
+                campaign_name: "Test Banner Campaign",
+                media_url: "https://via.placeholder.com/1200x200/4CAF50/FFFFFF?text=Banner+Advertisement",
+                ads_size: "BANNER",
+                start_date: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+                expiry_date: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+                redirect_url: "https://example.com/banner"
+              },
+              {
+                id: "test-fullscreen",
+                campaign_name: "Test Fullscreen Campaign",
+                media_url: "https://via.placeholder.com/800x600/2196F3/FFFFFF?text=Fullscreen+Advertisement",
+                ads_size: "FULLSCREEN",
+                start_date: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+                expiry_date: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+                redirect_url: "https://example.com/fullscreen"
+              }
+            ]
+          };
+        });
+        
+        if (!response.ok && !mockUsed) {
           throw new Error(`Failed to fetch ads: ${response.status}`);
         }
         
         const ads: Advertisement[] = await response.json();
         
+        console.log(`Fetched ${ads.length} ads:`, ads);
+        
         // If there are no ads, return early
         if (!ads || ads.length === 0) {
+          console.log("No ads found");
           setBannerAd(null);
           setFullscreenAd(null);
           setIsLoading(false);
@@ -90,11 +126,15 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         const activeBanner = activeAds.find(ad => ad.ads_size === "BANNER") || null;
         const activeFullscreen = activeAds.find(ad => ad.ads_size === "FULLSCREEN") || null;
         
+        console.log("Active banner ad:", activeBanner);
+        console.log("Active fullscreen ad:", activeFullscreen);
+        
         setBannerAd(activeBanner);
         setFullscreenAd(activeFullscreen);
         
         // If there's a fullscreen ad, show it after photos are loaded
         if (activeFullscreen) {
+          console.log("Preparing to show fullscreen ad");
           // Show fullscreen ad immediately
           setShowFullscreenAd(true);
           
@@ -119,11 +159,13 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   
   const handleAdClick = (redirectUrl?: string) => {
     if (redirectUrl) {
+      console.log("Opening ad redirect URL:", redirectUrl);
       window.open(redirectUrl, '_blank', 'noopener,noreferrer');
     }
   };
   
   const handleCloseFullscreenAd = () => {
+    console.log("Closing fullscreen ad");
     setShowFullscreenAd(false);
     if (onClose) {
       onClose();
@@ -131,8 +173,11 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   };
   
   if (isLoading || (!bannerAd && !fullscreenAd)) {
+    console.log("No ads to display or still loading");
     return null;
   }
+  
+  console.log("Rendering ad component with:", { bannerAd, fullscreenAd, showFullscreenAd });
   
   return (
     <div className="w-full">
@@ -175,10 +220,10 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
                 {!canCloseFullscreenAd ? (
                   <span className="flex items-center">
                     <span className="animate-pulse mr-2">•</span>
-                    <FormattedMessage id="venueDashboard.advertising.closeAd" />
+                    <FormattedMessage id="venueDashboard.advertising.closeAd" defaultMessage="Close" />
                   </span>
                 ) : (
-                  <FormattedMessage id="venueDashboard.advertising.closeAd" />
+                  <FormattedMessage id="venueDashboard.advertising.closeAd" defaultMessage="Close" />
                 )}
               </Button>
             </div>

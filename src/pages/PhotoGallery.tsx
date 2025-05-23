@@ -43,9 +43,11 @@ const PhotoGallery = () => {
   // Set photos as loaded once data is available and loading is complete
   useEffect(() => {
     if (data && !isLoading) {
+      console.log("Photos loaded, will show ads soon");
       setPhotosLoaded(true);
       // Show ads after a short delay when photos are loaded
       setTimeout(() => {
+        console.log("Setting showAds to true");
         setShowAds(true);
       }, 1000);
     }
