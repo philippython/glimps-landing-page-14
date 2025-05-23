@@ -32,6 +32,7 @@ interface PhotosDataFromApi {
 const PhotoGallery = () => {
   const { uuid } = useParams<{ uuid: string }>();
   const [photosLoaded, setPhotosLoaded] = useState(false);
+  const [showAds, setShowAds] = useState(false);
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
     queryKey: ['photos', uuid],
     queryFn: () => fetchPhotosFromApi(uuid || ""),
@@ -43,6 +44,10 @@ const PhotoGallery = () => {
   useEffect(() => {
     if (data && !isLoading) {
       setPhotosLoaded(true);
+      // Show ads after a short delay when photos are loaded
+      setTimeout(() => {
+        setShowAds(true);
+      }, 1000);
     }
   }, [data, isLoading]);
 
@@ -114,11 +119,16 @@ const PhotoGallery = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <header className="bg-white border-b">
-        <div className="container mx-auto px-4 py-6">
-          {photosLoaded && data?.venue_id ? (
+      {/* Show advertisements in header area when photos are loaded */}
+      {photosLoaded && showAds && data?.venue_id ? (
+        <header className="bg-white border-b">
+          <div className="container mx-auto px-4 py-6">
             <PhotoAdvertisement venueId={data.venue_id} />
-          ) : (
+          </div>
+        </header>
+      ) : (
+        <header className="bg-white border-b">
+          <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <LogoWithText />
@@ -159,9 +169,9 @@ const PhotoGallery = () => {
                 <p className="text-red-500 text-md font-semibold text-center">Чтобы скачать фото, зажмите фотографию, и в открывшемся меню нажмите скачать</p>
               </div>
             </div>
-          )}
-        </div>
-      </header>
+          </div>
+        </header>
+      )}
 
       <main className="flex-grow container mx-auto px-4 py-8">
         {isLoading ? (

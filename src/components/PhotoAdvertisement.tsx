@@ -16,7 +16,7 @@ interface Advertisement {
   start_date: string;
   expiry_date: string;
   status?: AdStatus;
-  redirect_url?: string; // Added redirect_url field
+  redirect_url?: string;
 }
 
 interface PhotoAdvertisementProps {
@@ -57,16 +57,10 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         
         // For each ad, determine the status based on dates
         const now = new Date();
-        // Reset time portion to compare dates only
-        now.setHours(0, 0, 0, 0);
         
         const processedAds = ads.map(ad => {
           const startDate = ad.start_date ? new Date(ad.start_date) : null;
           const expiryDate = ad.expiry_date ? new Date(ad.expiry_date) : null;
-          
-          // Reset time portion for accurate date comparison
-          if (startDate) startDate.setHours(0, 0, 0, 0);
-          if (expiryDate) expiryDate.setHours(0, 0, 0, 0);
           
           let status: AdStatus = "ACTIVE";
           
@@ -99,15 +93,15 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         setBannerAd(activeBanner);
         setFullscreenAd(activeFullscreen);
         
-        // If there's a fullscreen ad, show it after a delay
+        // If there's a fullscreen ad, show it after photos are loaded
         if (activeFullscreen) {
+          // Show fullscreen ad immediately
+          setShowFullscreenAd(true);
+          
+          // Make close button active after 5 seconds
           setTimeout(() => {
-            setShowFullscreenAd(true);
-            // Make close button active after 5 seconds
-            setTimeout(() => {
-              setCanCloseFullscreenAd(true);
-            }, 5000);
-          }, 1000); // Reduced to 1 second to show faster after photos are loaded
+            setCanCloseFullscreenAd(true);
+          }, 5000);
         }
       } catch (error) {
         console.error("Failed to fetch ads:", error);
@@ -121,7 +115,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     };
     
     fetchAds();
-  }, [venueId, intl]);
+  }, [venueId]);
   
   const handleAdClick = (redirectUrl?: string) => {
     if (redirectUrl) {
@@ -141,11 +135,11 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   }
   
   return (
-    <>
-      {/* Banner Ad */}
+    <div className="w-full">
+      {/* Banner Ad - replace header content with the banner */}
       {bannerAd && !showFullscreenAd && (
         <div 
-          className="w-full mb-4 cursor-pointer"
+          className="w-full cursor-pointer"
           onClick={() => handleAdClick(bannerAd.redirect_url)}
         >
           <ImageWithFallback
@@ -156,7 +150,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         </div>
       )}
       
-      {/* Fullscreen Ad */}
+      {/* Fullscreen Ad - overlay that appears after photos load */}
       {fullscreenAd && showFullscreenAd && (
         <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg overflow-hidden max-w-2xl w-full">
@@ -191,7 +185,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
