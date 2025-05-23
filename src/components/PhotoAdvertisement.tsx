@@ -36,7 +36,7 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
     const fetchAds = async () => {
       setIsLoading(true);
       try {
-        const apiUrl = intl.formatMessage({ id: "api_url" });
+        const apiUrl = import.meta.env.VITE_API_URL;
         const response = await fetch(`${apiUrl}/ads/${venueId}`);
         
         if (!response.ok) {

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format, isAfter } from "date-fns";
+import { format } from "date-fns";
 import { CalendarIcon, Plus, Eye, Trash2, PenLine } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -20,10 +20,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from "@/components/ui/dialog";
 import ImageWithFallback from "./ImageWithFallback";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -49,7 +46,7 @@ const AdvertisingManager = () => {
   const [adToEdit, setAdToEdit] = useState<Advertisement | null>(null);
   const [previewMode, setPreviewMode] = useState<AdSize>("BANNER");
   const [activeTab, setActiveTab] = useState("list");
-  const { venue, token, user } = useAuth();
+  const { venue, token } = useAuth();
   const intl = useIntl();
   
   // Form state
@@ -71,8 +68,8 @@ const AdvertisingManager = () => {
     setIsLoading(true);
     try {
       // Make API call to fetch ads
-      const apiUrl = intl.formatMessage({ id: "api_url" });
-      const response = await fetch(`${apiUrl}/ads/${venue.id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${apiUrl}/ads/all/${venue.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -114,7 +111,7 @@ const AdvertisingManager = () => {
     };
     
     try {
-      const apiUrl = intl.formatMessage({ id: "api_url" });
+      const apiUrl = import.meta.env.VITE_API_URL;
       const response = await fetch(`${apiUrl}/ads/create`, {
         method: "POST",
         headers: {
@@ -129,7 +126,7 @@ const AdvertisingManager = () => {
         throw new Error(errorData.message || "Failed to create ad");
       }
       
-      const createdAd = await response.json();
+      await response.json();
       
       // Fetch updated ads list
       fetchAds();
@@ -163,9 +160,10 @@ const AdvertisingManager = () => {
     };
     
     try {
-      const apiUrl = intl.formatMessage({ id: "api_url" });
-      const response = await fetch(`${apiUrl}/ads/update/${venue.id}`, {
-        method: "PUT",
+      const apiUrl = import.meta.env.VITE_API_URL;
+      // Using the ad ID for update instead of venue ID
+      const response = await fetch(`${apiUrl}/ads/update/${adToEdit.id}`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
@@ -201,7 +199,7 @@ const AdvertisingManager = () => {
     setIsLoading(true);
     
     try {
-      const apiUrl = intl.formatMessage({ id: "api_url" });
+      const apiUrl = import.meta.env.VITE_API_URL;
       const response = await fetch(`${apiUrl}/ads/delete/${id}`, {
         method: "DELETE",
         headers: {
@@ -260,8 +258,16 @@ const AdvertisingManager = () => {
       <CardContent>
         <Tabs defaultValue="list" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-4">
-            <TabsTrigger value="list">Ads List</TabsTrigger>
-            <TabsTrigger value="create">{adToEdit ? "Edit Ad" : "Create New Ad"}</TabsTrigger>
+            <TabsTrigger value="list">
+              <FormattedMessage id="venueDashboard.advertising.adsList" defaultMessage="Ads List" />
+            </TabsTrigger>
+            <TabsTrigger value="create">
+              {adToEdit ? (
+                <FormattedMessage id="venueDashboard.advertising.editAd" defaultMessage="Edit Ad" />
+              ) : (
+                <FormattedMessage id="venueDashboard.advertising.createNewAd" defaultMessage="Create New Ad" />
+              )}
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="list">
@@ -514,7 +520,7 @@ const AdvertisingManager = () => {
                   disabled={isLoading || !campaignName || !mediaUrl} 
                 >
                   {adToEdit ? (
-                    <FormattedMessage id="venueDashboard.advertising.update" />
+                    <FormattedMessage id="venueDashboard.advertising.update" defaultMessage="Update" />
                   ) : (
                     <FormattedMessage id="venueDashboard.advertising.submit" />
                   )}
