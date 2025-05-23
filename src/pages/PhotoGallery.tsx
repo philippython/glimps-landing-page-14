@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Download, ImageIcon } from "lucide-react";
@@ -11,6 +12,8 @@ import { convertDateTime, convertOnlyDate } from "@/lib/utils";
 import LogoWithText from "@/components/LogoWithText";
 import { FormattedMessage, useIntl } from "react-intl";
 import LanguagePicker from "@/components/LanguagePicker";
+import PhotoAdvertisement from "@/components/PhotoAdvertisement";
+import { useState, useEffect } from "react";
 
 type Photo = {
   photo_url: string,
@@ -22,17 +25,26 @@ interface PhotosDataFromApi {
   photos: Photo[],
   sent: boolean,
   synced: boolean,
-  created_at: string
+  created_at: string,
+  venue_id?: string
 }
 
 const PhotoGallery = () => {
   const { uuid } = useParams<{ uuid: string }>();
+  const [photosLoaded, setPhotosLoaded] = useState(false);
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
     queryKey: ['photos', uuid],
     queryFn: () => fetchPhotosFromApi(uuid || ""),
     enabled: !!uuid,
   });
   const intl = useIntl();
+
+  // Set photos as loaded once data is available and loading is complete
+  useEffect(() => {
+    if (data && !isLoading) {
+      setPhotosLoaded(true);
+    }
+  }, [data, isLoading]);
 
   const photoName = (index: number) => `${data && convertOnlyDate(data.created_at)} (${index + 1})`;
 
@@ -104,46 +116,50 @@ const PhotoGallery = () => {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <header className="bg-white border-b">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              <LogoWithText />
-              {data && (
-                <div>
-                  <h1 className="text-2xl font-bold text-glimps-900">
-                    <FormattedMessage id="photoGallery.title" />
-                  </h1>
-                  <p className="text-glimps-600">
-                    {convertDateTime(data.created_at)} • {data.photos.length}
-                    {" "}<FormattedMessage id="photoGallery.photos" />
-                  </p>
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col items-center md:items-end gap-1">
-              <div className="flex items-center space-x-3">
-                {/* Language Dropdown */}
-                <LanguagePicker />
-
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    if (data?.photos) {
-                      data.photos.forEach((photo, index) => {
-                        setTimeout(() => {
-                          handleDownload(photo.photo_url, photoName(index));
-                        }, 300);
-                      });
-                      toast.success(intl.formatMessage({ id: "photoGallery.download.downloadAll" }));
-                    }
-                  }}
-                  disabled={isLoading || !data}
-                >
-                  <FormattedMessage id="photoGallery.buttons.downloadAll" />
-                </Button>
+          {photosLoaded && data?.venue_id ? (
+            <PhotoAdvertisement venueId={data.venue_id} />
+          ) : (
+            <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <LogoWithText />
+                {data && (
+                  <div>
+                    <h1 className="text-2xl font-bold text-glimps-900">
+                      <FormattedMessage id="photoGallery.title" />
+                    </h1>
+                    <p className="text-glimps-600">
+                      {convertDateTime(data.created_at)} • {data.photos.length}
+                      {" "}<FormattedMessage id="photoGallery.photos" />
+                    </p>
+                  </div>
+                )}
               </div>
-              <p className="text-red-500 text-md font-semibold text-center">Чтобы скачать фото, зажмите фотографию, и в открывшемся меню нажмите скачать</p>
+              <div className="flex flex-col items-center md:items-end gap-1">
+                <div className="flex items-center space-x-3">
+                  {/* Language Dropdown */}
+                  <LanguagePicker />
+
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      if (data?.photos) {
+                        data.photos.forEach((photo, index) => {
+                          setTimeout(() => {
+                            handleDownload(photo.photo_url, photoName(index));
+                          }, 300);
+                        });
+                        toast.success(intl.formatMessage({ id: "photoGallery.download.downloadAll" }));
+                      }
+                    }}
+                    disabled={isLoading || !data}
+                  >
+                    <FormattedMessage id="photoGallery.buttons.downloadAll" />
+                  </Button>
+                </div>
+                <p className="text-red-500 text-md font-semibold text-center">Чтобы скачать фото, зажмите фотографию, и в открывшемся меню нажмите скачать</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </header>
 

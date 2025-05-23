@@ -16,13 +16,15 @@ interface Advertisement {
   start_date: string;
   expiry_date: string;
   status?: AdStatus;
+  redirect_url?: string; // Added redirect_url field
 }
 
 interface PhotoAdvertisementProps {
   venueId?: string;
+  onClose?: () => void;
 }
 
-const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
+const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   const [bannerAd, setBannerAd] = useState<Advertisement | null>(null);
   const [fullscreenAd, setFullscreenAd] = useState<Advertisement | null>(null);
   const [showFullscreenAd, setShowFullscreenAd] = useState(false);
@@ -105,7 +107,7 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
             setTimeout(() => {
               setCanCloseFullscreenAd(true);
             }, 5000);
-          }, 10000); // Show after 10 seconds to ensure user has time to see photos are loaded
+          }, 1000); // Reduced to 1 second to show faster after photos are loaded
         }
       } catch (error) {
         console.error("Failed to fetch ads:", error);
@@ -121,6 +123,19 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
     fetchAds();
   }, [venueId, intl]);
   
+  const handleAdClick = (redirectUrl?: string) => {
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+  
+  const handleCloseFullscreenAd = () => {
+    setShowFullscreenAd(false);
+    if (onClose) {
+      onClose();
+    }
+  };
+  
   if (isLoading || (!bannerAd && !fullscreenAd)) {
     return null;
   }
@@ -129,7 +144,10 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
     <>
       {/* Banner Ad */}
       {bannerAd && !showFullscreenAd && (
-        <div className="w-full mb-4">
+        <div 
+          className="w-full mb-4 cursor-pointer"
+          onClick={() => handleAdClick(bannerAd.redirect_url)}
+        >
           <ImageWithFallback
             src={bannerAd.media_url}
             alt={bannerAd.campaign_name}
@@ -142,7 +160,10 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
       {fullscreenAd && showFullscreenAd && (
         <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg overflow-hidden max-w-2xl w-full">
-            <div className="p-4">
+            <div 
+              className="p-4 cursor-pointer"
+              onClick={() => handleAdClick(fullscreenAd.redirect_url)}
+            >
               <ImageWithFallback
                 src={fullscreenAd.media_url}
                 alt={fullscreenAd.campaign_name}
@@ -153,7 +174,7 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
               <p className="font-semibold">{fullscreenAd.campaign_name}</p>
               <Button
                 variant="outline"
-                onClick={() => setShowFullscreenAd(false)}
+                onClick={handleCloseFullscreenAd}
                 disabled={!canCloseFullscreenAd}
                 className="transition-opacity"
               >
