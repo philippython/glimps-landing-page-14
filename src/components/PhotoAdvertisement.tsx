@@ -54,10 +54,17 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
         }
         
         // For each ad, determine the status based on dates
+        const now = new Date();
+        // Reset time portion to compare dates only
+        now.setHours(0, 0, 0, 0);
+        
         const processedAds = ads.map(ad => {
-          const now = new Date();
           const startDate = ad.start_date ? new Date(ad.start_date) : null;
           const expiryDate = ad.expiry_date ? new Date(ad.expiry_date) : null;
+          
+          // Reset time portion for accurate date comparison
+          if (startDate) startDate.setHours(0, 0, 0, 0);
+          if (expiryDate) expiryDate.setHours(0, 0, 0, 0);
           
           let status: AdStatus = "ACTIVE";
           
@@ -65,7 +72,11 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
             status = "SCHEDULED";
           } else if (expiryDate && now > expiryDate) {
             status = "EXPIRED";
+          } else {
+            status = "ACTIVE"; // Explicitly set to ACTIVE if today is the start date
           }
+          
+          console.log(`Ad ${ad.campaign_name} status: ${status}, start: ${startDate?.toISOString()}, now: ${now.toISOString()}`);
           
           return {
             ...ad,
@@ -75,6 +86,7 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
         
         // Filter for active ads only
         const activeAds = processedAds.filter(ad => ad.status === "ACTIVE");
+        console.log(`Found ${activeAds.length} active ads out of ${processedAds.length} total`);
         
         // Set banner and fullscreen ads if available
         const activeBanner = activeAds.find(ad => ad.ads_size === "BANNER") || null;
