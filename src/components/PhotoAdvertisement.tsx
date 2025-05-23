@@ -1,8 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import ImageWithFallback from "./ImageWithFallback";
+import { toast } from "sonner";
 
 type AdSize = "BANNER" | "FULLSCREEN";
 type AdStatus = "ACTIVE" | "EXPIRED" | "SCHEDULED";
@@ -12,8 +13,8 @@ interface Advertisement {
   campaign_name: string;
   media_url: string;
   ads_size: AdSize;
-  start_date?: string;
-  expiry_date?: string;
+  start_date: string;
+  expiry_date: string;
   status?: AdStatus;
 }
 
@@ -26,24 +27,29 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
   const [fullscreenAd, setFullscreenAd] = useState<Advertisement | null>(null);
   const [showFullscreenAd, setShowFullscreenAd] = useState(false);
   const [canCloseFullscreenAd, setCanCloseFullscreenAd] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const intl = useIntl();
   
   useEffect(() => {
     if (!venueId) return;
     
     const fetchAds = async () => {
+      setIsLoading(true);
       try {
-        // This would be replaced with an actual API call in production
-        // Example API call:
-        // const response = await fetch(`${api_url}/ads/${venueId}`);
-        // const ads = await response.json();
+        const apiUrl = intl.formatMessage({ id: "api_url" });
+        const response = await fetch(`${apiUrl}/ads/${venueId}`);
         
-        // For now, we'll simulate an empty response
-        const ads: Advertisement[] = [];
+        if (!response.ok) {
+          throw new Error(`Failed to fetch ads: ${response.status}`);
+        }
+        
+        const ads: Advertisement[] = await response.json();
         
         // If there are no ads, return early
-        if (ads.length === 0) {
+        if (!ads || ads.length === 0) {
           setBannerAd(null);
           setFullscreenAd(null);
+          setIsLoading(false);
           return;
         }
         
@@ -89,16 +95,19 @@ const PhotoAdvertisement = ({ venueId }: PhotoAdvertisementProps) => {
         }
       } catch (error) {
         console.error("Failed to fetch ads:", error);
+        toast.error("Failed to load advertisements");
         // Reset states in case of error
         setBannerAd(null);
         setFullscreenAd(null);
+      } finally {
+        setIsLoading(false);
       }
     };
     
     fetchAds();
-  }, [venueId]);
+  }, [venueId, intl]);
   
-  if (!bannerAd && !fullscreenAd) {
+  if (isLoading || (!bannerAd && !fullscreenAd)) {
     return null;
   }
   

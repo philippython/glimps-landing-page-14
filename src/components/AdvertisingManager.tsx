@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,7 +49,7 @@ const AdvertisingManager = () => {
   const [adToEdit, setAdToEdit] = useState<Advertisement | null>(null);
   const [previewMode, setPreviewMode] = useState<AdSize>("BANNER");
   const [activeTab, setActiveTab] = useState("list");
-  const { venue, token } = useAuth();
+  const { venue, token, user } = useAuth();
   const intl = useIntl();
   
   // Form state
@@ -59,28 +60,32 @@ const AdvertisingManager = () => {
   const [adSize, setAdSize] = useState<AdSize>("BANNER");
 
   useEffect(() => {
-    fetchAds();
-  }, [venue]);
+    if (venue && token) {
+      fetchAds();
+    }
+  }, [venue, token]);
 
   const fetchAds = async () => {
     if (!venue || !token) return;
     
     setIsLoading(true);
     try {
-      // This would be replaced with an actual API call in production
-      // For now, we'll just use the existing ads state
-      // Example API call would be:
-      // const response = await fetch(`${process.env.API_URL}/ads/${venue.id}`, {
-      //   headers: { Authorization: `Bearer ${token}` }
-      // });
-      // const data = await response.json();
-      // setAds(data);
+      // Make API call to fetch ads
+      const apiUrl = intl.formatMessage({ id: "api_url" });
+      const response = await fetch(`${apiUrl}/ads/${venue.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       
-      // For now, we'll keep using the existing ads state
-      setIsLoading(false);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ads: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setAds(data || []);
     } catch (error) {
       console.error("Failed to fetch ads:", error);
       toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.fetchError" }));
+    } finally {
       setIsLoading(false);
     }
   };
@@ -95,7 +100,7 @@ const AdvertisingManager = () => {
   };
 
   const handleCreateAd = async () => {
-    if (!venue) return;
+    if (!venue || !token) return;
     
     setIsLoading(true);
     
@@ -109,29 +114,25 @@ const AdvertisingManager = () => {
     };
     
     try {
-      // Mock API call - this would be replaced with actual API integration
-      // const response = await fetch(`${intl.formatMessage({ id: "api_url" })}/ads/create`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     "Authorization": `Bearer ${token}`
-      //   },
-      //   body: JSON.stringify(adPayload)
-      // });
-      // 
-      // const data = await response.json();
-      // if (!response.ok) throw new Error(data.message || "Failed to create ad");
+      const apiUrl = intl.formatMessage({ id: "api_url" });
+      const response = await fetch(`${apiUrl}/ads/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(adPayload)
+      });
       
-      // Mock success response
-      const mockResponse = {
-        ...adPayload,
-        id: Math.random().toString(36).substr(2, 9),
-        venue_id: venue.id,
-        created_at: new Date().toISOString()
-      };
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create ad");
+      }
       
-      // Add the new ad to the list
-      setAds([...ads, mockResponse]);
+      const createdAd = await response.json();
+      
+      // Fetch updated ads list
+      fetchAds();
       
       // Reset form and switch to list view
       resetForm();
@@ -148,7 +149,7 @@ const AdvertisingManager = () => {
   };
 
   const handleUpdateAd = async () => {
-    if (!venue || !adToEdit) return;
+    if (!venue || !adToEdit || !token) return;
     
     setIsLoading(true);
     
@@ -162,25 +163,23 @@ const AdvertisingManager = () => {
     };
     
     try {
-      // Mock API call - this would be replaced with actual API integration
-      // const response = await fetch(`${intl.formatMessage({ id: "api_url" })}/ads/update/${adToEdit.id}`, {
-      //   method: "PUT",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     "Authorization": `Bearer ${token}`
-      //   },
-      //   body: JSON.stringify(adPayload)
-      // });
-      // 
-      // const data = await response.json();
-      // if (!response.ok) throw new Error(data.message || "Failed to update ad");
+      const apiUrl = intl.formatMessage({ id: "api_url" });
+      const response = await fetch(`${apiUrl}/ads/update/${venue.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(adPayload)
+      });
       
-      // Update the ad in the list
-      setAds(ads.map(ad => 
-        ad.id === adToEdit.id ? 
-        { ...ad, ...adPayload } : 
-        ad
-      ));
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update ad");
+      }
+      
+      // Fetch updated ads list
+      fetchAds();
       
       // Reset form and switch to list view
       resetForm();
@@ -197,24 +196,26 @@ const AdvertisingManager = () => {
   };
 
   const handleDeleteAd = async (id: string) => {
+    if (!token || !venue) return;
+    
     setIsLoading(true);
     
     try {
-      // Mock API call - this would be replaced with actual API integration
-      // const response = await fetch(`${intl.formatMessage({ id: "api_url" })}/ads/delete/${id}`, {
-      //   method: "DELETE",
-      //   headers: {
-      //     "Authorization": `Bearer ${token}`
-      //   }
-      // });
-      // 
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.message || "Failed to delete ad");
-      // }
+      const apiUrl = intl.formatMessage({ id: "api_url" });
+      const response = await fetch(`${apiUrl}/ads/delete/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
       
-      // Remove the ad from the list
-      setAds(ads.filter(ad => ad.id !== id));
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete ad");
+      }
+      
+      // Fetch updated ads list
+      fetchAds();
       
       // Show success message
       toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.deleteSuccess" }));
@@ -264,7 +265,11 @@ const AdvertisingManager = () => {
           </TabsList>
           
           <TabsContent value="list">
-            {ads.length === 0 ? (
+            {isLoading ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-4"><FormattedMessage id="common.loading" /></p>
+              </div>
+            ) : ads.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 mb-4"><FormattedMessage id="venueDashboard.advertising.noAds" /></p>
                 <Button variant="outline" onClick={() => {
@@ -408,9 +413,6 @@ const AdvertisingManager = () => {
                     placeholder="https://example.com/ad-image.jpg"
                     className="flex-1"
                   />
-                  <p className="text-sm text-muted-foreground">
-                    <FormattedMessage id="venueDashboard.advertising.uploadMediaHelper" />
-                  </p>
                 </div>
                 
                 <div className="grid gap-2">
