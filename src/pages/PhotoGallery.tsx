@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Download, ImageIcon } from "lucide-react";
@@ -43,11 +42,15 @@ const PhotoGallery = () => {
   // Set photos as loaded once data is available and loading is complete
   useEffect(() => {
     if (data && !isLoading) {
-      console.log("Photos loaded, will show ads soon");
+      console.log("TESTING ADS: Photos loaded, data available:", { 
+        hasData: !!data, 
+        venueId: data.venue_id, 
+        photosCount: data.photos.length 
+      });
       setPhotosLoaded(true);
       // Show ads after a short delay when photos are loaded
       setTimeout(() => {
-        console.log("Setting showAds to true");
+        console.log("TESTING ADS: Setting showAds to true");
         setShowAds(true);
       }, 1000);
     }
@@ -118,6 +121,13 @@ const PhotoGallery = () => {
       </div>
     );
   }
+
+  console.log("TESTING ADS: PhotoGallery render state:", { 
+    photosLoaded, 
+    showAds, 
+    hasVenueId: !!data?.venue_id,
+    venueId: data?.venue_id 
+  });
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">

@@ -38,18 +38,22 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     const fetchAds = async () => {
       setIsLoading(true);
       try {
-        console.log("Fetching ads for venue:", venueId);
+        console.log("TESTING ADS: Fetching ads for venue:", venueId);
         
         // For debugging, let's add a mock ad if API fails
         let mockUsed = false;
         
         const apiUrl = import.meta.env.VITE_API_URL;
-        const response = await fetch(`${apiUrl}/ads/${venueId}`).catch(err => {
-          console.log("API fetch failed, using mock data:", err);
+        let response: Response;
+        
+        try {
+          response = await fetch(`${apiUrl}/ads/${venueId}`);
+        } catch (err) {
+          console.log("TESTING ADS: API fetch failed, using mock data:", err);
           mockUsed = true;
           
-          // Mock response for testing
-          return {
+          // Mock response for testing - create proper Response-like object
+          response = {
             ok: true,
             json: async () => [
               {
@@ -71,20 +75,20 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
                 redirect_url: "https://example.com/fullscreen"
               }
             ]
-          };
-        });
+          } as Response;
+        }
         
         if (!response.ok && !mockUsed) {
-          throw new Error(`Failed to fetch ads: ${response.status}`);
+          throw new Error(`Failed to fetch ads`);
         }
         
         const ads: Advertisement[] = await response.json();
         
-        console.log(`Fetched ${ads.length} ads:`, ads);
+        console.log(`TESTING ADS: Fetched ${ads.length} ads:`, ads);
         
         // If there are no ads, return early
         if (!ads || ads.length === 0) {
-          console.log("No ads found");
+          console.log("TESTING ADS: No ads found");
           setBannerAd(null);
           setFullscreenAd(null);
           setIsLoading(false);
@@ -110,7 +114,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
             status = "ACTIVE"; // Active if today is on or after start date and no expiry
           }
           
-          console.log(`Ad ${ad.campaign_name} status: ${status}, start: ${startDate?.toISOString()}, expiry: ${expiryDate?.toISOString()}, now: ${now.toISOString()}`);
+          console.log(`TESTING ADS: Ad ${ad.campaign_name} status: ${status}, start: ${startDate?.toISOString()}, expiry: ${expiryDate?.toISOString()}, now: ${now.toISOString()}`);
           
           return {
             ...ad,
@@ -120,21 +124,21 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         
         // Filter for active ads only
         const activeAds = processedAds.filter(ad => ad.status === "ACTIVE");
-        console.log(`Found ${activeAds.length} active ads out of ${processedAds.length} total`);
+        console.log(`TESTING ADS: Found ${activeAds.length} active ads out of ${processedAds.length} total`);
         
         // Only show the first active ad of each type (to ensure only one active ad at a time)
         const activeBanner = activeAds.find(ad => ad.ads_size === "BANNER") || null;
         const activeFullscreen = activeAds.find(ad => ad.ads_size === "FULLSCREEN") || null;
         
-        console.log("Active banner ad:", activeBanner);
-        console.log("Active fullscreen ad:", activeFullscreen);
+        console.log("TESTING ADS: Active banner ad:", activeBanner);
+        console.log("TESTING ADS: Active fullscreen ad:", activeFullscreen);
         
         setBannerAd(activeBanner);
         setFullscreenAd(activeFullscreen);
         
         // If there's a fullscreen ad, show it after photos are loaded
         if (activeFullscreen) {
-          console.log("Preparing to show fullscreen ad");
+          console.log("TESTING ADS: Preparing to show fullscreen ad");
           // Show fullscreen ad immediately
           setShowFullscreenAd(true);
           
@@ -144,7 +148,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
           }, 5000);
         }
       } catch (error) {
-        console.error("Failed to fetch ads:", error);
+        console.error("TESTING ADS: Failed to fetch ads:", error);
         toast.error("Failed to load advertisements");
         // Reset states in case of error
         setBannerAd(null);
@@ -159,13 +163,13 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   
   const handleAdClick = (redirectUrl?: string) => {
     if (redirectUrl) {
-      console.log("Opening ad redirect URL:", redirectUrl);
+      console.log("TESTING ADS: Opening ad redirect URL:", redirectUrl);
       window.open(redirectUrl, '_blank', 'noopener,noreferrer');
     }
   };
   
   const handleCloseFullscreenAd = () => {
-    console.log("Closing fullscreen ad");
+    console.log("TESTING ADS: Closing fullscreen ad");
     setShowFullscreenAd(false);
     if (onClose) {
       onClose();
@@ -173,11 +177,11 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   };
   
   if (isLoading || (!bannerAd && !fullscreenAd)) {
-    console.log("No ads to display or still loading");
+    console.log("TESTING ADS: No ads to display or still loading");
     return null;
   }
   
-  console.log("Rendering ad component with:", { bannerAd, fullscreenAd, showFullscreenAd });
+  console.log("TESTING ADS: Rendering ad component with:", { bannerAd, fullscreenAd, showFullscreenAd });
   
   return (
     <div className="w-full">
