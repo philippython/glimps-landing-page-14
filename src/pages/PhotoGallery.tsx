@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Download, ImageIcon } from "lucide-react";
@@ -39,17 +40,38 @@ const PhotoGallery = () => {
   });
   const intl = useIntl();
 
+  // Function to get venue ID from various sources
+  const getVenueId = () => {
+    // First try to get from localStorage
+    const localStorageVenueId = localStorage.getItem('venueId') || localStorage.getItem('venue_id');
+    if (localStorageVenueId) {
+      console.log("TESTING ADS: Found venue ID in localStorage:", localStorageVenueId);
+      return localStorageVenueId;
+    }
+
+    // Then try from photo data venue_id field
+    if (data?.venue_id) {
+      console.log("TESTING ADS: Found venue_id in photo data:", data.venue_id);
+      return data.venue_id;
+    }
+
+    console.log("TESTING ADS: No venue ID found in localStorage or photo data");
+    return null;
+  };
+
   // Set photos as loaded once data is available and loading is complete
   useEffect(() => {
     if (data && !isLoading) {
       console.log("TESTING ADS: Full photo data received:", data);
       console.log("TESTING ADS: Data keys:", Object.keys(data));
       console.log("TESTING ADS: venue_id from data:", data.venue_id);
-      console.log("TESTING ADS: id from data:", data.id);
+      console.log("TESTING ADS: session id from data:", data.id);
+      console.log("TESTING ADS: localStorage venueId:", localStorage.getItem('venueId'));
+      console.log("TESTING ADS: localStorage venue_id:", localStorage.getItem('venue_id'));
       
-      // Try to find venue_id in different possible locations
-      const venueId = data.venue_id || data.id || null;
-      console.log("TESTING ADS: Extracted venueId:", venueId);
+      // Get the correct venue ID
+      const venueId = getVenueId();
+      console.log("TESTING ADS: Final extracted venueId:", venueId);
       
       setPhotosLoaded(true);
       // Show ads after a short delay when photos are loaded
@@ -126,15 +148,17 @@ const PhotoGallery = () => {
     );
   }
 
-  // Extract venue ID for ads - try multiple possible locations
-  const venueId = data?.venue_id || data?.id || null;
+  // Get the correct venue ID
+  const venueId = getVenueId();
   
   console.log("TESTING ADS: PhotoGallery render state:", { 
     photosLoaded, 
     showAds, 
     hasVenueId: !!venueId,
     venueId: venueId,
+    sessionId: data?.id,
     dataKeys: data ? Object.keys(data) : [],
+    localStorageVenueId: localStorage.getItem('venueId'),
     fullData: data
   });
 
@@ -146,6 +170,7 @@ const PhotoGallery = () => {
           <div className="container mx-auto px-4 py-6">
             <div className="mb-4 p-2 bg-blue-100 rounded">
               <p className="text-sm text-blue-800">TESTING ADS: Ads should display here for venue: {venueId}</p>
+              <p className="text-xs text-blue-600">Session ID: {data?.id} (not used for ads)</p>
             </div>
             <PhotoAdvertisement venueId={venueId} />
           </div>
@@ -157,6 +182,8 @@ const PhotoGallery = () => {
               <div className="mb-4 p-2 bg-red-100 rounded">
                 <p className="text-sm text-red-800">TESTING ADS: No venue ID found - ads will not display</p>
                 <p className="text-xs text-red-600">Available data keys: {data ? Object.keys(data).join(', ') : 'No data'}</p>
+                <p className="text-xs text-red-600">localStorage venueId: {localStorage.getItem('venueId')}</p>
+                <p className="text-xs text-red-600">Session ID from data: {data?.id}</p>
               </div>
             )}
             <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
