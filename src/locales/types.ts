@@ -1,3 +1,4 @@
+
 export type Messages = {
   common: {
     glimps: string;
@@ -245,6 +246,13 @@ export type Messages = {
       search: string;
       signOut: string;
       analytics: string;
+      advertising: string;
+    },
+    filters: {
+      dateFrom: string;
+      dateTo: string;
+      reset: string;
+      search: string;
     },
     sessions: {
       UUID: string;
@@ -265,7 +273,7 @@ export type Messages = {
       UUID: string;
       phoneNumber: string;
       telegram: string;
-      lastsession: string;
+      lastSession: string;
       createdAt: string;
       actions: string;
       viewLastPhotos: string;
@@ -384,6 +392,40 @@ export type Messages = {
         photo: string;
         user: string;
       };
+    },
+    advertising: {
+      title: string;
+      description: string;
+      createAd: string;
+      campaignName: string;
+      mediaUrl: string;
+      startDate: string;
+      expiryDate: string;
+      adsSize: string;
+      adsSizeOptions: {
+        banner: string;
+        fullscreen: string;
+      };
+      submit: string;
+      edit: string;
+      delete: string;
+      preview: string;
+      messages: {
+        createSuccess: string;
+        createError: string;
+        updateSuccess: string;
+        updateError: string;
+        deleteSuccess: string;
+        deleteError: string;
+      };
+      closeAd: string;
+      status: string;
+      active: string;
+      scheduled: string;
+      expired: string;
+      noAds: string;
+      uploadMedia: string;
+      uploadMediaHelper: string;
     },
     messages: {
       successUpdateVenue: string;

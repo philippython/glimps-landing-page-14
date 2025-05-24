@@ -6,11 +6,12 @@ import {
   ChevronDown,
   Phone,
   MessageSquare,
-  Calendar,
+  CalendarIcon,
   Store,
   User,
   LogOut,
   ChartNoAxesCombined,
+  Megaphone
 } from "lucide-react";
 import {
   Table,
@@ -46,6 +47,21 @@ import { toast } from "sonner";
 import { FormattedMessage, useIntl } from "react-intl";
 import { EditVenueFormValues } from "@/lib/createSchema";
 import AnalyticsInfo from "@/components/AnalyticsInfo";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationEllipsis, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination";
+import { format } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import AdvertisingManager from "@/components/AdvertisingManager";
+
+const ITEMS_PER_PAGE = 10;
 
 const VenueDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,8 +69,17 @@ const VenueDashboard = () => {
   const [venueUsers, setVenueUsers] = useState<VenueUser[]>([]);
   const [venuePhotos, setVenuePhotos] = useState<VenuePhotos[]>([]);
   const [loading, setLoading] = useState(false);
+  const [userSearchTerm, setUserSearchTerm] = useState("");
   const { user, venue, token, logout, setUserAndVenueAfterCreation } = useAuth();
   const intl = useIntl();
+
+  // Pagination state
+  const [currentPhotoPage, setCurrentPhotoPage] = useState(1);
+  const [currentUserPage, setCurrentUserPage] = useState(1);
+
+  // Date filter state
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
 
   const navigate = useNavigate();
 
@@ -74,17 +99,141 @@ const VenueDashboard = () => {
     }
   }, [venue, token, user, navigate]);
 
+  // Reset pagination when search or date filters change
+  useEffect(() => {
+    setCurrentPhotoPage(1);
+    setCurrentUserPage(1);
+  }, [searchTerm, dateFrom, dateTo, userSearchTerm]);
+
+  // Filter functions with date filtering
+  const filterByDate = (date: string | undefined) => {
+    if (!date || (!dateFrom && !dateTo)) return true;
+    
+    const itemDate = new Date(`${date}Z`);
+    
+    if (dateFrom && dateTo) {
+      // Set the time of dateTo to end of day for inclusive range
+      const endDate = new Date(dateTo);
+      endDate.setHours(23, 59, 59, 999);
+      return itemDate >= dateFrom && itemDate <= endDate;
+    } else if (dateFrom) {
+      return itemDate >= dateFrom;
+    } else if (dateTo) {
+      // Set the time of dateTo to end of day for inclusive range
+      const endDate = new Date(dateTo);
+      endDate.setHours(23, 59, 59, 999);
+      return itemDate <= endDate;
+    }
+    
+    return true;
+  };
+
   const filteredVenuePhotos = venuePhotos.filter(
     photo =>
-      photo.id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim()) ||
+      (photo.id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim()) ||
       photo.user_id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim()) ||
-      photo.link_id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
+      photo.link_id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())) &&
+      filterByDate(photo.created_at)
   );
 
   const filteredVenueUsers = venueUsers.filter(
     user =>
-      user.id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
+      (user.id.toLowerCase().trim().includes(userSearchTerm.toLowerCase().trim()) ||
+      (user.phone_number && user.phone_number.toString().includes(userSearchTerm)) ||
+      (user.telegram_username && user.telegram_username.toLowerCase().trim().includes(userSearchTerm.toLowerCase().trim()))) &&
+      filterByDate(user.created_at)
   );
+
+  // Pagination calculations
+  const totalPhotoPages = Math.ceil(filteredVenuePhotos.length / ITEMS_PER_PAGE);
+  const totalUserPages = Math.ceil(filteredVenueUsers.length / ITEMS_PER_PAGE);
+  
+  const paginatedPhotos = filteredVenuePhotos.slice(
+    (currentPhotoPage - 1) * ITEMS_PER_PAGE,
+    currentPhotoPage * ITEMS_PER_PAGE
+  );
+  
+  const paginatedUsers = filteredVenueUsers.slice(
+    (currentUserPage - 1) * ITEMS_PER_PAGE,
+    currentUserPage * ITEMS_PER_PAGE
+  );
+
+  // Function to render pagination numbers
+  const renderPaginationItems = (currentPage: number, totalPages: number, setPage: (page: number) => void) => {
+    const items = [];
+    
+    if (totalPages <= 7) {
+      // If we have 7 or fewer pages, show all page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink isActive={currentPage === i} onClick={() => setPage(i)}>
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    } else {
+      // Always show first page
+      items.push(
+        <PaginationItem key={1}>
+          <PaginationLink isActive={currentPage === 1} onClick={() => setPage(1)}>
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+
+      // Add ellipsis if current page is more than 3
+      if (currentPage > 3) {
+        items.push(<PaginationEllipsis key="start-ellipsis" />);
+      }
+
+      // Calculate start and end of visible page numbers around current page
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
+      
+      // Adjust if at boundaries
+      if (currentPage <= 3) {
+        end = Math.min(5, totalPages - 1);
+      }
+      if (currentPage >= totalPages - 2) {
+        start = Math.max(2, totalPages - 4);
+      }
+
+      // Add visible page numbers
+      for (let i = start; i <= end; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink isActive={currentPage === i} onClick={() => setPage(i)}>
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+
+      // Add ellipsis if current page is less than totalPages - 2
+      if (currentPage < totalPages - 2) {
+        items.push(<PaginationEllipsis key="end-ellipsis" />);
+      }
+
+      // Always show last page
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink isActive={currentPage === totalPages} onClick={() => setPage(totalPages)}>
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return items;
+  };
+
+  // Date filtering reset function
+  const resetDateFilters = () => {
+    setDateFrom(undefined);
+    setDateTo(undefined);
+  };
 
   const navItems = [
     {
@@ -101,6 +250,11 @@ const VenueDashboard = () => {
       id: "users",
       label: <FormattedMessage id="venueDashboard.navItems.usersList" />,
       icon: <Users className="h-4 w-4" />
+    },
+    {
+      id: "advertising",
+      label: <FormattedMessage id="venueDashboard.navItems.advertising" />,
+      icon: <Megaphone className="h-4 w-4" />
     },
     {
       id: "venue-settings",
@@ -222,9 +376,67 @@ const VenueDashboard = () => {
           {activeTab === "sessions" && (
             <Card>
               <div className="p-6">
-                <h2 className="text-xl font-semibold mb-4">
-                  <FormattedMessage id="venueDashboard.navItems.sessions" />
-                </h2>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                  <h2 className="text-xl font-semibold mb-4 sm:mb-0">
+                    <FormattedMessage id="venueDashboard.navItems.sessions" />
+                  </h2>
+                  
+                  {/* Date filter controls */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dateFrom ? (
+                              format(dateFrom, "PPP")
+                            ) : (
+                              <span><FormattedMessage id="venueDashboard.filters.dateFrom" /></span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateFrom}
+                            onSelect={(date) => setDateFrom(date)}
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dateTo ? (
+                              format(dateTo, "PPP")
+                            ) : (
+                              <span><FormattedMessage id="venueDashboard.filters.dateTo" /></span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateTo}
+                            onSelect={(date) => setDateTo(date)}
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    <Button variant="ghost" size="sm" onClick={resetDateFilters}>
+                      <FormattedMessage id="venueDashboard.filters.reset" />
+                    </Button>
+                  </div>
+                </div>
+                
                 <div className="rounded-md border">
                   <Table>
                     <TableHeader>
@@ -246,7 +458,7 @@ const VenueDashboard = () => {
                         </TableHead>
                         <TableHead className="">
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
+                            <CalendarIcon className="h-4 w-4" />
                             <FormattedMessage id="venueDashboard.sessions.timestamp" />
                           </div>
                         </TableHead>
@@ -256,8 +468,8 @@ const VenueDashboard = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredVenuePhotos.length > 0 ? (
-                        filteredVenuePhotos.map((photo) => (
+                      {paginatedPhotos.length > 0 ? (
+                        paginatedPhotos.map((photo) => (
                           <TableRow key={photo.id}>
                             <TableCell className="font-medium">{photo.id}</TableCell>
                             <TableCell>{photo.user_id}</TableCell>
@@ -289,7 +501,6 @@ const VenueDashboard = () => {
                                       className="object-scale-down"
                                     />
                                   </DialogContent>
-
                                 </DialogPortal>
                               </Dialog>
 
@@ -313,6 +524,28 @@ const VenueDashboard = () => {
                     </TableBody>
                   </Table>
                 </div>
+                
+                {filteredVenuePhotos.length > 0 && (
+                  <div className="mt-4">
+                    <Pagination>
+                      <PaginationContent>
+                        {currentPhotoPage > 1 && (
+                          <PaginationItem>
+                            <PaginationPrevious onClick={() => setCurrentPhotoPage(prev => Math.max(1, prev - 1))} />
+                          </PaginationItem>
+                        )}
+                        
+                        {renderPaginationItems(currentPhotoPage, totalPhotoPages, setCurrentPhotoPage)}
+                        
+                        {currentPhotoPage < totalPhotoPages && (
+                          <PaginationItem>
+                            <PaginationNext onClick={() => setCurrentPhotoPage(prev => Math.min(totalPhotoPages, prev + 1))} />
+                          </PaginationItem>
+                        )}
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
               </div>
             </Card>
           )}
@@ -320,9 +553,81 @@ const VenueDashboard = () => {
           {activeTab === "users" && (
             <Card>
               <div className="p-6">
-                <h2 className="text-xl font-semibold mb-4">
-                  <FormattedMessage id="venueDashboard.navItems.usersList" />
-                </h2>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                  <h2 className="text-xl font-semibold mb-4 sm:mb-0">
+                    <FormattedMessage id="venueDashboard.navItems.usersList" />
+                  </h2>
+                  
+                  {/* Date filter controls */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dateFrom ? (
+                              format(dateFrom, "PPP")
+                            ) : (
+                              <span><FormattedMessage id="venueDashboard.filters.dateFrom" /></span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateFrom}
+                            onSelect={(date) => setDateFrom(date)}
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dateTo ? (
+                              format(dateTo, "PPP")
+                            ) : (
+                              <span><FormattedMessage id="venueDashboard.filters.dateTo" /></span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateTo}
+                            onSelect={(date) => setDateTo(date)}
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    <Button variant="ghost" size="sm" onClick={resetDateFilters}>
+                      <FormattedMessage id="venueDashboard.filters.reset" />
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* User search input */}
+                <div className="mb-4">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                    <Input
+                      type="search"
+                      placeholder={intl.formatMessage({ id: "venueDashboard.filters.search" })}
+                      className="w-full pl-9 pr-4"
+                      value={userSearchTerm}
+                      onChange={(e) => setUserSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
                 <div className="rounded-md border">
                   <Table>
                     <TableHeader>
@@ -344,13 +649,13 @@ const VenueDashboard = () => {
                         </TableHead>
                         <TableHead className="w-[180px]">
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
+                            <CalendarIcon className="h-4 w-4" />
                             <FormattedMessage id="venueDashboard.usersList.lastSession" />
                           </div>
                         </TableHead>
                         <TableHead className="w-[180px]">
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
+                            <CalendarIcon className="h-4 w-4" />
                             <FormattedMessage id="venueDashboard.usersList.createdAt" />
                           </div>
                         </TableHead>
@@ -360,8 +665,8 @@ const VenueDashboard = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredVenueUsers.length > 0 ? (
-                        filteredVenueUsers.map((user) => (
+                      {paginatedUsers.length > 0 ? (
+                        paginatedUsers.map((user) => (
                           <TableRow key={user.id}>
                             <TableCell className="font-medium">{user.id}</TableCell>
                             <TableCell>{user.phone_number}</TableCell>
@@ -385,7 +690,7 @@ const VenueDashboard = () => {
                         ))
                       ) : (
                         <TableRow>
-                          <TableCell colSpan={5} className="h-24 text-center">
+                          <TableCell colSpan={6} className="h-24 text-center">
                             <FormattedMessage id="venueDashboard.usersList.noUsers" />
                           </TableCell>
                         </TableRow>
@@ -393,20 +698,50 @@ const VenueDashboard = () => {
                     </TableBody>
                   </Table>
                 </div>
+                
+                {filteredVenueUsers.length > 0 && (
+                  <div className="mt-4">
+                    <Pagination>
+                      <PaginationContent>
+                        {currentUserPage > 1 && (
+                          <PaginationItem>
+                            <PaginationPrevious onClick={() => setCurrentUserPage(prev => Math.max(1, prev - 1))} />
+                          </PaginationItem>
+                        )}
+                        
+                        {renderPaginationItems(currentUserPage, totalUserPages, setCurrentUserPage)}
+                        
+                        {currentUserPage < totalUserPages && (
+                          <PaginationItem>
+                            <PaginationNext onClick={() => setCurrentUserPage(prev => Math.min(totalUserPages, prev + 1))} />
+                          </PaginationItem>
+                        )}
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
               </div>
             </Card>
           )}
 
           {activeTab === "venue-settings" && (
-            <VenueSettings mode="edit" loading={loading} onSubmit={onVenueSettingsSubmit} />
+            <VenueSettings 
+              mode="edit" 
+              loading={loading} 
+              onSubmit={onVenueSettingsSubmit} 
+            />
           )}
 
           {activeTab === "account-settings" && (
             <AccountSettings />
           )}
-
+          
           {activeTab === "analytics" && (
             <AnalyticsInfo venueUsers={venueUsers} venuePhotos={venuePhotos} />
+          )}
+          
+          {activeTab === "advertising" && (
+            <AdvertisingManager />
           )}
         </div>
       </main>
