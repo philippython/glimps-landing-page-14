@@ -49,10 +49,16 @@ const PhotoGallery = () => {
       return localStorageVenueId;
     }
 
-    // Then try from photo data venue_id field
+    // Then try from photo data venue_id field at top level
     if (data?.venue_id) {
-      console.log("TESTING ADS: Found venue_id in photo data:", data.venue_id);
+      console.log("TESTING ADS: Found venue_id in photo data (top level):", data.venue_id);
       return data.venue_id;
+    }
+
+    // Then try from photos array - venue_id is nested inside photos
+    if (data?.photos && data.photos.length > 0 && data.photos[0].venue_id) {
+      console.log("TESTING ADS: Found venue_id in photos array:", data.photos[0].venue_id);
+      return data.photos[0].venue_id;
     }
 
     console.log("TESTING ADS: No venue ID found in localStorage or photo data");
@@ -64,7 +70,8 @@ const PhotoGallery = () => {
     if (data && !isLoading) {
       console.log("TESTING ADS: Full photo data received:", data);
       console.log("TESTING ADS: Data keys:", Object.keys(data));
-      console.log("TESTING ADS: venue_id from data:", data.venue_id);
+      console.log("TESTING ADS: venue_id from data (top level):", data.venue_id);
+      console.log("TESTING ADS: venue_id from photos[0]:", data.photos?.[0]?.venue_id);
       console.log("TESTING ADS: session id from data:", data.id);
       console.log("TESTING ADS: localStorage venueId:", localStorage.getItem('venueId'));
       console.log("TESTING ADS: localStorage venue_id:", localStorage.getItem('venue_id'));
@@ -159,6 +166,7 @@ const PhotoGallery = () => {
     sessionId: data?.id,
     dataKeys: data ? Object.keys(data) : [],
     localStorageVenueId: localStorage.getItem('venueId'),
+    venueIdFromPhotos: data?.photos?.[0]?.venue_id,
     fullData: data
   });
 
