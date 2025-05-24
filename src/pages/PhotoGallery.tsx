@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Download, ImageIcon } from "lucide-react";
@@ -17,7 +16,8 @@ import { useState, useEffect } from "react";
 
 type Photo = {
   photo_url: string,
-  sent: boolean
+  sent: boolean,
+  venue_id?: string
 }
 
 interface PhotosDataFromApi {
