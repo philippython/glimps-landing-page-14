@@ -42,15 +42,19 @@ const PhotoGallery = () => {
   // Set photos as loaded once data is available and loading is complete
   useEffect(() => {
     if (data && !isLoading) {
-      console.log("TESTING ADS: Photos loaded, data available:", { 
-        hasData: !!data, 
-        venueId: data.venue_id, 
-        photosCount: data.photos.length 
-      });
+      console.log("TESTING ADS: Full photo data received:", data);
+      console.log("TESTING ADS: Data keys:", Object.keys(data));
+      console.log("TESTING ADS: venue_id from data:", data.venue_id);
+      console.log("TESTING ADS: id from data:", data.id);
+      
+      // Try to find venue_id in different possible locations
+      const venueId = data.venue_id || data.id || null;
+      console.log("TESTING ADS: Extracted venueId:", venueId);
+      
       setPhotosLoaded(true);
       // Show ads after a short delay when photos are loaded
       setTimeout(() => {
-        console.log("TESTING ADS: Setting showAds to true");
+        console.log("TESTING ADS: Setting showAds to true with venueId:", venueId);
         setShowAds(true);
       }, 1000);
     }
@@ -122,25 +126,39 @@ const PhotoGallery = () => {
     );
   }
 
+  // Extract venue ID for ads - try multiple possible locations
+  const venueId = data?.venue_id || data?.id || null;
+  
   console.log("TESTING ADS: PhotoGallery render state:", { 
     photosLoaded, 
     showAds, 
-    hasVenueId: !!data?.venue_id,
-    venueId: data?.venue_id 
+    hasVenueId: !!venueId,
+    venueId: venueId,
+    dataKeys: data ? Object.keys(data) : [],
+    fullData: data
   });
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* Show advertisements in header area when photos are loaded */}
-      {photosLoaded && showAds && data?.venue_id ? (
+      {photosLoaded && showAds && venueId ? (
         <header className="bg-white border-b">
           <div className="container mx-auto px-4 py-6">
-            <PhotoAdvertisement venueId={data.venue_id} />
+            <div className="mb-4 p-2 bg-blue-100 rounded">
+              <p className="text-sm text-blue-800">TESTING ADS: Ads should display here for venue: {venueId}</p>
+            </div>
+            <PhotoAdvertisement venueId={venueId} />
           </div>
         </header>
       ) : (
         <header className="bg-white border-b">
           <div className="container mx-auto px-4 py-6">
+            {photosLoaded && showAds && !venueId && (
+              <div className="mb-4 p-2 bg-red-100 rounded">
+                <p className="text-sm text-red-800">TESTING ADS: No venue ID found - ads will not display</p>
+                <p className="text-xs text-red-600">Available data keys: {data ? Object.keys(data).join(', ') : 'No data'}</p>
+              </div>
+            )}
             <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <LogoWithText />
