@@ -194,7 +194,6 @@ const PhotoGallery = () => {
                   <ImageWithFallback
                     className="absolute inset-0 object-cover w-full h-full"
                     src={photo.photo_url}
-                    fallback={<ImageIcon className="text-gray-400 w-10 h-10 mx-auto my-12" />}
                     alt={`Photo ${index + 1}`}
                   />
                 </div>
