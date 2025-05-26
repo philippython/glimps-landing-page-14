@@ -14,6 +14,7 @@ const AdvertisingManager = () => {
   const [ads, setAds] = useState<Advertisement[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [editingAd, setEditingAd] = useState<Advertisement | null>(null);
   const { venue, token } = useAuth();
 
   useEffect(() => {
@@ -49,13 +50,30 @@ const AdvertisingManager = () => {
     }
   };
 
-  const handleCreateAd = async (formData: FormData) => {
+  const handleCreateOrUpdateAd = async (data: {
+    campaign_name: string;
+    media_url: string;
+    start_date: string;
+    expiry_date: string;
+    ads_size: "BANNER" | "FULLSCREEN";
+  }) => {
     if (!venue || !token) return;
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${apiUrl}/ads/create`, {
-        method: 'POST',
+      const formData = new FormData();
+      formData.append('campaign_name', data.campaign_name);
+      formData.append('media_url', data.media_url);
+      formData.append('start_date', data.start_date);
+      formData.append('expiry_date', data.expiry_date);
+      formData.append('ads_size', data.ads_size);
+      formData.append('venue_id', venue.id);
+
+      const url = editingAd ? `${apiUrl}/ads/${editingAd.id}` : `${apiUrl}/ads/create`;
+      const method = editingAd ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: {
           Authorization: `Bearer ${token}`
         },
@@ -64,15 +82,16 @@ const AdvertisingManager = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Failed to create ad: ${response.status}`);
+        throw new Error(errorData.message || `Failed to ${editingAd ? 'update' : 'create'} ad: ${response.status}`);
       }
 
-      toast.success("Advertisement created successfully!");
+      toast.success(`Advertisement ${editingAd ? 'updated' : 'created'} successfully!`);
       setShowForm(false);
+      setEditingAd(null);
       fetchAds();
     } catch (error) {
-      console.error("Failed to create ad:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to create advertisement");
+      console.error(`Failed to ${editingAd ? 'update' : 'create'} ad:`, error);
+      toast.error(error instanceof Error ? error.message : `Failed to ${editingAd ? 'update' : 'create'} advertisement`);
     }
   };
 
@@ -101,6 +120,16 @@ const AdvertisingManager = () => {
     }
   };
 
+  const handleEditAd = (ad: Advertisement) => {
+    setEditingAd(ad);
+    setShowForm(true);
+  };
+
+  const handleCreateNew = () => {
+    setEditingAd(null);
+    setShowForm(true);
+  };
+
   const checkActiveAdsLimit = (adsSize: "BANNER" | "FULLSCREEN") => {
     const now = new Date();
     const activeAdsOfSameType = ads.filter(ad => {
@@ -124,7 +153,7 @@ const AdvertisingManager = () => {
               />
             </h2>
             <Button
-              onClick={() => setShowForm(true)}
+              onClick={handleCreateNew}
               disabled={showForm}
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -137,15 +166,21 @@ const AdvertisingManager = () => {
 
           {showForm ? (
             <AdForm
-              onSubmit={handleCreateAd}
-              onCancel={() => setShowForm(false)}
-              checkActiveAdsLimit={checkActiveAdsLimit}
+              adToEdit={editingAd}
+              isLoading={isLoading}
+              onSubmit={handleCreateOrUpdateAd}
+              onCancel={() => {
+                setShowForm(false);
+                setEditingAd(null);
+              }}
             />
           ) : (
             <AdList
               ads={ads}
               isLoading={isLoading}
+              onEdit={handleEditAd}
               onDelete={handleDeleteAd}
+              onCreateNew={handleCreateNew}
             />
           )}
         </div>
