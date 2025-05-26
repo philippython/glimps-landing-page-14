@@ -56,6 +56,10 @@ const AdList = ({ ads, isLoading, onEdit, onDelete, onCreateNew }: AdListProps) 
     }
   };
 
+  const handleAdClick = (mediaUrl: string) => {
+    window.open(mediaUrl, "_blank", "noopener,noreferrer");
+  };
+
   if (isLoading) {
     return (
       <div className="text-center py-8">
@@ -134,15 +138,31 @@ const AdList = ({ ads, isLoading, onEdit, onDelete, onCreateNew }: AdListProps) 
                           </div>
                         </div>
                         <div className="w-full p-4">
-                          <ImageWithFallback src={adToShow?.media_url || ""} alt={adToShow?.campaign_name || ""} className="w-full h-20 object-cover" />
+                          <div 
+                            className="cursor-pointer"
+                            onClick={() => handleAdClick(adToShow?.media_url || "")}
+                          >
+                            <ImageWithFallback 
+                              src={adToShow?.media_url || ""} 
+                              alt={adToShow?.campaign_name || ""} 
+                              className="w-full h-20 object-cover" 
+                            />
+                          </div>
                         </div>
                       </div>
                     ) : (
                       <div className="relative">
                         <div className="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center p-6">
                           <div className="bg-white rounded-lg overflow-hidden max-w-lg w-full">
-                            <div className="p-4">
-                              <ImageWithFallback src={adToShow?.media_url || ""} alt={adToShow?.campaign_name || ""} className="w-full aspect-video object-cover" />
+                            <div 
+                              className="p-4 cursor-pointer"
+                              onClick={() => handleAdClick(adToShow?.media_url || "")}
+                            >
+                              <ImageWithFallback 
+                                src={adToShow?.media_url || ""} 
+                                alt={adToShow?.campaign_name || ""} 
+                                className="w-full aspect-video object-cover" 
+                              />
                             </div>
                             <div className="p-4 bg-gray-50 flex justify-between">
                               <p className="font-semibold">{adToShow?.campaign_name}</p>

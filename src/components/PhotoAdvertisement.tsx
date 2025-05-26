@@ -119,10 +119,8 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     fetchAds();
   }, [venueId, intl]);
 
-  const handleAdClick = (redirectUrl?: string) => {
-    if (redirectUrl) {
-      window.open(redirectUrl, "_blank", "noopener,noreferrer");
-    }
+  const handleAdClick = (mediaUrl: string) => {
+    window.open(mediaUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleCloseFullscreenAd = () => {
@@ -137,7 +135,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
       {bannerAd && !showFullscreenAd && (
         <div
           className="w-full cursor-pointer"
-          onClick={() => handleAdClick(bannerAd.redirect_url)}
+          onClick={() => handleAdClick(bannerAd.media_url)}
         >
           <ImageWithFallback
             src={bannerAd.media_url}
@@ -152,7 +150,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
           <div className="bg-white rounded-lg overflow-hidden max-w-2xl w-full">
             <div
               className="p-4 cursor-pointer"
-              onClick={() => handleAdClick(fullscreenAd.redirect_url)}
+              onClick={() => handleAdClick(fullscreenAd.media_url)}
             >
               <ImageWithFallback
                 src={fullscreenAd.media_url}
