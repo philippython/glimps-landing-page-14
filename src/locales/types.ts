@@ -1,7 +1,7 @@
-
 export type Messages = {
   common: {
     glimps: string;
+    loading?: string;
     navbar: {
       home: string;
       pricing: string;
@@ -397,6 +397,10 @@ export type Messages = {
       title: string;
       description: string;
       createAd: string;
+      createNewAd?: string;
+      editAd?: string;
+      adsList?: string;
+      update?: string;
       campaignName: string;
       mediaUrl: string;
       startDate: string;
@@ -417,6 +421,7 @@ export type Messages = {
         updateError: string;
         deleteSuccess: string;
         deleteError: string;
+        activeAdConflict?: string;
       };
       closeAd: string;
       status: string;
@@ -426,6 +431,8 @@ export type Messages = {
       noAds: string;
       uploadMedia: string;
       uploadMediaHelper: string;
+      activeAdsTitle?: string;
+      activeUntil?: string;
     },
     messages: {
       successUpdateVenue: string;

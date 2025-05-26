@@ -80,7 +80,7 @@ const AdvertisingManager = () => {
       setAds(data || []);
     } catch (error) {
       console.error("Failed to fetch ads:", error);
-      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.fetchError" }));
+      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.createError", defaultMessage: "Failed to load ads" }));
     } finally {
       setIsLoading(false);
     }
@@ -127,7 +127,14 @@ const AdvertisingManager = () => {
     
     // Check for active ad conflict
     if (checkForActiveAdConflict(startDate, expiryDate, adSize)) {
-      toast.error(`There is already an active ${adSize.toLowerCase()} ad during this time period. Only one active ad per type is allowed at a time.`);
+      const adTypeText = adSize === "BANNER" 
+        ? intl.formatMessage({ id: "venueDashboard.advertising.adsSizeOptions.banner", defaultMessage: "banner" })
+        : intl.formatMessage({ id: "venueDashboard.advertising.adsSizeOptions.fullscreen", defaultMessage: "fullscreen" });
+      
+      toast.error(intl.formatMessage(
+        { id: "venueDashboard.advertising.messages.activeAdConflict", defaultMessage: "There is already an active {adType} ad during this time period. Only one active ad per type is allowed at a time." },
+        { adType: adTypeText }
+      ));
       return;
     }
     
@@ -168,10 +175,10 @@ const AdvertisingManager = () => {
       setActiveTab("list");
       
       // Show success message
-      toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.createSuccess" }));
+      toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.createSuccess", defaultMessage: "Ad created successfully" }));
     } catch (error) {
       console.error("Failed to create ad:", error);
-      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.createError" }));
+      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.createError", defaultMessage: "Failed to create ad" }));
     } finally {
       setIsLoading(false);
     }
@@ -182,7 +189,14 @@ const AdvertisingManager = () => {
     
     // Check for active ad conflict (excluding the current ad being edited)
     if (checkForActiveAdConflict(startDate, expiryDate, adSize, adToEdit.id)) {
-      toast.error(`There is already an active ${adSize.toLowerCase()} ad during this time period. Only one active ad per type is allowed at a time.`);
+      const adTypeText = adSize === "BANNER" 
+        ? intl.formatMessage({ id: "venueDashboard.advertising.adsSizeOptions.banner", defaultMessage: "banner" })
+        : intl.formatMessage({ id: "venueDashboard.advertising.adsSizeOptions.fullscreen", defaultMessage: "fullscreen" });
+      
+      toast.error(intl.formatMessage(
+        { id: "venueDashboard.advertising.messages.activeAdConflict", defaultMessage: "There is already an active {adType} ad during this time period. Only one active ad per type is allowed at a time." },
+        { adType: adTypeText }
+      ));
       return;
     }
     
@@ -222,10 +236,10 @@ const AdvertisingManager = () => {
       setActiveTab("list");
       
       // Show success message
-      toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.updateSuccess" }));
+      toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.updateSuccess", defaultMessage: "Ad updated successfully" }));
     } catch (error) {
       console.error("Failed to update ad:", error);
-      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.updateError" }));
+      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.updateError", defaultMessage: "Failed to update ad" }));
     } finally {
       setIsLoading(false);
     }
@@ -238,7 +252,7 @@ const AdvertisingManager = () => {
     
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${apiUrl}/ads/delete/${id}`, {
+      const response = await fetch(`${apiUrl}/ads/${id}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -254,10 +268,10 @@ const AdvertisingManager = () => {
       fetchAds();
       
       // Show success message
-      toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.deleteSuccess" }));
+      toast.success(intl.formatMessage({ id: "venueDashboard.advertising.messages.deleteSuccess", defaultMessage: "Ad deleted successfully" }));
     } catch (error) {
       console.error("Failed to delete ad:", error);
-      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.deleteError" }));
+      toast.error(intl.formatMessage({ id: "venueDashboard.advertising.messages.deleteError", defaultMessage: "Failed to delete ad" }));
     } finally {
       setIsLoading(false);
     }
@@ -295,8 +309,8 @@ const AdvertisingManager = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle><FormattedMessage id="venueDashboard.advertising.title" /></CardTitle>
-        <CardDescription><FormattedMessage id="venueDashboard.advertising.description" /></CardDescription>
+        <CardTitle><FormattedMessage id="venueDashboard.advertising.title" defaultMessage="Advertising" /></CardTitle>
+        <CardDescription><FormattedMessage id="venueDashboard.advertising.description" defaultMessage="Manage your advertising campaigns" /></CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="list" value={activeTab} onValueChange={setActiveTab}>
@@ -316,17 +330,17 @@ const AdvertisingManager = () => {
           <TabsContent value="list">
             {isLoading ? (
               <div className="text-center py-8">
-                <p className="text-gray-500 mb-4"><FormattedMessage id="common.loading" /></p>
+                <p className="text-gray-500 mb-4"><FormattedMessage id="common.loading" defaultMessage="Loading..." /></p>
               </div>
             ) : ads.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-500 mb-4"><FormattedMessage id="venueDashboard.advertising.noAds" /></p>
+                <p className="text-gray-500 mb-4"><FormattedMessage id="venueDashboard.advertising.noAds" defaultMessage="No ads found" /></p>
                 <Button variant="outline" onClick={() => {
                   resetForm();
                   setActiveTab("create");
                 }}>
                   <Plus className="h-4 w-4 mr-2" />
-                  <FormattedMessage id="venueDashboard.advertising.createAd" />
+                  <FormattedMessage id="venueDashboard.advertising.createAd" defaultMessage="Create Ad" />
                 </Button>
               </div>
             ) : (
@@ -334,12 +348,12 @@ const AdvertisingManager = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead><FormattedMessage id="venueDashboard.advertising.campaignName" /></TableHead>
-                      <TableHead><FormattedMessage id="venueDashboard.advertising.adsSize" /></TableHead>
-                      <TableHead><FormattedMessage id="venueDashboard.advertising.startDate" /></TableHead>
-                      <TableHead><FormattedMessage id="venueDashboard.advertising.expiryDate" /></TableHead>
-                      <TableHead><FormattedMessage id="venueDashboard.advertising.status" /></TableHead>
-                      <TableHead className="text-right"><FormattedMessage id="venueDashboard.sessions.actions" /></TableHead>
+                      <TableHead><FormattedMessage id="venueDashboard.advertising.campaignName" defaultMessage="Campaign Name" /></TableHead>
+                      <TableHead><FormattedMessage id="venueDashboard.advertising.adsSize" defaultMessage="Ad Size" /></TableHead>
+                      <TableHead><FormattedMessage id="venueDashboard.advertising.startDate" defaultMessage="Start Date" /></TableHead>
+                      <TableHead><FormattedMessage id="venueDashboard.advertising.expiryDate" defaultMessage="Expiry Date" /></TableHead>
+                      <TableHead><FormattedMessage id="venueDashboard.advertising.status" defaultMessage="Status" /></TableHead>
+                      <TableHead className="text-right"><FormattedMessage id="venueDashboard.sessions.actions" defaultMessage="Actions" /></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -349,6 +363,7 @@ const AdvertisingManager = () => {
                         <TableCell>
                           <FormattedMessage 
                             id={`venueDashboard.advertising.adsSizeOptions.${ad.ads_size === "BANNER" ? "banner" : "fullscreen"}`} 
+                            defaultMessage={ad.ads_size === "BANNER" ? "Banner" : "Fullscreen"}
                           />
                         </TableCell>
                         <TableCell>{format(new Date(ad.start_date), "PPP")}</TableCell>
@@ -361,7 +376,10 @@ const AdvertisingManager = () => {
                               ${getAdStatus(ad) === "expired" ? "bg-gray-100 text-gray-800" : ""}
                             `}
                           >
-                            <FormattedMessage id={`venueDashboard.advertising.${getAdStatus(ad)}`} />
+                            <FormattedMessage 
+                              id={`venueDashboard.advertising.${getAdStatus(ad)}`} 
+                              defaultMessage={getAdStatus(ad)}
+                            />
                           </span>
                         </TableCell>
                         <TableCell className="text-right space-x-2">
@@ -400,7 +418,7 @@ const AdvertisingManager = () => {
                                       <div className="p-4 bg-gray-50 flex justify-between">
                                         <p className="font-semibold">{adToShow?.campaign_name}</p>
                                         <Button variant="ghost" size="sm">
-                                          <FormattedMessage id="venueDashboard.advertising.closeAd" />
+                                          <FormattedMessage id="venueDashboard.advertising.closeAd" defaultMessage="Close" />
                                         </Button>
                                       </div>
                                     </div>
@@ -441,7 +459,7 @@ const AdvertisingManager = () => {
               <div className="grid gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="campaign-name">
-                    <FormattedMessage id="venueDashboard.advertising.campaignName" />
+                    <FormattedMessage id="venueDashboard.advertising.campaignName" defaultMessage="Campaign Name" />
                   </Label>
                   <Input 
                     id="campaign-name" 
@@ -453,7 +471,7 @@ const AdvertisingManager = () => {
                 
                 <div className="grid gap-2">
                   <Label htmlFor="media-url">
-                    <FormattedMessage id="venueDashboard.advertising.mediaUrl" />
+                    <FormattedMessage id="venueDashboard.advertising.mediaUrl" defaultMessage="Media URL" />
                   </Label>
                   <Input 
                     id="media-url" 
@@ -466,7 +484,7 @@ const AdvertisingManager = () => {
                 
                 <div className="grid gap-2">
                   <Label>
-                    <FormattedMessage id="venueDashboard.advertising.startDate" />
+                    <FormattedMessage id="venueDashboard.advertising.startDate" defaultMessage="Start Date" />
                   </Label>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -501,7 +519,7 @@ const AdvertisingManager = () => {
                 
                 <div className="grid gap-2">
                   <Label>
-                    <FormattedMessage id="venueDashboard.advertising.expiryDate" />
+                    <FormattedMessage id="venueDashboard.advertising.expiryDate" defaultMessage="Expiry Date" />
                   </Label>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -528,19 +546,19 @@ const AdvertisingManager = () => {
                 
                 <div className="grid gap-2">
                   <Label>
-                    <FormattedMessage id="venueDashboard.advertising.adsSize" />
+                    <FormattedMessage id="venueDashboard.advertising.adsSize" defaultMessage="Ad Size" />
                   </Label>
                   <RadioGroup value={adSize} onValueChange={(value) => setAdSize(value as AdSize)}>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="BANNER" id="banner" />
                       <Label htmlFor="banner">
-                        <FormattedMessage id="venueDashboard.advertising.adsSizeOptions.banner" />
+                        <FormattedMessage id="venueDashboard.advertising.adsSizeOptions.banner" defaultMessage="Banner" />
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="FULLSCREEN" id="fullscreen" />
                       <Label htmlFor="fullscreen">
-                        <FormattedMessage id="venueDashboard.advertising.adsSizeOptions.fullscreen" />
+                        <FormattedMessage id="venueDashboard.advertising.adsSizeOptions.fullscreen" defaultMessage="Fullscreen" />
                       </Label>
                     </div>
                   </RadioGroup>
@@ -556,7 +574,7 @@ const AdvertisingManager = () => {
                   }} 
                   className="mr-2"
                 >
-                  <FormattedMessage id="common.cancel" />
+                  <FormattedMessage id="common.cancel" defaultMessage="Cancel" />
                 </Button>
                 <Button 
                   onClick={adToEdit ? handleUpdateAd : handleCreateAd} 
@@ -565,7 +583,7 @@ const AdvertisingManager = () => {
                   {adToEdit ? (
                     <FormattedMessage id="venueDashboard.advertising.update" defaultMessage="Update" />
                   ) : (
-                    <FormattedMessage id="venueDashboard.advertising.submit" />
+                    <FormattedMessage id="venueDashboard.advertising.submit" defaultMessage="Submit" />
                   )}
                 </Button>
               </div>
