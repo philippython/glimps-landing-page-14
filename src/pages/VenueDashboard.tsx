@@ -60,6 +60,7 @@ import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import AdvertisingManager from "@/components/AdvertisingManager";
+import ActiveAdBanner from "@/components/ActiveAdBanner";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -372,6 +373,7 @@ const VenueDashboard = () => {
       </div>
 
       <main className="p-6">
+        <ActiveAdBanner />
         <div className="grid gap-6">
           {activeTab === "sessions" && (
             <Card>
