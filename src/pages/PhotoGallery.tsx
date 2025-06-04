@@ -1,12 +1,14 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Download, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import ImageWithFallback from "@/components/ImageWithFallback";
+import ProgressiveImage from "@/components/ProgressiveImage";
+import EnhancedDownloadButton from "@/components/EnhancedDownloadButton";
 import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
+import { downloadMultiplePhotos } from "@/utils/downloadUtils";
 import { convertDateTime, convertOnlyDate } from "@/lib/utils";
 import LogoWithText from "@/components/LogoWithText";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -33,6 +35,9 @@ const PhotoGallery = () => {
   const { uuid } = useParams<{ uuid: string }>();
   const [photosLoaded, setPhotosLoaded] = useState(false);
   const [showAds, setShowAds] = useState(false);
+  const [loadedImagesCount, setLoadedImagesCount] = useState(0);
+  const [isDownloadingAll, setIsDownloadingAll] = useState(false);
+  
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
     queryKey: ['photos', uuid],
     queryFn: () => fetchPhotosFromApi(uuid || ""),
@@ -58,32 +63,37 @@ const PhotoGallery = () => {
 
   const photoName = (index: number) => `${data && convertOnlyDate(data.created_at)} (${index + 1})`;
 
-  const handleDownload = (url: string, name: string) => {
-    fetch(url)
-      .then(response => response.blob())
-      .then(blob => {
-        const blobUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = blobUrl;
-        a.download = `${name}.jpg`;
-        document.body.appendChild(a);
-        if ('download' in HTMLAnchorElement.prototype) {
-          a.click();
-        } else {
-          window.open(blobUrl, '_blank');
-        }
-        window.URL.revokeObjectURL(blobUrl);
-        document.body.removeChild(a);
-      })
-      .catch(() => {
-        try {
-          window.open(url, '_blank');
-          toast.info(`${intl.formatMessage({ id: 'photoGallery.download.downloadFailed' })} - Opened in new tab`);
-        } catch (e) {
-          toast.error(`${intl.formatMessage({ id: 'photoGallery.download.downloadFailed' })} ${name}`);
-        }
-      });
+  const handleImageLoad = () => {
+    setLoadedImagesCount(prev => prev + 1);
+  };
+
+  const handleDownloadAll = async () => {
+    if (!data?.photos) return;
+    
+    setIsDownloadingAll(true);
+    console.log(`Starting download of all ${data.photos.length} photos`);
+    
+    try {
+      const photosToDownload = data.photos.map((photo, index) => ({
+        url: photo.photo_url,
+        filename: photoName(index)
+      }));
+
+      const successCount = await downloadMultiplePhotos(photosToDownload);
+      
+      if (successCount === data.photos.length) {
+        toast.success(intl.formatMessage({ id: "photoGallery.download.downloadAll" }));
+      } else if (successCount > 0) {
+        toast.success(`Downloaded ${successCount}/${data.photos.length} photos successfully`);
+      } else {
+        toast.error(intl.formatMessage({ id: "photoGallery.download.downloadFailed" }));
+      }
+    } catch (error) {
+      console.error('Batch download error:', error);
+      toast.error(intl.formatMessage({ id: "photoGallery.download.downloadFailed" }));
+    } finally {
+      setIsDownloadingAll(false);
+    }
   };
 
   if (!uuid) {
@@ -147,19 +157,14 @@ const PhotoGallery = () => {
                   <LanguagePicker />
                   <Button
                     variant="outline"
-                    onClick={() => {
-                      if (data?.photos) {
-                        data.photos.forEach((photo, index) => {
-                          setTimeout(() => {
-                            handleDownload(photo.photo_url, photoName(index));
-                          }, 300);
-                        });
-                        toast.success(intl.formatMessage({ id: "photoGallery.download.downloadAll" }));
-                      }
-                    }}
-                    disabled={isLoading || !data}
+                    onClick={handleDownloadAll}
+                    disabled={isLoading || !data || isDownloadingAll}
                   >
-                    <FormattedMessage id="photoGallery.buttons.downloadAll" />
+                    {isDownloadingAll ? (
+                      <FormattedMessage id="photoGallery.buttons.downloading" />
+                    ) : (
+                      <FormattedMessage id="photoGallery.buttons.downloadAll" />
+                    )}
                   </Button>
                 </div>
                 <p className="text-red-500 text-md font-semibold text-center">
@@ -191,21 +196,21 @@ const PhotoGallery = () => {
             {data?.photos.map((photo, index) => (
               <Card key={index} className="overflow-hidden">
                 <div className="relative pt-[75%]">
-                  <ImageWithFallback
-                    className="absolute inset-0 object-cover w-full h-full"
+                  <ProgressiveImage
+                    className="absolute inset-0"
                     src={photo.photo_url}
                     alt={`Photo ${index + 1}`}
+                    onLoad={handleImageLoad}
                   />
                 </div>
                 <div className="p-4 flex items-center justify-between">
                   <p className="text-sm text-gray-700 font-medium truncate">{photoName(index)}</p>
-                  <Button
+                  <EnhancedDownloadButton
+                    url={photo.photo_url}
+                    filename={photoName(index)}
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDownload(photo.photo_url, photoName(index))}
-                  >
-                    <Download className="w-5 h-5" />
-                  </Button>
+                  />
                 </div>
               </Card>
             ))}
