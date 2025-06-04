@@ -1,13 +1,7 @@
 
 import { useState } from "react";
-import { Download, Smartphone, Monitor } from "lucide-react";
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { downloadPhoto } from "@/utils/downloadUtils";
 import { toast } from "sonner";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -30,9 +24,9 @@ const EnhancedDownloadButton = ({
   const [isDownloading, setIsDownloading] = useState(false);
   const intl = useIntl();
 
-  const handleDownload = async (method: 'auto' | 'save-as') => {
+  const handleDownload = async () => {
     setIsDownloading(true);
-    console.log(`Download initiated with method: ${method} for ${filename}`);
+    console.log(`Download initiated for ${filename}`);
 
     try {
       const success = await downloadPhoto({
@@ -57,58 +51,23 @@ const EnhancedDownloadButton = ({
     }
   };
 
-  // Detect if user is on mobile
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
   if (showText) {
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant={variant} size={size} disabled={isDownloading}>
-            <Download className="w-4 h-4 mr-2" />
-            {isDownloading ? (
-              <FormattedMessage id="photoGallery.buttons.downloading" />
-            ) : (
-              <FormattedMessage id="photoGallery.buttons.download" />
-            )}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleDownload('auto')}>
-            <Download className="w-4 h-4 mr-2" />
-            <FormattedMessage id="photoGallery.buttons.quickDownload" />
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleDownload('save-as')}>
-            {isMobile ? <Smartphone className="w-4 h-4 mr-2" /> : <Monitor className="w-4 h-4 mr-2" />}
-            <FormattedMessage 
-              id={isMobile ? "photoGallery.buttons.saveToPhotos" : "photoGallery.buttons.saveToFiles"} 
-            />
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Button variant={variant} size={size} disabled={isDownloading} onClick={handleDownload}>
+        <Download className="w-4 h-4 mr-2" />
+        {isDownloading ? (
+          <FormattedMessage id="photoGallery.buttons.downloading" />
+        ) : (
+          <FormattedMessage id="photoGallery.buttons.download" />
+        )}
+      </Button>
     );
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant={variant} size={size} disabled={isDownloading}>
-          <Download className="w-4 h-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => handleDownload('auto')}>
-          <Download className="w-4 h-4 mr-2" />
-          <FormattedMessage id="photoGallery.buttons.quickDownload" />
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleDownload('save-as')}>
-          {isMobile ? <Smartphone className="w-4 h-4 mr-2" /> : <Monitor className="w-4 h-4 mr-2" />}
-          <FormattedMessage 
-            id={isMobile ? "photoGallery.buttons.saveToPhotos" : "photoGallery.buttons.saveToFiles"} 
-          />
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button variant={variant} size={size} disabled={isDownloading} onClick={handleDownload}>
+      <Download className="w-4 h-4" />
+    </Button>
   );
 };
 
