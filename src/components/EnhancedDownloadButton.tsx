@@ -30,40 +30,16 @@ const EnhancedDownloadButton = ({
   const [isDownloading, setIsDownloading] = useState(false);
   const intl = useIntl();
 
-  const handleDownload = async (method: 'auto' | 'save-as' | 'new-tab') => {
+  const handleDownload = async (method: 'auto' | 'save-as') => {
     setIsDownloading(true);
     console.log(`Download initiated with method: ${method} for ${filename}`);
 
     try {
-      if (method === 'new-tab') {
-        // Force open in new tab for manual save
-        window.open(url, '_blank', 'noopener,noreferrer');
-        toast.info(intl.formatMessage({ id: 'photoGallery.download.openedInNewTab' }));
-        setIsDownloading(false);
-        return;
-      }
-
-      if (method === 'save-as') {
-        // Try to trigger browser's save dialog
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${filename}.jpg`;
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        toast.success(intl.formatMessage({ id: 'photoGallery.download.downloadOne' }));
-        setIsDownloading(false);
-        return;
-      }
-
-      // Auto method - try best approach
       const success = await downloadPhoto({
         url,
         filename,
         onSuccess: () => {
-          toast.success(intl.formatMessage({ id: 'photoGallery.download.downloadOne' }));
+          toast.success(intl.formatMessage({ id: 'photoGallery.download.saveSuccess' }));
         },
         onError: (error) => {
           toast.error(`${intl.formatMessage({ id: 'photoGallery.download.downloadFailed' })}: ${error}`);
@@ -71,11 +47,7 @@ const EnhancedDownloadButton = ({
       });
 
       if (!success) {
-        // If auto download fails, show manual options
-        toast.error(
-          intl.formatMessage({ id: 'photoGallery.download.downloadFailed' }) + 
-          '. Please try "Save to Photos" or "Open in New Tab"'
-        );
+        toast.error(intl.formatMessage({ id: 'photoGallery.download.downloadFailed' }));
       }
     } catch (error) {
       console.error('Download error:', error);
@@ -112,10 +84,6 @@ const EnhancedDownloadButton = ({
               id={isMobile ? "photoGallery.buttons.saveToPhotos" : "photoGallery.buttons.saveToFiles"} 
             />
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleDownload('new-tab')}>
-            <Download className="w-4 h-4 mr-2" />
-            <FormattedMessage id="photoGallery.buttons.openInNewTab" />
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );
@@ -138,10 +106,6 @@ const EnhancedDownloadButton = ({
           <FormattedMessage 
             id={isMobile ? "photoGallery.buttons.saveToPhotos" : "photoGallery.buttons.saveToFiles"} 
           />
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleDownload('new-tab')}>
-          <Download className="w-4 h-4 mr-2" />
-          <FormattedMessage id="photoGallery.buttons.openInNewTab" />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

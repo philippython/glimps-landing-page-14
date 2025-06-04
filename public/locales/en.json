@@ -45,7 +45,8 @@
       "downloadOne": "Downloaded",
       "downloadAll": "Downloaded all photos",
       "downloadFailed": "Failed to download",
-      "openedInNewTab": "Opened in new tab - right-click and select 'Save image as...'"
+      "downloading": "Downloading...",
+      "saveSuccess": "Photo saved successfully"
     },
     "buttons": {
       "downloadAll": "Download All",
@@ -53,8 +54,7 @@
       "downloading": "Downloading...",
       "quickDownload": "Quick Download",
       "saveToPhotos": "Save to Photos",
-      "saveToFiles": "Save to Files",
-      "openInNewTab": "Open in New Tab"
+      "saveToFiles": "Save to Files"
     },
     "footer": {
       "trademark": "Glimps. All rights reserved.",

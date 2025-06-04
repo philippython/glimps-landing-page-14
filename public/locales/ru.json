@@ -45,7 +45,8 @@
       "downloadOne": "Скачано",
       "downloadAll": "Все фото скачаны",
       "downloadFailed": "Не удалось скачать",
-      "openedInNewTab": "Открыто в новой вкладке - нажмите правой кнопкой и выберите 'Сохранить изображение как...'"
+      "downloading": "Скачивается...",
+      "saveSuccess": "Фото успешно сохранено"
     },
     "buttons": {
       "downloadAll": "Скачать всё",
@@ -53,8 +54,7 @@
       "downloading": "Скачивается...",
       "quickDownload": "Быстрое скачивание",
       "saveToPhotos": "Сохранить в фото",
-      "saveToFiles": "Сохранить в файлы",
-      "openInNewTab": "Открыть в новой вкладке"
+      "saveToFiles": "Сохранить в файлы"
     },
     "footer": {
       "trademark": "Glimps. Все права защищены.",

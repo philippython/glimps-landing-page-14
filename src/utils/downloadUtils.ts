@@ -11,7 +11,7 @@ export interface DownloadOptions {
 export const downloadPhoto = async ({ url, filename, onSuccess, onError }: DownloadOptions) => {
   console.log(`Starting download for: ${filename}`);
   
-  // Method 1: Try modern download with fetch
+  // Method 1: Try fetch with blob download (most reliable)
   try {
     const response = await fetch(url, {
       method: 'GET',
@@ -27,7 +27,6 @@ export const downloadPhoto = async ({ url, filename, onSuccess, onError }: Downl
     const blob = await response.blob();
     const blobUrl = window.URL.createObjectURL(blob);
     
-    // Try programmatic download
     const link = document.createElement('a');
     link.href = blobUrl;
     link.download = `${filename}.jpg`;
@@ -47,13 +46,12 @@ export const downloadPhoto = async ({ url, filename, onSuccess, onError }: Downl
     console.error(`Fetch download failed: ${error}`);
   }
   
-  // Method 2: Try direct link opening
+  // Method 2: Try direct link download
   try {
     const link = document.createElement('a');
     link.href = url;
     link.download = `${filename}.jpg`;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
+    link.style.display = 'none';
     
     document.body.appendChild(link);
     link.click();
@@ -66,20 +64,28 @@ export const downloadPhoto = async ({ url, filename, onSuccess, onError }: Downl
     console.error(`Direct link download failed: ${error}`);
   }
   
-  // Method 3: Fallback to new window
+  // Method 3: Background iframe method (no visible tabs)
   try {
-    const newWindow = window.open(url, '_blank');
-    if (newWindow) {
-      console.log(`Opened in new window: ${filename}`);
-      onSuccess?.();
-      return true;
-    }
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    
+    document.body.appendChild(iframe);
+    
+    // Remove iframe after a delay
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, 3000);
+    
+    console.log(`Background download attempted: ${filename}`);
+    onSuccess?.();
+    return true;
   } catch (error) {
-    console.error(`New window fallback failed: ${error}`);
+    console.error(`Background iframe download failed: ${error}`);
   }
   
   // All methods failed
-  const errorMessage = 'Download failed. Please try right-clicking the image and selecting "Save image as..."';
+  const errorMessage = 'Download failed. Please try again.';
   console.error(`All download methods failed for: ${filename}`);
   onError?.(errorMessage);
   return false;
@@ -103,7 +109,7 @@ export const downloadMultiplePhotos = async (photos: Array<{ url: string; filena
     
     if (success) {
       // Small delay between downloads to prevent browser blocking
-      await delay(300);
+      await delay(500);
     }
   }
   
