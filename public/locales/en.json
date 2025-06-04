@@ -1,6 +1,8 @@
+
 {
   "common": {
     "glimps": "Glimps",
+    "loading": "Loading...",
     "navbar": {
       "home": "Home",
       "pricing": "Pricing",
@@ -250,7 +252,7 @@
     "navItems": {
       "sessions": "Photo Sessions",
       "usersList": "Users List",
-      "venueSettings": "Vennue Settings",
+      "venueSettings": "Venue Settings",
       "accountSettings": "Account Settings",
       "search": "Search...",
       "signOut": "Sign Out",
@@ -275,7 +277,7 @@
       },
       "viewPhoto": "View Photo",
       "userPhoto": "User Photo",
-      "viewSession": "View photo ession",
+      "viewSession": "View photo session",
       "noPhotoFound": "No photo sessions found."
     },
     "usersList": {
@@ -406,6 +408,10 @@
       "title": "Advertising Management",
       "description": "Create and manage advertisements for your venue",
       "createAd": "Create New Ad",
+      "createNewAd": "Create New Ad",
+      "editAd": "Edit Ad",
+      "adsList": "Ads List",
+      "update": "Update",
       "campaignName": "Campaign Name",
       "mediaUrl": "Media URL",
       "startDate": "Start Date",
@@ -425,16 +431,20 @@
         "updateSuccess": "Advertisement updated successfully!",
         "updateError": "Failed to update advertisement. Please try again.",
         "deleteSuccess": "Advertisement deleted successfully!",
-        "deleteError": "Failed to delete advertisement. Please try again."
+        "deleteError": "Failed to delete advertisement. Please try again.",
+        "activeAdConflict": "An active ad of this type already exists for this date range.",
+        "loadFailed": "Failed to load advertisements"
       },
-      "closeAd": "Close Advertisement",
+      "closeAd": "Close",
       "status": "Status",
       "active": "Active",
       "scheduled": "Scheduled",
       "expired": "Expired",
       "noAds": "No advertisements found. Create your first ad campaign!",
       "uploadMedia": "Upload Media",
-      "uploadMediaHelper": "Recommended: JPG, PNG or MP4 (Max 10MB)"
+      "uploadMediaHelper": "Recommended: JPG, PNG or MP4 (Max 10MB)",
+      "activeAdsTitle": "Active Ads",
+      "activeUntil": "Active until"
     },
     "messages": {
       "successUpdateVenue": "Venue settings updated successfully!",
