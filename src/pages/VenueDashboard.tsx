@@ -36,6 +36,11 @@ import {
 import { useAuth } from "@/auth/AuthProvider";
 import LanguagePicker from "@/components/LanguagePicker";
 import LogoWithText from "@/components/LogoWithText";
+import {
+  deleteExportUsersProcess,
+  getExportUsersProcess,
+  startExportUsersProcess,
+} from "@/service/exportUsersApi";
 import { VenueUser, fetchVenueUsersFromApi } from "@/service/fetchVenueUsersFromApi";
 import { convertDateTime } from '@/lib/utils';
 import { VenuePhotos, fetchVenuePhotosFromApi } from "@/service/fetchVenuePhotosFromApi";
@@ -70,6 +75,7 @@ const VenueDashboard = () => {
   const [venuePhotos, setVenuePhotos] = useState<VenuePhotos[]>([]);
   const [loading, setLoading] = useState(false);
   const [userSearchTerm, setUserSearchTerm] = useState("");
+  const [xlsxReportLoading, setXlsxReportLoading] = useState(false);
   const { user, venue, token, logout, setUserAndVenueAfterCreation } = useAuth();
   const intl = useIntl();
 
@@ -104,6 +110,29 @@ const VenueDashboard = () => {
     setCurrentPhotoPage(1);
     setCurrentUserPage(1);
   }, [searchTerm, dateFrom, dateTo, userSearchTerm]);
+
+  const exportXlsxReport = () => {
+    if (token) {
+      setXlsxReportLoading(true);
+      startExportUsersProcess(token)
+        .then((process) => new Promise((resolve, reject) => {
+          const intervalId = setInterval(() => {
+            getExportUsersProcess(token, process.id)
+              .then((process) => {
+                if (process.link) {
+                  clearInterval(intervalId);
+                  window.open(process.link);
+                  setXlsxReportLoading(false);
+                  setTimeout(() => {
+                    deleteExportUsersProcess(token, process.id);
+                  }, 5000);
+                  resolve();
+                }
+              });
+          }, 1000);
+        }));
+    }
+  };
 
   // Filter functions with date filtering
   const filterByDate = (date: string | undefined) => {
@@ -610,6 +639,15 @@ const VenueDashboard = () => {
 
                     <Button variant="ghost" size="sm" onClick={resetDateFilters}>
                       <FormattedMessage id="venueDashboard.filters.reset" />
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      loading={xlsxReportLoading}
+                      onClick={exportXlsxReport}
+                    >
+                      <FormattedMessage id="venueDashboard.sessions.downloadXLSX" />
                     </Button>
                   </div>
                 </div>
