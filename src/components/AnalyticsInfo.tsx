@@ -1,3 +1,4 @@
+
 import { VenuePhotos } from "@/service/fetchVenuePhotosFromApi";
 import { VenueUser } from "@/service/fetchVenueUsersFromApi";
 import * as React from "react"
@@ -24,22 +25,32 @@ type AnalyticsInfoProps = {
 
 export default function AnalyticsInfo(props: AnalyticsInfoProps) {
   const intl = useIntl();
+  
+  // Ensure we have valid arrays to work with
+  const users = Array.isArray(props.venueUsers) ? props.venueUsers : [];
+  const photos = Array.isArray(props.venuePhotos) ? props.venuePhotos : [];
+  
+  console.log("Analytics data - users:", users.length, "photos:", photos.length);
+  
   const chartData = React.useMemo(() => {
     const counts: Record<string, { photo: number; user: number }> = {};
-    props.venuePhotos.forEach(photo => {
+    
+    photos.forEach(photo => {
       const date = new Date(`${photo.created_at}Z`).toISOString().split('T')[0];
       if (!counts[date]) counts[date] = { photo: 0, user: 0 };
       counts[date].photo += 1;
     });
-    props.venueUsers.forEach(user => {
+    
+    users.forEach(user => {
       const date = new Date(`${user.created_at}Z`).toISOString().split('T')[0];
       if (!counts[date]) counts[date] = { photo: 0, user: 0 };
       counts[date].user += 1;
     });
+    
     return Object.entries(counts)
       .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
       .map(([date, { photo, user }]) => ({ date, photo, user }));
-  }, [props.venuePhotos, props.venueUsers]);
+  }, [photos, users]);
 
   const chartConfig = {
     photo: {

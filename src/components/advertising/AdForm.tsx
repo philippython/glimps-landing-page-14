@@ -61,23 +61,25 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
-  const validateFile = async (file: File): Promise<boolean> => {
-    const isImage = file.type.startsWith('image/');
-    const isVideo = file.type.startsWith('video/');
+  const validateFile = (file: File): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
 
-    if (!isImage && !isVideo) {
-      toast.error("Please select an image or video file");
-      return false;
-    }
+      if (!isImage && !isVideo) {
+        toast.error("Please select an image or video file");
+        resolve(false);
+        return;
+      }
 
-    if (adSize === "BANNER" && isVideo) {
-      toast.error("Banner ads can only use images, not videos");
-      return false;
-    }
+      if (adSize === "BANNER" && isVideo) {
+        toast.error("Banner ads can only use images, not videos");
+        resolve(false);
+        return;
+      }
 
-    if (adSize === "BANNER" && isImage) {
-      // Check image dimensions for banner (should be wide, not square)
-      return new Promise<boolean>((resolve) => {
+      if (adSize === "BANNER" && isImage) {
+        // Check image dimensions for banner (should be wide, not square)
         const img = new Image();
         img.onload = () => {
           const aspectRatio = img.width / img.height;
@@ -93,10 +95,10 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
           resolve(false);
         };
         img.src = URL.createObjectURL(file);
-      });
-    }
-
-    return true;
+      } else {
+        resolve(true);
+      }
+    });
   };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -171,16 +173,24 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
           </Label>
           
           {!selectedFile && !mediaUrl ? (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
               <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <Label htmlFor="media-upload" className="cursor-pointer">
-                <span className="text-sm text-gray-600">
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
                   Click to upload image or video
-                </span>
+                </p>
+                <p className="text-xs text-gray-500">
+                  {adSize === "BANNER" ? "Images only (wide rectangles)" : "Images or videos supported"}
+                </p>
+              </div>
+              <Label htmlFor="media-upload" className="cursor-pointer">
+                <Button variant="outline" className="mt-4" asChild>
+                  <span>Choose File</span>
+                </Button>
                 <Input
                   id="media-upload"
                   type="file"
-                  accept="image/*,video/*"
+                  accept={adSize === "BANNER" ? "image/*" : "image/*,video/*"}
                   className="hidden"
                   onChange={handleFileSelect}
                 />
@@ -196,13 +206,13 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
                       alt="Preview" 
                       className="max-h-32 rounded border"
                     />
-                  ) : (
+                  ) : selectedFile?.type.startsWith('video/') ? (
                     <video 
                       src={previewUrl} 
                       className="max-h-32 rounded border"
                       controls
                     />
-                  )}
+                  ) : null}
                   <Button
                     variant="destructive"
                     size="icon"
@@ -221,6 +231,12 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
                     <span>{uploadProgress}%</span>
                   </div>
                   <Progress value={uploadProgress} />
+                </div>
+              )}
+              
+              {!selectedFile && mediaUrl && (
+                <div className="text-sm text-green-600">
+                  ✓ Media uploaded successfully
                 </div>
               )}
             </div>
@@ -285,12 +301,10 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
                 initialFocus
                 className="p-3 pointer-events-auto"
                 disabled={(date) => {
-                  // If editing an existing ad and the original start date is in the past, allow it
                   if (adToEdit && new Date(adToEdit.start_date) < new Date() && 
                       date && date.toDateString() === new Date(adToEdit.start_date).toDateString()) {
                     return false;
                   }
-                  // Otherwise, disable past dates
                   return date < new Date(new Date().setHours(0, 0, 0, 0));
                 }}
               />
