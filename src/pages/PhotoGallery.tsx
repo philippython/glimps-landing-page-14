@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import ProgressiveImage from "@/components/ProgressiveImage";
 import EnhancedDownloadButton from "@/components/EnhancedDownloadButton";
+import BoomerangDownloadButton from "@/components/BoomerangDownloadButton";
 import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
 import { downloadMultiplePhotos } from "@/utils/downloadUtils";
 import { convertDateTime, convertOnlyDate } from "@/lib/utils";
@@ -19,7 +20,10 @@ import { useState, useEffect } from "react";
 type Photo = {
   photo_url: string,
   sent: boolean,
-  venue_id?: string
+  venue_id?: string,
+  boomerang?: {
+    url?: string | null
+  } | null
 }
 
 interface PhotosDataFromApi {
@@ -205,12 +209,22 @@ const PhotoGallery = () => {
                 </div>
                 <div className="p-4 flex items-center justify-between">
                   <p className="text-sm text-gray-700 font-medium truncate">{photoName(index)}</p>
-                  <EnhancedDownloadButton
-                    url={photo.photo_url}
-                    filename={photoName(index)}
-                    variant="ghost"
-                    size="icon"
-                  />
+                  <div className="flex items-center gap-2">
+                    <EnhancedDownloadButton
+                      url={photo.photo_url}
+                      filename={photoName(index)}
+                      variant="ghost"
+                      size="icon"
+                    />
+                    {photo.boomerang?.url && (
+                      <BoomerangDownloadButton
+                        url={photo.boomerang.url}
+                        filename={`${photoName(index)}_boomerang`}
+                        variant="ghost"
+                        size="icon"
+                      />
+                    )}
+                  </div>
                 </div>
               </Card>
             ))}

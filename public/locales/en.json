@@ -60,5 +60,23 @@
       "trademark": "Glimps. All rights reserved.",
       "message": "Photos are available for 30 days from the event date."
     }
+  },
+  "venueDashboard": {
+    "advertising": {
+      "title": "Advertisement Management",
+      "createAd": "Create Advertisement",
+      "campaignName": "Campaign Name",
+      "mediaUrl": "Media URL",
+      "mediaUpload": "Upload Media",
+      "startDate": "Start Date",
+      "expiryDate": "Expiry Date",
+      "adsSize": "Ad Size",
+      "adsSizeOptions": {
+        "banner": "Banner",
+        "fullscreen": "Fullscreen"
+      },
+      "submit": "Create Advertisement",
+      "update": "Update Advertisement"
+    }
   }
 }

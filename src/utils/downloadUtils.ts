@@ -91,6 +91,44 @@ export const downloadPhoto = async ({ url, filename, onSuccess, onError }: Downl
   return false;
 };
 
+export const downloadVideo = async ({ url, filename, onSuccess, onError }: DownloadOptions) => {
+  console.log(`Starting video download for: ${filename}`);
+  
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = `${filename}.mp4`;
+    link.style.display = 'none';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up
+    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+    
+    console.log(`Video download successful: ${filename}`);
+    onSuccess?.();
+    return true;
+  } catch (error) {
+    console.error(`Video download failed: ${error}`);
+    const errorMessage = 'Video download failed. Please try again.';
+    onError?.(errorMessage);
+    return false;
+  }
+};
+
 export const downloadMultiplePhotos = async (photos: Array<{ url: string; filename: string }>) => {
   console.log(`Starting batch download of ${photos.length} photos`);
   

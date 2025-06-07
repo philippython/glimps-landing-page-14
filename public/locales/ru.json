@@ -60,5 +60,23 @@
       "trademark": "Glimps. Все права защищены.",
       "message": "Фото доступны в течение 30 дней с даты события."
     }
+  },
+  "venueDashboard": {
+    "advertising": {
+      "title": "Управление рекламой",
+      "createAd": "Создать рекламу",
+      "campaignName": "Название кампании",
+      "mediaUrl": "URL медиа",
+      "mediaUpload": "Загрузить медиа",
+      "startDate": "Дата начала",
+      "expiryDate": "Дата окончания",
+      "adsSize": "Размер рекламы",
+      "adsSizeOptions": {
+        "banner": "Баннер",
+        "fullscreen": "Полноэкранная"
+      },
+      "submit": "Создать рекламу",
+      "update": "Обновить рекламу"
+    }
   }
 }
