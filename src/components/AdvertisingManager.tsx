@@ -52,22 +52,28 @@ const AdvertisingManager = () => {
 
   const handleCreateOrUpdateAd = async (data: {
     campaign_name: string;
-    media_url: string;
     start_date: string;
     expiry_date: string;
     ads_size: "BANNER" | "FULLSCREEN";
+    media_file?: File;
   }) => {
     if (!venue || !token) return;
 
+    setIsLoading(true);
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
       const formData = new FormData();
+      
       formData.append('campaign_name', data.campaign_name);
-      formData.append('media_url', data.media_url);
       formData.append('start_date', data.start_date);
       formData.append('expiry_date', data.expiry_date);
       formData.append('ads_size', data.ads_size);
       formData.append('venue_id', venue.id);
+
+      // Only append media file if one is selected (for new ads or when updating with new media)
+      if (data.media_file) {
+        formData.append('media_file', data.media_file);
+      }
 
       const url = editingAd ? `${apiUrl}/ads/${editingAd.id}` : `${apiUrl}/ads/create`;
       const method = editingAd ? 'PUT' : 'POST';
@@ -76,6 +82,7 @@ const AdvertisingManager = () => {
         method,
         headers: {
           Authorization: `Bearer ${token}`
+          // Don't set Content-Type for FormData, let browser set it with boundary
         },
         body: formData,
       });
@@ -92,6 +99,8 @@ const AdvertisingManager = () => {
     } catch (error) {
       console.error(`Failed to ${editingAd ? 'update' : 'create'} ad:`, error);
       toast.error(error instanceof Error ? error.message : `Failed to ${editingAd ? 'update' : 'create'} advertisement`);
+    } finally {
+      setIsLoading(false);
     }
   };
 

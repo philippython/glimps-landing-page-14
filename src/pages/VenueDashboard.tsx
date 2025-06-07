@@ -91,11 +91,19 @@ const VenueDashboard = () => {
 
     if (venue && token) {
       fetchVenueUsersFromApi(token, venue.id)
-        .then((response) => setVenueUsers(response.users))
+        .then((response) => {
+          // Handle both old and new API response formats
+          const users = Array.isArray(response) ? response : (response.users || []);
+          setVenueUsers(users);
+        })
         .catch((error) => console.error("Error fetching venue users", error));
 
       fetchVenuePhotosFromApi(token, venue.id)
-        .then((response) => setVenuePhotos(response.photos))
+        .then((response) => {
+          // Handle both old and new API response formats
+          const photos = Array.isArray(response) ? response : (response.photos || []);
+          setVenuePhotos(photos);
+        })
         .catch((error) => console.error("Error fetching venue photos", error));
     }
   }, [venue, token, user, navigate]);
@@ -129,7 +137,8 @@ const VenueDashboard = () => {
     return true;
   };
 
-  const filteredVenuePhotos = venuePhotos.filter(
+  // Ensure arrays exist before filtering
+  const filteredVenuePhotos = (venuePhotos || []).filter(
     photo =>
       (photo.id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim()) ||
       photo.user_id.toLowerCase().trim().includes(searchTerm.toLowerCase().trim()) ||
@@ -137,7 +146,7 @@ const VenueDashboard = () => {
       filterByDate(photo.created_at)
   );
 
-  const filteredVenueUsers = venueUsers.filter(
+  const filteredVenueUsers = (venueUsers || []).filter(
     user =>
       (user.id.toLowerCase().trim().includes(userSearchTerm.toLowerCase().trim()) ||
       (user.phone_number && user.phone_number.toString().includes(userSearchTerm)) ||

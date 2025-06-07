@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,10 +35,10 @@ interface AdFormProps {
   onCancel: () => void;
   onSubmit: (data: {
     campaign_name: string;
-    media_url: string;
     start_date: string;
     expiry_date: string;
     ads_size: AdSize;
+    media_file?: File;
   }) => void;
 }
 
@@ -46,7 +47,6 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
 
   // Form state
   const [campaignName, setCampaignName] = useState<string>(adToEdit?.campaign_name || "");
-  const [mediaUrl, setMediaUrl] = useState<string>(adToEdit?.media_url || "");
   const [startDate, setStartDate] = useState<Date>(
     adToEdit ? new Date(adToEdit.start_date) : new Date()
   );
@@ -57,8 +57,6 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
 
   // File upload state
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const validateFile = (file: File): Promise<boolean> => {
@@ -115,40 +113,20 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
   const removeSelectedFile = () => {
     setSelectedFile(null);
     setPreviewUrl("");
-    setUploadProgress(0);
-  };
-
-  const simulateUpload = () => {
-    setIsUploading(true);
-    setUploadProgress(0);
-    
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          // Simulate uploaded URL
-          setMediaUrl("https://example.com/uploaded-media.jpg");
-          toast.success("Media uploaded successfully!");
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
   };
 
   const handleSubmit = () => {
-    if (selectedFile && !isUploading && uploadProgress === 0) {
-      simulateUpload();
+    if (!adToEdit && !selectedFile) {
+      toast.error("Please select a media file");
       return;
     }
 
     onSubmit({
       campaign_name: campaignName,
-      media_url: mediaUrl,
       start_date: startDate.toISOString(),
       expiry_date: expiryDate.toISOString(),
-      ads_size: adSize
+      ads_size: adSize,
+      media_file: selectedFile || undefined
     });
   };
 
@@ -172,87 +150,86 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
             <FormattedMessage id="venueDashboard.advertising.mediaUpload" />
           </Label>
           
-          {!selectedFile && !mediaUrl ? (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
-              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <div className="space-y-2">
-                <p className="text-sm text-gray-600">
-                  Click to upload image or video
-                </p>
-                <p className="text-xs text-gray-500">
-                  {adSize === "BANNER" ? "Images only (wide rectangles)" : "Images or videos supported"}
-                </p>
-              </div>
-              <Label htmlFor="media-upload" className="cursor-pointer">
-                <Button variant="outline" className="mt-4" asChild>
-                  <span>Choose File</span>
-                </Button>
-                <Input
-                  id="media-upload"
-                  type="file"
-                  accept={adSize === "BANNER" ? "image/*" : "image/*,video/*"}
-                  className="hidden"
-                  onChange={handleFileSelect}
-                />
-              </Label>
-            </div>
-          ) : (
+          {/* Show existing media for edit mode */}
+          {adToEdit && adToEdit.media_url && !selectedFile && (
             <div className="space-y-3">
-              {previewUrl && (
-                <div className="relative inline-block">
-                  {selectedFile?.type.startsWith('image/') ? (
-                    <img 
-                      src={previewUrl} 
-                      alt="Preview" 
-                      className="max-h-32 rounded border"
-                    />
-                  ) : selectedFile?.type.startsWith('video/') ? (
-                    <video 
-                      src={previewUrl} 
-                      className="max-h-32 rounded border"
-                      controls
-                    />
-                  ) : null}
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    className="absolute -top-2 -right-2 h-6 w-6"
-                    onClick={removeSelectedFile}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-              
-              {isUploading && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Uploading...</span>
-                    <span>{uploadProgress}%</span>
-                  </div>
-                  <Progress value={uploadProgress} />
-                </div>
-              )}
-              
-              {!selectedFile && mediaUrl && (
-                <div className="text-sm text-green-600">
-                  ✓ Media uploaded successfully
-                </div>
-              )}
+              <div className="text-sm text-gray-600">Current media:</div>
+              <div className="relative inline-block">
+                {adToEdit.media_url.includes('.mp4') || adToEdit.media_url.includes('.mov') || adToEdit.media_url.includes('.avi') ? (
+                  <video 
+                    src={adToEdit.media_url} 
+                    className="max-h-32 rounded border"
+                    controls
+                  />
+                ) : (
+                  <img 
+                    src={adToEdit.media_url} 
+                    alt="Current ad media" 
+                    className="max-h-32 rounded border"
+                  />
+                )}
+              </div>
+              <div className="text-sm text-gray-500">
+                Select a new file to replace the current media
+              </div>
             </div>
           )}
-          
-          {!selectedFile && (
-            <div className="grid gap-2">
-              <Label htmlFor="media-url">
-                <FormattedMessage id="venueDashboard.advertising.mediaUrl" />
-              </Label>
-              <Input 
-                id="media-url" 
-                value={mediaUrl} 
-                onChange={(e) => setMediaUrl(e.target.value)} 
-                placeholder="https://example.com/ad-image.jpg"
+
+          {/* File upload area */}
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
+            <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">
+                {adToEdit ? "Upload new media file" : "Click to upload image or video"}
+              </p>
+              <p className="text-xs text-gray-500">
+                {adSize === "BANNER" ? "Images only (wide rectangles)" : "Images or videos supported"}
+              </p>
+            </div>
+            <Label htmlFor="media-upload" className="cursor-pointer">
+              <Button variant="outline" className="mt-4" asChild>
+                <span>Choose File</span>
+              </Button>
+              <Input
+                id="media-upload"
+                type="file"
+                accept={adSize === "BANNER" ? "image/*" : "image/*,video/*"}
+                className="hidden"
+                onChange={handleFileSelect}
               />
+            </Label>
+          </div>
+
+          {/* Preview selected file */}
+          {selectedFile && previewUrl && (
+            <div className="space-y-3">
+              <div className="text-sm text-gray-600">Selected file:</div>
+              <div className="relative inline-block">
+                {selectedFile.type.startsWith('image/') ? (
+                  <img 
+                    src={previewUrl} 
+                    alt="Preview" 
+                    className="max-h-32 rounded border"
+                  />
+                ) : selectedFile.type.startsWith('video/') ? (
+                  <video 
+                    src={previewUrl} 
+                    className="max-h-32 rounded border"
+                    controls
+                  />
+                ) : null}
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  className="absolute -top-2 -right-2 h-6 w-6"
+                  onClick={removeSelectedFile}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="text-sm text-green-600">
+                ✓ File selected: {selectedFile.name}
+              </div>
             </div>
           )}
         </div>
@@ -345,17 +322,15 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
           variant="outline" 
           onClick={onCancel} 
           className="mr-2"
-          disabled={isUploading}
+          disabled={isLoading}
         >
           <FormattedMessage id="common.cancel" />
         </Button>
         <Button 
           onClick={handleSubmit} 
-          disabled={isLoading || !campaignName || (!mediaUrl && !selectedFile) || isUploading} 
+          disabled={isLoading || !campaignName || (!adToEdit && !selectedFile)} 
         >
-          {isUploading ? (
-            "Uploading..."
-          ) : adToEdit ? (
+          {adToEdit ? (
             <FormattedMessage id="venueDashboard.advertising.update" />
           ) : (
             <FormattedMessage id="venueDashboard.advertising.submit" />
