@@ -91,11 +91,11 @@ const VenueDashboard = () => {
 
     if (venue && token) {
       fetchVenueUsersFromApi(token, venue.id)
-        .then((data) => setVenueUsers(data))
+        .then((response) => setVenueUsers(response.users))
         .catch((error) => console.error("Error fetching venue users", error));
 
       fetchVenuePhotosFromApi(token, venue.id)
-        .then((data) => setVenuePhotos(data))
+        .then((response) => setVenuePhotos(response.photos))
         .catch((error) => console.error("Error fetching venue photos", error));
     }
   }, [venue, token, user, navigate]);
