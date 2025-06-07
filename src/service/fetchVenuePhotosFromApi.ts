@@ -1,3 +1,4 @@
+
 import axios from "axios";
 
 export type VenuePhotos = {
@@ -10,10 +11,29 @@ export type VenuePhotos = {
   "created_at": string
 }
 
-export const fetchVenuePhotosFromApi = async (token: string, venueId: string): Promise<VenuePhotos[]> => {
+interface PaginationOptions {
+  limit?: number;
+  offset?: number;
+}
+
+interface VenuePhotosResponse {
+  photos: VenuePhotos[];
+  total_count: number;
+}
+
+export const fetchVenuePhotosFromApi = async (token: string, venueId: string, pagination?: PaginationOptions): Promise<VenuePhotosResponse> => {
   try {
-    const res = await axios.get<VenuePhotos[]>(
-      `${import.meta.env.VITE_API_URL}/photos/all/venues/${venueId}`,
+    const params = new URLSearchParams();
+    if (pagination?.limit) {
+      params.append('limit', pagination.limit.toString());
+    }
+    if (pagination?.offset) {
+      params.append('offset', pagination.offset.toString());
+    }
+    
+    const url = `${import.meta.env.VITE_API_URL}/photos/all/venues/${venueId}${params.toString() ? `?${params.toString()}` : ''}`;
+    const res = await axios.get<VenuePhotosResponse>(
+      url,
       {
         headers: {
           Authorization: `Bearer ${token}`,

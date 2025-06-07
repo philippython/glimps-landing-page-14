@@ -61,7 +61,7 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
-  const validateFile = (file: File): boolean => {
+  const validateFile = async (file: File): Promise<boolean> => {
     const isImage = file.type.startsWith('image/');
     const isVideo = file.type.startsWith('video/');
 
@@ -88,8 +88,12 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
             resolve(true);
           }
         };
+        img.onerror = () => {
+          toast.error("Failed to load image for validation");
+          resolve(false);
+        };
         img.src = URL.createObjectURL(file);
-      }).then(isValid => isValid);
+      });
     }
 
     return true;

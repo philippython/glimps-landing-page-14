@@ -16,6 +16,14 @@ import { FormattedMessage, useIntl } from "react-intl";
 import LanguagePicker from "@/components/LanguagePicker";
 import PhotoAdvertisement from "@/components/PhotoAdvertisement";
 import { useState, useEffect } from "react";
+import { 
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 type Photo = {
   photo_url: string,
@@ -32,7 +40,8 @@ interface PhotosDataFromApi {
   sent: boolean,
   synced: boolean,
   created_at: string,
-  venue_id?: string
+  venue_id?: string,
+  total_count?: number
 }
 
 const PhotoGallery = () => {
@@ -41,10 +50,15 @@ const PhotoGallery = () => {
   const [showAds, setShowAds] = useState(false);
   const [loadedImagesCount, setLoadedImagesCount] = useState(0);
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const photosPerPage = 12;
   
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
-    queryKey: ['photos', uuid],
-    queryFn: () => fetchPhotosFromApi(uuid || ""),
+    queryKey: ['photos', uuid, currentPage],
+    queryFn: () => fetchPhotosFromApi(uuid || "", {
+      limit: photosPerPage,
+      offset: (currentPage - 1) * photosPerPage
+    }),
     enabled: !!uuid,
   });
   const intl = useIntl();
@@ -65,7 +79,7 @@ const PhotoGallery = () => {
     }
   }, [data, isLoading]);
 
-  const photoName = (index: number) => `${data && convertOnlyDate(data.created_at)} (${index + 1})`;
+  const photoName = (index: number) => `${data && convertOnlyDate(data.created_at)} (${((currentPage - 1) * photosPerPage) + index + 1})`;
 
   const handleImageLoad = () => {
     setLoadedImagesCount(prev => prev + 1);
@@ -99,6 +113,8 @@ const PhotoGallery = () => {
       setIsDownloadingAll(false);
     }
   };
+
+  const totalPages = data?.total_count ? Math.ceil(data.total_count / photosPerPage) : 1;
 
   if (!uuid) {
     return (
@@ -150,7 +166,7 @@ const PhotoGallery = () => {
                       <FormattedMessage id="photoGallery.title" />
                     </h1>
                     <p className="text-glimps-600">
-                      {convertDateTime(data.created_at)} • {data.photos.length}{" "}
+                      {convertDateTime(data.created_at)} • {data.total_count || data.photos.length}{" "}
                       <FormattedMessage id="photoGallery.photos" />
                     </p>
                   </div>
@@ -196,39 +212,95 @@ const PhotoGallery = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data?.photos.map((photo, index) => (
-              <Card key={index} className="overflow-hidden">
-                <div className="relative pt-[75%]">
-                  <ProgressiveImage
-                    className="absolute inset-0"
-                    src={photo.photo_url}
-                    alt={`Photo ${index + 1}`}
-                    onLoad={handleImageLoad}
-                  />
-                </div>
-                <div className="p-4 flex items-center justify-between">
-                  <p className="text-sm text-gray-700 font-medium truncate">{photoName(index)}</p>
-                  <div className="flex items-center gap-2">
-                    <EnhancedDownloadButton
-                      url={photo.photo_url}
-                      filename={photoName(index)}
-                      variant="ghost"
-                      size="icon"
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {data?.photos.map((photo, index) => (
+                <Card key={index} className="overflow-hidden">
+                  <div className="relative pt-[75%]">
+                    <ProgressiveImage
+                      className="absolute inset-0"
+                      src={photo.photo_url}
+                      alt={`Photo ${index + 1}`}
+                      onLoad={handleImageLoad}
                     />
-                    {photo.boomerang?.url && (
-                      <BoomerangDownloadButton
-                        url={photo.boomerang.url}
-                        filename={`${photoName(index)}_boomerang`}
+                  </div>
+                  <div className="p-4 flex items-center justify-between">
+                    <p className="text-sm text-gray-700 font-medium truncate">{photoName(index)}</p>
+                    <div className="flex items-center gap-2">
+                      <EnhancedDownloadButton
+                        url={photo.photo_url}
+                        filename={photoName(index)}
                         variant="ghost"
                         size="icon"
                       />
-                    )}
+                      {photo.boomerang?.url && (
+                        <BoomerangDownloadButton
+                          url={photo.boomerang.url}
+                          filename={`${photoName(index)}_boomerang`}
+                          variant="ghost"
+                          size="icon"
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+                </Card>
+              ))}
+            </div>
+            
+            {totalPages > 1 && (
+              <div className="mt-8 flex justify-center">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) setCurrentPage(currentPage - 1);
+                        }}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+                    
+                    {[...Array(totalPages)].map((_, i) => {
+                      const page = i + 1;
+                      if (page === currentPage || 
+                          page === 1 || 
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)) {
+                        return (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setCurrentPage(page);
+                              }}
+                              isActive={page === currentPage}
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      }
+                      return null;
+                    })}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                        }}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
