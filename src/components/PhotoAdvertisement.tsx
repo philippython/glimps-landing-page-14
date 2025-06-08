@@ -182,7 +182,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
               </Button>
             </div>
           </div>
-        )}
+        </div>
       )}
     </div>
   );
