@@ -65,10 +65,15 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         }
 
         const now = new Date();
+        now.setHours(0, 0, 0, 0); // Set to start of today for accurate comparison
 
         const processedAds = ads.map((ad) => {
           const startDate = ad.start_date ? new Date(ad.start_date) : null;
           const expiryDate = ad.expiry_date ? new Date(ad.expiry_date) : null;
+
+          // Set hours to 0 for date-only comparison
+          if (startDate) startDate.setHours(0, 0, 0, 0);
+          if (expiryDate) expiryDate.setHours(23, 59, 59, 999); // End of expiry day
 
           let status: AdStatus = "ACTIVE";
 
@@ -87,6 +92,8 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
             status = "ACTIVE";
           }
 
+          console.log(`Ad ${ad.campaign_name}: status=${status}, start=${startDate?.toISOString()}, expiry=${expiryDate?.toISOString()}, now=${now.toISOString()}`);
+
           return {
             ...ad,
             status,
@@ -94,6 +101,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         });
 
         const activeAds = processedAds.filter((ad) => ad.status === "ACTIVE");
+        console.log(`Found ${activeAds.length} active ads out of ${ads.length} total ads`);
 
         const activeBanner = activeAds.find((ad) => ad.ads_size === "BANNER") || null;
         const activeFullscreen = activeAds.find(
