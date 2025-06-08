@@ -10,4 +10,5 @@ export interface Advertisement {
   ads_size: AdSize;
   venue_id: string;
   created_at: string;
+  redirect_url?: string;
 }

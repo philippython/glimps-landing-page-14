@@ -748,7 +748,11 @@ const VenueDashboard = () => {
           )}
           
           {activeTab === "analytics" && (
-            <AnalyticsInfo venueUsers={venueUsers} venuePhotos={venuePhotos} />
+            <AnalyticsInfo 
+              venueUsers={venueUsers} 
+              venuePhotos={venuePhotos} 
+              totalUsers={venueUsers.length}
+            />
           )}
           
           {activeTab === "advertising" && (
