@@ -35,6 +35,8 @@ export const fetchVenueUsersFromApi = async (token: string, venueId: string, pag
     }
     
     const url = `${import.meta.env.VITE_API_URL}/user/all/${venueId}${params.toString() ? `?${params.toString()}` : ''}`;
+    console.log("Fetching users from:", url);
+    
     const res = await axios.get<VenueUsersDataFromApi[]>(
       url,
       {
@@ -44,13 +46,43 @@ export const fetchVenueUsersFromApi = async (token: string, venueId: string, pag
         }
       }
     );
+    
+    console.log("Raw API response:", res.data);
     const formattedData = res.data.map(data => data.user);
+    
+    // Get total count by making a separate request without pagination
+    let totalCount = formattedData.length;
+    if (!pagination) {
+      totalCount = formattedData.length;
+    } else {
+      // If pagination is used, we need to get the total count separately
+      try {
+        const totalUrl = `${import.meta.env.VITE_API_URL}/user/all/${venueId}`;
+        const totalRes = await axios.get<VenueUsersDataFromApi[]>(
+          totalUrl,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json"
+            }
+          }
+        );
+        totalCount = totalRes.data.length;
+      } catch (error) {
+        console.error("Error fetching total count:", error);
+        totalCount = formattedData.length;
+      }
+    }
+    
+    console.log("Formatted users:", formattedData);
+    console.log("Total count:", totalCount);
+    
     return {
       users: formattedData,
-      total_count: formattedData.length // This should come from the API response
+      total_count: totalCount
     };
   } catch (error) {
-    console.error("Error fetching photos from API", error);
+    console.error("Error fetching users from API", error);
     throw error
   }
 }

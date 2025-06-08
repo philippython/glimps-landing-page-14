@@ -44,7 +44,6 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         try {
           response = await fetch(`${apiUrl}/ads/all/${venueId}`);
         } catch (error) {
-          // If API fetch fails, log the error and proceed without ads
           console.error("Failed to fetch ads from API:", error);
           setBannerAd(null);
           setFullscreenAd(null);
@@ -120,8 +119,10 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     fetchAds();
   }, [venueId, intl]);
 
-  const handleAdClick = (mediaUrl: string) => {
-    window.open(mediaUrl, "_blank", "noopener,noreferrer");
+  const handleAdClick = (ad: Advertisement) => {
+    if (ad.redirect_url) {
+      window.open(ad.redirect_url, "_blank", "noopener,noreferrer");
+    }
   };
 
   const handleCloseFullscreenAd = () => {
@@ -129,14 +130,14 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     if (onClose) onClose();
   };
 
-  if (isLoading || (!bannerAd && !fullscreenAd)) return null;
+  if (isLoading) return null;
 
   return (
     <div className="w-full">
       {bannerAd && !showFullscreenAd && (
         <div
           className="w-full cursor-pointer"
-          onClick={() => handleAdClick(bannerAd.media_url)}
+          onClick={() => handleAdClick(bannerAd)}
         >
           <ImageWithFallback
             src={bannerAd.media_url}
@@ -151,7 +152,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
           <div className="bg-white rounded-lg overflow-hidden max-w-2xl w-full">
             <div
               className="p-4 cursor-pointer"
-              onClick={() => handleAdClick(fullscreenAd.media_url)}
+              onClick={() => handleAdClick(fullscreenAd)}
             >
               <ImageWithFallback
                 src={fullscreenAd.media_url}

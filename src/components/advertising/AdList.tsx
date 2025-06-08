@@ -1,204 +1,155 @@
 
-import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Eye, Trash2, PenLine } from "lucide-react";
-import { format } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Pencil, Trash2, Plus } from "lucide-react";
 import { FormattedMessage } from "react-intl";
-import ImageWithFallback from "../ImageWithFallback";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
-type AdSize = "BANNER" | "FULLSCREEN";
-
-interface Advertisement {
-  id: string;
-  campaign_name: string;
-  media_url: string;
-  start_date: string;
-  expiry_date: string;
-  ads_size: AdSize;
-  venue_id: string;
-  created_at: string;
-}
+import { Advertisement } from "@/types/advertisement";
+import AdPreview from "../AdPreview";
 
 interface AdListProps {
   ads: Advertisement[];
   isLoading: boolean;
   onEdit: (ad: Advertisement) => void;
-  onDelete: (id: string) => void;
+  onDelete: (adId: string) => void;
   onCreateNew: () => void;
 }
 
 const AdList = ({ ads, isLoading, onEdit, onDelete, onCreateNew }: AdListProps) => {
-  const [adToShow, setAdToShow] = useState<Advertisement | null>(null);
-  const [previewMode, setPreviewMode] = useState<AdSize>("BANNER");
-
   const getAdStatus = (ad: Advertisement) => {
     const now = new Date();
-    const start = new Date(ad.start_date);
-    const expiry = new Date(ad.expiry_date);
-    
-    // Reset time portion for accurate date comparison
-    now.setHours(0, 0, 0, 0);
-    start.setHours(0, 0, 0, 0);
-    expiry.setHours(0, 0, 0, 0);
-    
-    if (now < start) {
-      return "scheduled";
-    } else if (now > expiry) {
-      return "expired";
-    } else {
-      return "active";
-    }
+    const startDate = new Date(ad.start_date);
+    const expiryDate = new Date(ad.expiry_date);
+
+    if (now < startDate) return "SCHEDULED";
+    if (now > expiryDate) return "EXPIRED";
+    return "ACTIVE";
   };
 
-  const handleAdClick = (mediaUrl: string) => {
-    window.open(mediaUrl, "_blank", "noopener,noreferrer");
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "ACTIVE": return "bg-green-100 text-green-800";
+      case "SCHEDULED": return "bg-blue-100 text-blue-800";
+      case "EXPIRED": return "bg-red-100 text-red-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
   };
 
   if (isLoading) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-500 mb-4"><FormattedMessage id="common.loading" /></p>
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <Card key={i} className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-2 flex-1">
+                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-3 w-1/4" />
+              </div>
+              <div className="flex gap-2">
+                <Skeleton className="h-8 w-16" />
+                <Skeleton className="h-8 w-16" />
+                <Skeleton className="h-8 w-16" />
+              </div>
+            </div>
+          </Card>
+        ))}
       </div>
     );
   }
 
   if (ads.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-500 mb-4"><FormattedMessage id="venueDashboard.advertising.noAds" /></p>
-        <Button variant="outline" onClick={onCreateNew}>
-          <Plus className="h-4 w-4 mr-2" />
-          <FormattedMessage id="venueDashboard.advertising.createAd" />
+      <div className="text-center py-12">
+        <div className="mb-4">
+          <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+            <Plus className="w-8 h-8 text-gray-400" />
+          </div>
+        </div>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <FormattedMessage 
+            id="venueDashboard.advertising.noAds" 
+            defaultMessage="No advertisements yet" 
+          />
+        </h3>
+        <p className="text-gray-600 mb-6">
+          <FormattedMessage 
+            id="venueDashboard.advertising.noAdsDescription" 
+            defaultMessage="Create your first advertisement to start promoting your venue." 
+          />
+        </p>
+        <Button onClick={onCreateNew}>
+          <Plus className="w-4 h-4 mr-2" />
+          <FormattedMessage 
+            id="venueDashboard.advertising.createFirstAd" 
+            defaultMessage="Create First Advertisement" 
+          />
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead><FormattedMessage id="venueDashboard.advertising.campaignName" /></TableHead>
-            <TableHead><FormattedMessage id="venueDashboard.advertising.adsSize" /></TableHead>
-            <TableHead><FormattedMessage id="venueDashboard.advertising.startDate" /></TableHead>
-            <TableHead><FormattedMessage id="venueDashboard.advertising.expiryDate" /></TableHead>
-            <TableHead><FormattedMessage id="venueDashboard.advertising.status" /></TableHead>
-            <TableHead className="text-right"><FormattedMessage id="venueDashboard.sessions.actions" /></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {ads.map(ad => (
-            <TableRow key={ad.id}>
-              <TableCell className="font-medium">{ad.campaign_name}</TableCell>
-              <TableCell>
-                <FormattedMessage 
-                  id={`venueDashboard.advertising.adsSizeOptions.${ad.ads_size === "BANNER" ? "banner" : "fullscreen"}`} 
+    <div className="space-y-4">
+      {ads.map((ad) => {
+        const status = getAdStatus(ad);
+        return (
+          <Card key={ad.id} className="p-4">
+            <div className="flex items-start justify-between">
+              <div className="space-y-2 flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-medium">{ad.campaign_name}</h3>
+                  <Badge className={getStatusColor(status)}>
+                    {status}
+                  </Badge>
+                  <Badge variant="outline">
+                    {ad.ads_size}
+                  </Badge>
+                </div>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <div>
+                    <span className="font-medium">Start:</span> {new Date(ad.start_date).toLocaleDateString()}
+                  </div>
+                  <div>
+                    <span className="font-medium">Expiry:</span> {new Date(ad.expiry_date).toLocaleDateString()}
+                  </div>
+                  {ad.redirect_url && (
+                    <div>
+                      <span className="font-medium">Redirect:</span> 
+                      <a href={ad.redirect_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
+                        {ad.redirect_url}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="flex gap-2 ml-4">
+                <AdPreview 
+                  mediaUrl={ad.media_url} 
+                  adSize={ad.ads_size} 
+                  campaignName={ad.campaign_name}
                 />
-              </TableCell>
-              <TableCell>{format(new Date(ad.start_date), "PPP")}</TableCell>
-              <TableCell>{format(new Date(ad.expiry_date), "PPP")}</TableCell>
-              <TableCell>
-                <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                    ${getAdStatus(ad) === "active" ? "bg-green-100 text-green-800" : ""}
-                    ${getAdStatus(ad) === "scheduled" ? "bg-blue-100 text-blue-800" : ""}
-                    ${getAdStatus(ad) === "expired" ? "bg-gray-100 text-gray-800" : ""}
-                  `}
-                >
-                  <FormattedMessage id={`venueDashboard.advertising.${getAdStatus(ad)}`} />
-                </span>
-              </TableCell>
-              <TableCell className="text-right space-x-2">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" size="sm" onClick={() => {
-                      setAdToShow(ad);
-                      setPreviewMode(ad.ads_size);
-                    }}>
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className={previewMode === "FULLSCREEN" ? "max-w-screen-xl p-0" : ""}>
-                    {previewMode === "BANNER" ? (
-                      <div className="w-full">
-                        <div className="w-full p-2 bg-white border-b flex justify-between items-center">
-                          <div className="flex-1">
-                            <h3 className="font-semibold">Your Glimps Photos</h3>
-                            <p className="text-sm text-gray-500">5 photos</p>
-                          </div>
-                          <div className="flex space-x-2">
-                            <Button variant="outline" size="sm" disabled>Download All</Button>
-                          </div>
-                        </div>
-                        <div className="w-full p-4">
-                          <div 
-                            className="cursor-pointer"
-                            onClick={() => handleAdClick(adToShow?.media_url || "")}
-                          >
-                            <ImageWithFallback 
-                              src={adToShow?.media_url || ""} 
-                              alt={adToShow?.campaign_name || ""} 
-                              className="w-full h-20 object-cover" 
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="relative">
-                        <div className="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center p-6">
-                          <div className="bg-white rounded-lg overflow-hidden max-w-lg w-full">
-                            <div 
-                              className="p-4 cursor-pointer"
-                              onClick={() => handleAdClick(adToShow?.media_url || "")}
-                            >
-                              <ImageWithFallback 
-                                src={adToShow?.media_url || ""} 
-                                alt={adToShow?.campaign_name || ""} 
-                                className="w-full aspect-video object-cover" 
-                              />
-                            </div>
-                            <div className="p-4 bg-gray-50 flex justify-between">
-                              <p className="font-semibold">{adToShow?.campaign_name}</p>
-                              <Button variant="ghost" size="sm">
-                                <FormattedMessage id="venueDashboard.advertising.closeAd" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="w-full h-[70vh] opacity-20">
-                          {/* Blurred mock content */}
-                          <div className="flex flex-wrap gap-3 p-6">
-                            {[1, 2, 3, 4, 5].map(i => (
-                              <div key={i} className="w-64 h-64 bg-gray-200 rounded-lg"></div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </DialogContent>
-                </Dialog>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => onEdit(ad)}
                 >
-                  <PenLine className="h-4 w-4" />
+                  <Pencil className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => onDelete(ad.id)}>
-                  <Trash2 className="h-4 w-4" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onDelete(ad.id)}
+                  className="text-red-600 hover:text-red-700"
+                >
+                  <Trash2 className="w-4 h-4" />
                 </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              </div>
+            </div>
+          </Card>
+        );
+      })}
     </div>
   );
 };

@@ -21,6 +21,7 @@ import {
 type AnalyticsInfoProps = {
   venueUsers: VenueUser[];
   venuePhotos: VenuePhotos[];
+  totalUsers: number;
 }
 
 export default function AnalyticsInfo(props: AnalyticsInfoProps) {
@@ -29,10 +30,12 @@ export default function AnalyticsInfo(props: AnalyticsInfoProps) {
   // Ensure we have valid arrays to work with
   const users = Array.isArray(props.venueUsers) ? props.venueUsers : [];
   const photos = Array.isArray(props.venuePhotos) ? props.venuePhotos : [];
+  const totalUsers = props.totalUsers || users.length;
   
   console.log("Analytics data received:");
   console.log("Users data:", props.venueUsers);
   console.log("Photos data:", props.venuePhotos);
+  console.log("Total users:", totalUsers);
   console.log("Processed users count:", users.length);
   console.log("Processed photos count:", photos.length);
   
@@ -86,12 +89,12 @@ export default function AnalyticsInfo(props: AnalyticsInfoProps) {
     () => {
       const totals = {
         photo: photos.length,
-        user: users.length,
+        user: totalUsers,
       };
       console.log("Calculated totals:", totals);
       return totals;
     },
-    [photos, users]
+    [photos, totalUsers]
   )
 
   return (
