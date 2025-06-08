@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -139,7 +140,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         >
           <ImageWithFallback
             src={bannerAd.media_url}
-            alt={bannerAd.campaign_name}
+            alt="Advertisement"
             className="w-full h-20 md:h-24 lg:h-28 object-cover rounded-md"
           />
         </div>
@@ -154,12 +155,11 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
             >
               <ImageWithFallback
                 src={fullscreenAd.media_url}
-                alt={fullscreenAd.campaign_name}
+                alt="Advertisement"
                 className="w-full aspect-video object-cover rounded-md"
               />
             </div>
-            <div className="p-4 bg-gray-50 flex justify-between items-center">
-              <p className="font-semibold">{fullscreenAd.campaign_name}</p>
+            <div className="p-4 bg-gray-50 flex justify-end items-center">
               <Button
                 variant="outline"
                 onClick={handleCloseFullscreenAd}
@@ -182,7 +182,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
               </Button>
             </div>
           </div>
-        </div>
+        )}
       )}
     </div>
   );

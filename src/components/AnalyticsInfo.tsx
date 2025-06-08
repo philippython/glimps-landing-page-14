@@ -30,26 +30,43 @@ export default function AnalyticsInfo(props: AnalyticsInfoProps) {
   const users = Array.isArray(props.venueUsers) ? props.venueUsers : [];
   const photos = Array.isArray(props.venuePhotos) ? props.venuePhotos : [];
   
-  console.log("Analytics data - users:", users.length, "photos:", photos.length);
+  console.log("Analytics data received:");
+  console.log("Users data:", props.venueUsers);
+  console.log("Photos data:", props.venuePhotos);
+  console.log("Processed users count:", users.length);
+  console.log("Processed photos count:", photos.length);
   
   const chartData = React.useMemo(() => {
     const counts: Record<string, { photo: number; user: number }> = {};
     
+    // Process photos
     photos.forEach(photo => {
-      const date = new Date(`${photo.created_at}Z`).toISOString().split('T')[0];
-      if (!counts[date]) counts[date] = { photo: 0, user: 0 };
-      counts[date].photo += 1;
+      try {
+        const date = new Date(`${photo.created_at}Z`).toISOString().split('T')[0];
+        if (!counts[date]) counts[date] = { photo: 0, user: 0 };
+        counts[date].photo += 1;
+      } catch (error) {
+        console.error("Error processing photo date:", photo.created_at, error);
+      }
     });
     
+    // Process users
     users.forEach(user => {
-      const date = new Date(`${user.created_at}Z`).toISOString().split('T')[0];
-      if (!counts[date]) counts[date] = { photo: 0, user: 0 };
-      counts[date].user += 1;
+      try {
+        const date = new Date(`${user.created_at}Z`).toISOString().split('T')[0];
+        if (!counts[date]) counts[date] = { photo: 0, user: 0 };
+        counts[date].user += 1;
+      } catch (error) {
+        console.error("Error processing user date:", user.created_at, error);
+      }
     });
     
-    return Object.entries(counts)
+    const result = Object.entries(counts)
       .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
       .map(([date, { photo, user }]) => ({ date, photo, user }));
+    
+    console.log("Chart data processed:", result);
+    return result;
   }, [photos, users]);
 
   const chartConfig = {
@@ -66,11 +83,15 @@ export default function AnalyticsInfo(props: AnalyticsInfoProps) {
   const [activeChart, setActiveChart] = React.useState<keyof typeof chartConfig>("photo")
 
   const total = React.useMemo(
-    () => ({
-      photo: chartData.reduce((acc, curr) => acc + curr.photo, 0),
-      user: chartData.reduce((acc, curr) => acc + curr.user, 0),
-    }),
-    [chartData]
+    () => {
+      const totals = {
+        photo: photos.length,
+        user: users.length,
+      };
+      console.log("Calculated totals:", totals);
+      return totals;
+    },
+    [photos, users]
   )
 
   return (

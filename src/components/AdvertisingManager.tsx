@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,6 +49,35 @@ const AdvertisingManager = () => {
     }
   };
 
+  const checkActiveAdsLimit = (newAdData: {
+    start_date: string;
+    expiry_date: string;
+  }) => {
+    const now = new Date();
+    const newStart = new Date(newAdData.start_date);
+    const newExpiry = new Date(newAdData.expiry_date);
+    
+    // Check if the new ad would be active now
+    const newAdIsActiveNow = now >= newStart && now <= newExpiry;
+    
+    if (!newAdIsActiveNow) {
+      return false; // No conflict if new ad is not active now
+    }
+    
+    // Check for existing active ads
+    const hasActiveAd = ads.some(ad => {
+      if (editingAd && ad.id === editingAd.id) {
+        return false; // Don't count the ad being edited
+      }
+      
+      const start = new Date(ad.start_date);
+      const expiry = new Date(ad.expiry_date);
+      return now >= start && now <= expiry;
+    });
+    
+    return hasActiveAd;
+  };
+
   const handleCreateOrUpdateAd = async (data: {
     campaign_name: string;
     start_date: string;
@@ -58,6 +86,12 @@ const AdvertisingManager = () => {
     media_file?: File;
   }) => {
     if (!venue || !token) return;
+
+    // Check for active ad limit
+    if (checkActiveAdsLimit(data)) {
+      toast.error("You can only have one active advertisement at a time. Please schedule this ad for later or edit your current active ad.");
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -137,17 +171,6 @@ const AdvertisingManager = () => {
   const handleCreateNew = () => {
     setEditingAd(null);
     setShowForm(true);
-  };
-
-  const checkActiveAdsLimit = (adsSize: "BANNER" | "FULLSCREEN") => {
-    const now = new Date();
-    const activeAdsOfSameType = ads.filter(ad => {
-      const start = new Date(ad.start_date);
-      const expiry = new Date(ad.expiry_date);
-      return ad.ads_size === adsSize && now >= start && now <= expiry;
-    });
-    
-    return activeAdsOfSameType.length > 0;
   };
 
   return (
