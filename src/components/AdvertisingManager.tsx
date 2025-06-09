@@ -110,7 +110,7 @@ const AdvertisingManager = () => {
         formData.append('external_url', data.external_url);
       }
 
-      // Only append media file if one is selected (for new ads or when updating with new media)
+      // Only append media file for new ads OR when updating with new media
       if (data.media_file) {
         formData.append('media_file', data.media_file);
       }
@@ -119,7 +119,7 @@ const AdvertisingManager = () => {
       const url = editingAd 
         ? `${apiUrl}/ads/update/${editingAd.id}` 
         : `${apiUrl}/ads/create`;
-      const method = editingAd ? 'PATCH' : 'POST'; // Changed from PUT to PATCH
+      const method = editingAd ? 'PATCH' : 'POST';
 
       const response = await fetch(url, {
         method,

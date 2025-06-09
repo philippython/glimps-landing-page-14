@@ -244,76 +244,84 @@ const PhotoGallery = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {data?.photos.map((photo, index) => (
-                <Card key={index} className="overflow-hidden">
-                  <div className="relative pt-[75%]">
-                    <ProgressiveImage
-                      className="absolute inset-0"
-                      src={photo.photo_url}
-                      alt={`Photo ${index + 1}`}
-                      onLoad={handleImageLoad}
-                    />
-                  </div>
-                  
-                  {/* Boomerang Video Display - Fixed to use correct nested structure */}
-                  {photo.boomerang?.boomerang_url && (
-                    <div className="relative pt-[75%] border-t">
-                      <video
-                        ref={(el) => {
-                          if (el) {
-                            el.onplay = () => setPlayingVideos(prev => new Set(prev).add(index));
-                            el.onpause = () => setPlayingVideos(prev => {
-                              const newSet = new Set(prev);
-                              newSet.delete(index);
-                              return newSet;
-                            });
-                          }
-                        }}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        src={photo.boomerang.boomerang_url}
-                        loop
-                        muted={false}
-                        controls={false}
+              {data?.photos.map((photo, index) => {
+                // Debug log to see the actual data structure for boomerang
+                if (index === 0) {
+                  console.log('First photo data structure:', JSON.stringify(photo, null, 2));
+                  console.log('Boomerang URL:', photo.boomerang?.boomerang_url);
+                }
+                
+                return (
+                  <Card key={index} className="overflow-hidden">
+                    <div className="relative pt-[75%]">
+                      <ProgressiveImage
+                        className="absolute inset-0"
+                        src={photo.photo_url}
+                        alt={`Photo ${index + 1}`}
+                        onLoad={handleImageLoad}
                       />
-                      <button
-                        onClick={(e) => {
-                          const video = e.currentTarget.previousElementSibling as HTMLVideoElement;
-                          toggleVideoPlay(index, video);
-                        }}
-                        className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-50 transition-all"
-                      >
-                        {playingVideos.has(index) ? (
-                          <Pause className="w-12 h-12 text-white" />
-                        ) : (
-                          <Play className="w-12 h-12 text-white" />
-                        )}
-                      </button>
                     </div>
-                  )}
-
-                  <div className="p-4">
-                    <p className="text-sm text-gray-700 font-medium truncate mb-3">{photoName(index)}</p>
                     
-                    {/* Multiple Download Buttons */}
-                    <div className="flex flex-wrap gap-2">
-                      <EnhancedDownloadButton
-                        url={photo.photo_url}
-                        filename={photoName(index)}
-                        variant="outline"
-                        size="sm"
-                        showText={true}
-                      />
+                    {/* Boomerang Video Display - Fixed to use correct nested structure */}
+                    {photo.boomerang?.boomerang_url && (
+                      <div className="relative pt-[75%] border-t">
+                        <video
+                          ref={(el) => {
+                            if (el) {
+                              el.onplay = () => setPlayingVideos(prev => new Set(prev).add(index));
+                              el.onpause = () => setPlayingVideos(prev => {
+                                const newSet = new Set(prev);
+                                newSet.delete(index);
+                                return newSet;
+                              });
+                            }
+                          }}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          src={photo.boomerang.boomerang_url}
+                          loop
+                          muted={false}
+                          controls={false}
+                        />
+                        <button
+                          onClick={(e) => {
+                            const video = e.currentTarget.previousElementSibling as HTMLVideoElement;
+                            toggleVideoPlay(index, video);
+                          }}
+                          className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-50 transition-all"
+                        >
+                          {playingVideos.has(index) ? (
+                            <Pause className="w-12 h-12 text-white" />
+                          ) : (
+                            <Play className="w-12 h-12 text-white" />
+                          )}
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="p-4">
+                      <p className="text-sm text-gray-700 font-medium truncate mb-3">{photoName(index)}</p>
                       
-                      <BoomerangDownloadButton
-                        url={photo.boomerang?.boomerang_url || ""}
-                        filename={`${photoName(index)}_boomerang`}
-                        variant={photo.boomerang?.boomerang_url ? "outline" : "outline"}
-                        size="sm"
-                      />
+                      {/* Multiple Download Buttons */}
+                      <div className="flex flex-wrap gap-2">
+                        <EnhancedDownloadButton
+                          url={photo.photo_url}
+                          filename={photoName(index)}
+                          variant="outline"
+                          size="sm"
+                          showText={true}
+                        />
+                        
+                        <BoomerangDownloadButton
+                          url={photo.boomerang?.boomerang_url || ""}
+                          filename={`${photoName(index)}_boomerang`}
+                          variant={photo.boomerang?.boomerang_url ? "outline" : "outline"}
+                          size="sm"
+                        />
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                );
+              })}
             </div>
             
             {totalPages > 1 && (
