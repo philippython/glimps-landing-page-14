@@ -83,6 +83,7 @@ const AdvertisingManager = () => {
     start_date: string;
     expiry_date: string;
     ads_size: "BANNER" | "FULLSCREEN";
+    external_url?: string;
     media_file?: File;
   }) => {
     if (!venue || !token) return;
@@ -104,12 +105,20 @@ const AdvertisingManager = () => {
       formData.append('ads_size', data.ads_size);
       formData.append('venue_id', venue.id);
 
+      // Add external_url if provided
+      if (data.external_url) {
+        formData.append('external_url', data.external_url);
+      }
+
       // Only append media file if one is selected (for new ads or when updating with new media)
       if (data.media_file) {
         formData.append('media_file', data.media_file);
       }
 
-      const url = editingAd ? `${apiUrl}/ads/${editingAd.id}` : `${apiUrl}/ads/create`;
+      // Use different endpoints for create vs update
+      const url = editingAd 
+        ? `${apiUrl}/ads/update/${editingAd.id}` 
+        : `${apiUrl}/ads/create`;
       const method = editingAd ? 'PUT' : 'POST';
 
       const response = await fetch(url, {

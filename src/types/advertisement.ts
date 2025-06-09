@@ -11,4 +11,5 @@ export interface Advertisement {
   venue_id: string;
   created_at: string;
   redirect_url?: string;
+  external_url?: string;
 }

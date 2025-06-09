@@ -27,6 +27,8 @@ interface Advertisement {
   ads_size: AdSize;
   venue_id: string;
   created_at: string;
+  redirect_url?: string;
+  external_url?: string;
 }
 
 interface AdFormProps {
@@ -38,6 +40,7 @@ interface AdFormProps {
     start_date: string;
     expiry_date: string;
     ads_size: AdSize;
+    external_url?: string;
     media_file?: File;
   }) => void;
 }
@@ -54,6 +57,7 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
     adToEdit ? new Date(adToEdit.expiry_date) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
   );
   const [adSize, setAdSize] = useState<AdSize>(adToEdit?.ads_size || "BANNER");
+  const [externalUrl, setExternalUrl] = useState<string>(adToEdit?.external_url || "");
 
   // File upload state
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -121,11 +125,16 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
       return;
     }
 
+    // Format dates to ensure we're sending the correct date (no time shift)
+    const formattedStartDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).toISOString();
+    const formattedExpiryDate = new Date(expiryDate.getFullYear(), expiryDate.getMonth(), expiryDate.getDate()).toISOString();
+
     onSubmit({
       campaign_name: campaignName,
-      start_date: startDate.toISOString(),
-      expiry_date: expiryDate.toISOString(),
+      start_date: formattedStartDate,
+      expiry_date: formattedExpiryDate,
       ads_size: adSize,
+      external_url: externalUrl || undefined,
       media_file: selectedFile || undefined
     });
   };
@@ -144,6 +153,19 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
             placeholder="Summer Promotion 2025"
           />
         </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="external-url">
+            External URL (Optional)
+          </Label>
+          <Input 
+            id="external-url" 
+            value={externalUrl} 
+            onChange={(e) => setExternalUrl(e.target.value)} 
+            placeholder="https://example.com"
+            type="url"
+          />
+        </div>
         
         <div className="grid gap-2">
           <Label>
@@ -160,6 +182,7 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
                     src={adToEdit.media_url} 
                     className="max-h-32 rounded border"
                     controls
+                    muted={false}
                   />
                 ) : (
                   <img 
@@ -216,6 +239,7 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
                     src={previewUrl} 
                     className="max-h-32 rounded border"
                     controls
+                    muted={false}
                   />
                 ) : null}
                 <Button

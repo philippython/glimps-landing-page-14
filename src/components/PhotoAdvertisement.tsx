@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -17,6 +16,7 @@ interface Advertisement {
   expiry_date: string;
   status?: AdStatus;
   redirect_url?: string;
+  external_url?: string;
 }
 
 interface PhotoAdvertisementProps {
@@ -128,14 +128,19 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   }, [venueId, intl]);
 
   const handleAdClick = (ad: Advertisement) => {
-    if (ad.redirect_url) {
-      window.open(ad.redirect_url, "_blank", "noopener,noreferrer");
+    const url = ad.external_url || ad.redirect_url;
+    if (url) {
+      window.open(url, "_blank", "noopener,noreferrer");
     }
   };
 
   const handleCloseFullscreenAd = () => {
     setShowFullscreenAd(false);
     if (onClose) onClose();
+  };
+
+  const isVideo = (url: string) => {
+    return url.includes('.mp4') || url.includes('.webm') || url.includes('.mov') || url.includes('.avi');
   };
 
   if (isLoading) return null;
@@ -147,11 +152,21 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
           className="w-full cursor-pointer"
           onClick={() => handleAdClick(bannerAd)}
         >
-          <ImageWithFallback
-            src={bannerAd.media_url}
-            alt="Advertisement"
-            className="w-full h-20 md:h-24 lg:h-28 object-cover rounded-md"
-          />
+          {isVideo(bannerAd.media_url) ? (
+            <video
+              src={bannerAd.media_url}
+              className="w-full h-20 md:h-24 lg:h-28 object-cover rounded-md"
+              autoPlay
+              muted={false}
+              controls={false}
+            />
+          ) : (
+            <ImageWithFallback
+              src={bannerAd.media_url}
+              alt="Advertisement"
+              className="w-full h-20 md:h-24 lg:h-28 object-cover rounded-md"
+            />
+          )}
         </div>
       )}
 
@@ -162,11 +177,21 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
               className="p-4 cursor-pointer"
               onClick={() => handleAdClick(fullscreenAd)}
             >
-              <ImageWithFallback
-                src={fullscreenAd.media_url}
-                alt="Advertisement"
-                className="w-full aspect-video object-cover rounded-md"
-              />
+              {isVideo(fullscreenAd.media_url) ? (
+                <video
+                  src={fullscreenAd.media_url}
+                  className="w-full aspect-video object-cover rounded-md"
+                  autoPlay
+                  muted={false}
+                  controls
+                />
+              ) : (
+                <ImageWithFallback
+                  src={fullscreenAd.media_url}
+                  alt="Advertisement"
+                  className="w-full aspect-video object-cover rounded-md"
+                />
+              )}
             </div>
             <div className="p-4 bg-gray-50 flex justify-end items-center">
               <Button

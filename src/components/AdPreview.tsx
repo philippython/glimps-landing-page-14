@@ -14,7 +14,7 @@ interface AdPreviewProps {
 const AdPreview = ({ mediaUrl, adSize, campaignName }: AdPreviewProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const isVideo = mediaUrl.includes('.mp4') || mediaUrl.includes('.webm') || mediaUrl.includes('.mov');
+  const isVideo = mediaUrl.includes('.mp4') || mediaUrl.includes('.webm') || mediaUrl.includes('.mov') || mediaUrl.includes('.avi');
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -32,6 +32,7 @@ const AdPreview = ({ mediaUrl, adSize, campaignName }: AdPreviewProps) => {
               <video
                 src={mediaUrl}
                 controls
+                muted={false}
                 className="w-full h-full object-cover rounded-md"
               />
             ) : (
