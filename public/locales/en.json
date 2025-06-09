@@ -1,8 +1,6 @@
-
 {
   "common": {
     "glimps": "Glimps",
-    "loading": "Loading...",
     "navbar": {
       "home": "Home",
       "pricing": "Pricing",
@@ -26,6 +24,161 @@
     "submit": "Submit",
     "cancel": "Cancel"
   },
+  "index": {
+    "hero": {
+      "tagline": "For Venue Owners",
+      "title": {
+        "first": "Turn Moments Into ",
+        "highlight": "Memories",
+        "last": " Your Customers Will Share"
+      },
+      "description": "Elevate your venue with Glimps photo booths—a premium amenity that increases customer engagement, dwell time, and generates social media exposure.",
+      "links": {
+        "viewPricing": "View Pricing",
+        "learnMore": "Learn More"
+      },
+      "footer": "Trusted by 200+ venues and entertainment spots nationwide"
+    },
+    "features": {
+      "title": "Why Venue Owners Love Glimps",
+      "description": "Our premium photo booths are designed specifically for venues in the hospitality and entertainment industry.",
+      "preiumExperience": {
+        "title": "Premium Photo Experience",
+        "description": "High-quality cameras and professional lighting ensure your customers get magazine-worthy photos every time."
+      },
+      "customerEngagement": {
+        "title": "Increased Customer Engagement",
+        "description": "Create memorable experiences that keep customers in your venue longer and coming back for more."
+      },
+      "revenueGeneration": {
+        "title": "Revenue Generation",
+        "description": "An additional revenue stream with flexible pricing models to suit your business."
+      },
+      "socialMedia": {
+        "title": "Social Media Amplification",
+        "description": "Instant social sharing with your branded templates increases visibility and attracts new customers."
+      }
+    },
+    "howItWorks": {
+      "tagline": "Simple Process",
+      "title": "How Glimps Works for Your Venue",
+      "keyPoints": {
+        "1": {
+          "number": "1",
+          "title": "Seamless Installation",
+          "description": "Our team handles the complete setup of your custom-branded photo booth in a spot that maximizes visibility and usage."
+        },
+        "2": {
+          "number": "2",
+          "title": "Customer Engagement",
+          "description": "Guests use the intuitive touchscreen interface to take photos, apply filters, and instantly share branded content to their social networks."
+        },
+        "3": {
+          "number": "3",
+          "title": "Analytics & Growth",
+          "description": "Access real-time data on usage, popular times, and social sharing reach to measure ROI and optimize your marketing."
+        }
+      },
+      "cta": "Get Started Today"
+    },
+    "testimonials": {
+      "title": "What Venue Owners Are Saying",
+      "description": "Join hundreds of satisfied venue owners who've transformed their customer experience with Glimps.",
+      "1": {
+        "author": "Kaari",
+        "position": "Venue Manager",
+        "quote": "Since installing Glimps, our weekend revenue has increased by 22%. Customers love it and many come specifically for the photo experience."
+      },
+      "2": {
+        "author": "Jani",
+        "position": "Manager",
+        "quote": "The team at Glimps made setup incredibly easy. Their responsive support and regular updates keep the system running smoothly."
+      },
+      "3": {
+        "author": "Mika",
+        "position": "Owner",
+        "quote": "Our customers spend an average of 40 minutes longer in our venue when using the Glimps booth. It's been a game-changer for our business."
+      }
+    },
+    "stats": {
+      "title": "The Glimps Impact",
+      "description": "Real results from venues using our photo booths.",
+      "increaseCustomerDwellTime": {
+        "value": "27%",
+        "label": "Average increase in customer dwell time"
+      },
+      "increaseSales": {
+        "value": "18%",
+        "label": "Increase in sales"
+      },
+      "mediaImpressions": {
+        "value": "3000+",
+        "label": "Average monthly social media impressions"
+      }
+    },
+    "cta": {
+      "title": "Ready to Transform Your Venue?",
+      "description": "Join the Glimps family and elevate your customer experience.",
+      "links": {
+        "seePricing": "See Pricing",
+        "learnMore": "Learn More"
+      }
+    }
+  },
+  "pricing": {},
+  "about": {
+    "title": "About Glimps",
+    "description": "We're revolutionizing the venue experience through innovative photo technology that creates memories and drives business growth.",
+    "ourStory": {
+      "title": "Our Story",
+      "description": {
+        "description1": "Glimps was born in 2018 when our founder, Alex Rivera, noticed a problem at his downtown entertainment venue. Customers were constantly asking staff to take photos of them, disrupting service and often resulting in poor-quality images that didn't capture the premium experience of the venue.",
+        "description2": "Working with a team of photography and software experts, Alex developed a prototype photo booth specifically designed for upscale venues. The results were immediate: customers loved the experience, spent more time in the venue, and enthusiastically shared their photos on social media, driving new business.",
+        "description3": "Since then, Glimps has expanded to serve hundreds of venues across the country, from intimate lounges to large nightclubs, restaurants, event spaces, and more. Our mission remains the same: to create memorable experiences for guests while driving measurable business results for venue owners.",
+        "description4": "Today, our team of 35 passionate individuals continues to innovate at the intersection of hospitality, entertainment, photography, and technology. We're proud to be trusted by some of the most respected establishments in the industry and are constantly evolving our product based on partner feedback and emerging trends."
+      }
+    },
+    "ourValues": {
+      "title": "Our Values",
+      "description": "These core principles guide everything we do at Glimps.",
+      "quality": {
+        "title": "Quality Above All",
+        "description": "We never compromise on the quality of our hardware, software, or customer experience."
+      },
+      "partnerSuccess": {
+        "title": "Partner Success",
+        "description": "Your success is our success. We're committed to helping your business grow with our solution."
+      },
+      "innovation": {
+        "title": "Continuous Innovation",
+        "description": "We constantly evolve our technology to stay ahead of trends and customer expectations."
+      },
+      "service": {
+        "title": "Exceptional Service",
+        "description": "We provide responsive, helpful support to ensure your photo booth always performs at its best."
+      }
+    }
+  },
+  "login": {
+    "title": "Sign in to your account",
+    "optionalTitle": {
+      "or": "Or",
+      "createAnAccount": "create an account"
+    },
+    "form": {
+      "username": "Username",
+      "usernameTips": "Can be username or email address",
+      "password": "Password",
+      "button": {
+        "signIn": "Sign in",
+        "loading": "Signing in..."
+      }
+    }
+  },
+  "notFound": {
+    "message": "Oops! We couldn't find the page you're looking for.",
+    "button": "Return to Home"
+  },
   "photoGallery": {
     "invalidId": {
       "title": "Invalid Photos Link",
@@ -44,39 +197,252 @@
     "download": {
       "downloadOne": "Downloaded",
       "downloadAll": "Downloaded all photos",
-      "downloadFailed": "Failed to download",
-      "downloading": "Downloading...",
-      "saveSuccess": "Photo saved successfully"
+      "downloadFailed": "Failed to download"
     },
     "buttons": {
       "downloadAll": "Download All",
-      "download": "Download",
-      "downloading": "Downloading...",
-      "quickDownload": "Quick Download",
-      "saveToPhotos": "Save to Photos",
-      "saveToFiles": "Save to Files"
+      "download": "Download"
     },
     "footer": {
       "trademark": "Glimps. All rights reserved.",
       "message": "Photos are available for 30 days from the event date."
     }
   },
+  "register": {
+    "title": "Create your account",
+    "optionalTitle": {
+      "or": "Already have an account?",
+      "login": "Sign in"
+    },
+    "form": {
+      "username": {
+        "label": "Username",
+        "placeholder": "johndoe"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "johndoe@example.com"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "••••••••"
+      },
+      "confirmPassword": {
+        "label": "Confirm Password",
+        "placeholder": "••••••••"
+      },
+      "button": {
+        "createAccount": "Create Account",
+        "loading": "Creating account..."
+      }
+    },
+    "messages": {
+      "usernameTooShort": "Username must be at least 5 characters.",
+      "emailInvalid": "Please enter a valid email address.",
+      "passwordTooShort": "Password must be at least 8 characters.",
+      "passwordMismatch": "Passwords do not match.",
+      "failedToCreateAccount": "Failed to create account. Please try again!",
+      "accountCreated": "Account created successfully! Logging in...",
+      "failed": "Registration failed. Please try again."
+    }
+  },
   "venueDashboard": {
+    "navItems": {
+      "sessions": "Photo Sessions",
+      "usersList": "Users List",
+      "venueSettings": "Vennue Settings",
+      "accountSettings": "Account Settings",
+      "search": "Search...",
+      "signOut": "Sign Out",
+      "analytics": "Analytics",
+      "advertising": "Advertising"
+    },
+    "filters": {
+      "dateFrom": "Date from",
+      "dateTo": "Date to",
+      "reset": "Reset filters",
+      "search": "Search users..."
+    },
+    "sessions": {
+      "UUID": "UUID",
+      "userUUID": "User UUID",
+      "sentToUser": "Sent to User",
+      "timestamp": "Timestamp",
+      "actions": "Actions",
+      "isPhotoSent": {
+        "yes": "Yes",
+        "no": "No"
+      },
+      "viewPhoto": "View Photo",
+      "userPhoto": "User Photo",
+      "viewSession": "View photo ession",
+      "noPhotoFound": "No photo sessions found."
+    },
+    "usersList": {
+      "UUID": "UUID",
+      "phoneNumber": "Phone Number",
+      "telegram": "Telegram",
+      "lastSession": "Last Session",
+      "createdAt": "Created At",
+      "actions": "Actions",
+      "viewLastPhotos": "View Last Photos",
+      "noPhotos": "No Photos",
+      "noUsers": "No users found."
+    },
+    "venueSettings": {
+      "title": {
+        "create": "Create your venue",
+        "edit": "Venue Settings"
+      },
+      "description": "Configure your venue booth appearance and contact information",
+      "form": {
+        "venueName": {
+          "label": "Venue Name",
+          "placeholder": "Enter your venue name"
+        },
+        "contactNumber": {
+          "label": "Contact Number",
+          "placeholder": "Enter your contact number"
+        },
+        "venue_logo": {
+          "label": "Venue Logo",
+          "button": "Upload Logo",
+          "helper": "Recommended: 512x512px, PNG, JPG, JPEG and SVG (Max 5MB)"
+        },
+        "logoPosition": {
+          "label": "Logo Position",
+          "placeholder": "Select logo position"
+        },
+        "logoRatio": {
+          "label": "Logo Size Ratio",
+          "helper": {
+            "max": "Large",
+            "min": "Small"
+          },
+          "description": "Adjust the size of your logo relative to the photo"
+        },
+        "logoTransparency": {
+          "label": "Logo Transparency",
+          "helper": {
+            "max": "Solid",
+            "min": "Transparent"
+          },
+          "description": "Adjust the transparency of your logo overlay"
+        },
+        "button": {
+          "create": "Submit",
+          "edit": "Save Settings",
+          "signout": "Sign Out"
+        }
+      },
+      "messages": {
+        "venueNameTooShort": "Venue name must be at least 2 characters.",
+        "contactNumberTooShort": "Contact number must be at least 5 digits.",
+        "missingLogo": "Logo is required",
+        "exceededLogoSize": "Max file size is 5MB.",
+        "invalidLogoType": "Invalid file type. Only PNG, JPG, JPEG, SVG are supported."
+      },
+      "logoPosition": {
+        "topLeft": "Top Left",
+        "topRight": "Top Right",
+        "topCenter": "Top Center",
+        "bottomLeft": "Bottom Left",
+        "bottomRight": "Bottom Right",
+        "bottomCenter": "Bottom Center",
+        "centerLeft": "Center Left",
+        "centerRight": "Center Right",
+        "center": "Center"
+      }
+    },
+    "accountSettings": {
+      "title": "Account Information",
+      "changePasswordTitle": "Change Password",
+      "form": {
+        "username": {
+          "label": "Username",
+          "placeholder": "Enter your username",
+          "description": "Your user name will be visible to others."
+        },
+        "email": {
+          "label": "Email address",
+          "placeholder": "Enter your email",
+          "description": "We'll use this email for notifications."
+        },
+        "newPassword": {
+          "label": "New Password",
+          "placeholder": "••••••••"
+        },
+        "confirmPassword": {
+          "label": "Confirm New Password",
+          "placeholder": "••••••••"
+        },
+        "buttons": {
+          "updateProfile": "Update Profile",
+          "updatingProfile": "Updating profile...",
+          "updatePassword": "Update Password",
+          "updatingPassword": "Updating password..."
+        }
+      },
+      "message": {
+        "usernameTooShort": "Username must be at least 5 characters.",
+        "emailInvalid": "Please enter a valid email address.",
+        "passwordTooShort": "Password must be at least 8 characters.",
+        "passwordMismatch": "Passwords do not match.",
+        "profileUpdated": "Your profile has been updated successfully.",
+        "profileUpdateFailed": "Failed to update your profile. Please try again.",
+        "passwordUpdated": "Your password has been changed successfully.",
+        "passwordUpdateFailed": "Failed to change your password. Please try again."
+      }
+    },
+    "analytics": {
+      "title": "Your Venue Analytics",
+      "description": "Showing total photos taken and users",
+      "chart": {
+        "photo": "Total photos taken",
+        "user": "Total users"
+      }
+    },
     "advertising": {
-      "title": "Advertisement Management",
-      "createAd": "Create Advertisement",
+      "title": "Advertising Management",
+      "description": "Create and manage advertisements for your venue",
+      "createAd": "Create New Ad",
       "campaignName": "Campaign Name",
       "mediaUrl": "Media URL",
-      "mediaUpload": "Upload Media",
       "startDate": "Start Date",
       "expiryDate": "Expiry Date",
       "adsSize": "Ad Size",
+      "noAdsDescription": "Create your first advertisement to start promoting your venue.",
+      "createFirstAd": "Create First Advertisement",
+      "mediaUpload": "Upload Media",
       "adsSizeOptions": {
         "banner": "Banner",
         "fullscreen": "Fullscreen"
       },
-      "submit": "Create Advertisement",
-      "update": "Update Advertisement"
+      "submit": "Submit Ad",
+      "edit": "Edit",
+      "delete": "Delete",
+      "preview": "Preview",
+      "messages": {
+        "createSuccess": "Advertisement created successfully!",
+        "createError": "Failed to create advertisement. Please try again.",
+        "updateSuccess": "Advertisement updated successfully!",
+        "updateError": "Failed to update advertisement. Please try again.",
+        "deleteSuccess": "Advertisement deleted successfully!",
+        "deleteError": "Failed to delete advertisement. Please try again."
+      },
+      "closeAd": "Close Advertisement",
+      "status": "Status",
+      "active": "Active",
+      "scheduled": "Scheduled",
+      "expired": "Expired",
+      "noAds": "No advertisements found. Create your first ad campaign!",
+      "uploadMedia": "Upload Media",
+      "uploadMediaHelper": "Recommended: JPG, PNG or MP4 (Max 10MB)"
+    },
+    "messages": {
+      "successUpdateVenue": "Venue settings updated successfully!",
+      "failedUpdateVenue": "Failed to update venue settings. Please try again!"
     }
-  }
+  },
+  "adminDashboard": {}
 }

@@ -245,11 +245,6 @@ const PhotoGallery = () => {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {data?.photos.map((photo, index) => {
-                // Debug log to see the actual data structure for boomerang
-                if (index === 0) {
-                  console.log('First photo data structure:', JSON.stringify(photo, null, 2));
-                  console.log('Boomerang URL:', photo.boomerang?.boomerang_url);
-                }
                 
                 return (
                   <Card key={index} className="overflow-hidden">

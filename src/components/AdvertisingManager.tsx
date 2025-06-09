@@ -115,6 +115,7 @@ const AdvertisingManager = () => {
         formData.append('media_file', data.media_file);
       }
 
+
       // Use different endpoints for create vs update
       const url = editingAd 
         ? `${apiUrl}/ads/update/${editingAd.id}` 
