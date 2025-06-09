@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -149,7 +150,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     <div className="w-full">
       {bannerAd && !showFullscreenAd && (
         <div
-          className="w-full cursor-pointer"
+          className={`w-full ${bannerAd.external_url || bannerAd.redirect_url ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
           onClick={() => handleAdClick(bannerAd)}
         >
           {isVideo(bannerAd.media_url) ? (
@@ -174,7 +175,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg overflow-hidden max-w-2xl w-full">
             <div
-              className="p-4 cursor-pointer"
+              className={`p-4 ${fullscreenAd.external_url || fullscreenAd.redirect_url ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
               onClick={() => handleAdClick(fullscreenAd)}
             >
               {isVideo(fullscreenAd.media_url) ? (
