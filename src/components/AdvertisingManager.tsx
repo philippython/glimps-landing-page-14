@@ -119,7 +119,7 @@ const AdvertisingManager = () => {
       const url = editingAd 
         ? `${apiUrl}/ads/update/${editingAd.id}` 
         : `${apiUrl}/ads/create`;
-      const method = editingAd ? 'PUT' : 'POST';
+      const method = editingAd ? 'PATCH' : 'POST'; // Changed from PUT to PATCH
 
       const response = await fetch(url, {
         method,

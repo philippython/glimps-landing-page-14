@@ -32,7 +32,7 @@ type Photo = {
   sent: boolean,
   venue_id?: string,
   boomerang?: {
-    url?: string | null
+    boomerang_url?: string | null
   } | null
 }
 
@@ -65,20 +65,7 @@ const PhotoGallery = () => {
     enabled: !!uuid,
   });
 
-  // Fetch venue users early to get accurate total count
-  const { data: venueUsersData } = useQuery({
-    queryKey: ['venue-users', data?.venue_id],
-    queryFn: () => {
-      const venueId = getVenueId();
-      const token = localStorage.getItem('token') || '';
-      return venueId ? fetchVenueUsersFromApi(token, venueId) : null;
-    },
-    enabled: !!data?.venue_id || !!localStorage.getItem('venueId') || !!localStorage.getItem('venue_id'),
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  });
-
-  const intl = useIntl();
-
+  // Get venue ID immediately for early venue users fetch
   const getVenueId = () => {
     const localStorageVenueId = localStorage.getItem('venueId') || localStorage.getItem('venue_id');
     if (localStorageVenueId) return localStorageVenueId;
@@ -87,9 +74,23 @@ const PhotoGallery = () => {
     return null;
   };
 
+  const venueId = getVenueId();
+
+  // Fetch venue users immediately when venue ID is available
+  const { data: venueUsersData } = useQuery({
+    queryKey: ['venue-users', venueId],
+    queryFn: () => {
+      const token = localStorage.getItem('token') || '';
+      return venueId ? fetchVenueUsersFromApi(token, venueId) : null;
+    },
+    enabled: !!venueId, // Run immediately when venueId is available
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  const intl = useIntl();
+
   useEffect(() => {
     if (data && !isLoading) {
-      const venueId = getVenueId();
       setPhotosLoaded(true);
       setTimeout(() => setShowAds(true), 1000);
     }
@@ -174,8 +175,6 @@ const PhotoGallery = () => {
     );
   }
 
-  const venueId = getVenueId();
-
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {photosLoaded && showAds && venueId ? (
@@ -256,8 +255,8 @@ const PhotoGallery = () => {
                     />
                   </div>
                   
-                  {/* Boomerang Video Display */}
-                  {photo.boomerang?.url && (
+                  {/* Boomerang Video Display - Fixed to use correct nested structure */}
+                  {photo.boomerang?.boomerang_url && (
                     <div className="relative pt-[75%] border-t">
                       <video
                         ref={(el) => {
@@ -271,7 +270,7 @@ const PhotoGallery = () => {
                           }
                         }}
                         className="absolute inset-0 w-full h-full object-cover"
-                        src={photo.boomerang.url}
+                        src={photo.boomerang.boomerang_url}
                         loop
                         muted={false}
                         controls={false}
@@ -306,9 +305,9 @@ const PhotoGallery = () => {
                       />
                       
                       <BoomerangDownloadButton
-                        url={photo.boomerang?.url || ""}
+                        url={photo.boomerang?.boomerang_url || ""}
                         filename={`${photoName(index)}_boomerang`}
-                        variant={photo.boomerang?.url ? "outline" : "outline"}
+                        variant={photo.boomerang?.boomerang_url ? "outline" : "outline"}
                         size="sm"
                       />
                     </div>

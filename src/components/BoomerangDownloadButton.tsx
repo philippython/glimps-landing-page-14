@@ -25,6 +25,8 @@ const BoomerangDownloadButton = ({
   const intl = useIntl();
   const isDisabled = !url || url.trim() === "";
 
+  console.log('BoomerangDownloadButton received URL:', url, 'isDisabled:', isDisabled);
+
   const handleDownload = async () => {
     if (isDisabled) return;
     
