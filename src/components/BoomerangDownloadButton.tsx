@@ -11,18 +11,23 @@ interface BoomerangDownloadButtonProps {
   filename: string;
   variant?: "ghost" | "outline" | "default";
   size?: "default" | "sm" | "lg" | "icon";
+  showText?: boolean;
 }
 
 const BoomerangDownloadButton = ({ 
   url, 
   filename, 
   variant = "ghost", 
-  size = "icon"
+  size = "icon",
+  showText = false
 }: BoomerangDownloadButtonProps) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const intl = useIntl();
+  const isDisabled = !url || url.trim() === "";
 
   const handleDownload = async () => {
+    if (isDisabled) return;
+    
     setIsDownloading(true);
     console.log(`Boomerang download initiated for ${filename}`);
 
@@ -49,13 +54,32 @@ const BoomerangDownloadButton = ({
     }
   };
 
+  if (showText) {
+    return (
+      <Button 
+        variant={variant} 
+        size={size} 
+        disabled={isDownloading || isDisabled} 
+        onClick={handleDownload}
+        title={isDisabled ? "No boomerang available" : "Download Boomerang"}
+      >
+        <Video className="w-4 h-4 mr-2" />
+        {isDownloading ? (
+          <FormattedMessage id="photoGallery.buttons.downloading" />
+        ) : (
+          "Boomerang"
+        )}
+      </Button>
+    );
+  }
+
   return (
     <Button 
       variant={variant} 
       size={size} 
-      disabled={isDownloading} 
+      disabled={isDownloading || isDisabled} 
       onClick={handleDownload}
-      title="Download Boomerang"
+      title={isDisabled ? "No boomerang available" : "Download Boomerang"}
     >
       <Video className="w-4 h-4" />
     </Button>

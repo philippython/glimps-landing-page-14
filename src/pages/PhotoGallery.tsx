@@ -9,6 +9,7 @@ import ProgressiveImage from "@/components/ProgressiveImage";
 import EnhancedDownloadButton from "@/components/EnhancedDownloadButton";
 import BoomerangDownloadButton from "@/components/BoomerangDownloadButton";
 import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
+import { fetchVenueUsersFromApi } from "@/service/fetchVenueUsersFromApi";
 import { downloadMultiplePhotos } from "@/utils/downloadUtils";
 import { convertDateTime, convertOnlyDate } from "@/lib/utils";
 import LogoWithText from "@/components/LogoWithText";
@@ -24,6 +25,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Play, Pause } from "lucide-react";
 
 type Photo = {
   photo_url: string,
@@ -51,6 +53,7 @@ const PhotoGallery = () => {
   const [loadedImagesCount, setLoadedImagesCount] = useState(0);
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set());
   const photosPerPage = 12;
   
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
@@ -61,6 +64,19 @@ const PhotoGallery = () => {
     }),
     enabled: !!uuid,
   });
+
+  // Fetch venue users early to get accurate total count
+  const { data: venueUsersData } = useQuery({
+    queryKey: ['venue-users', data?.venue_id],
+    queryFn: () => {
+      const venueId = getVenueId();
+      const token = localStorage.getItem('token') || '';
+      return venueId ? fetchVenueUsersFromApi(token, venueId) : null;
+    },
+    enabled: !!data?.venue_id || !!localStorage.getItem('venueId') || !!localStorage.getItem('venue_id'),
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
   const intl = useIntl();
 
   const getVenueId = () => {
@@ -83,6 +99,20 @@ const PhotoGallery = () => {
 
   const handleImageLoad = () => {
     setLoadedImagesCount(prev => prev + 1);
+  };
+
+  const toggleVideoPlay = (index: number, videoElement: HTMLVideoElement) => {
+    if (playingVideos.has(index)) {
+      videoElement.pause();
+      setPlayingVideos(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(index);
+        return newSet;
+      });
+    } else {
+      videoElement.play();
+      setPlayingVideos(prev => new Set(prev).add(index));
+    }
   };
 
   const handleDownloadAll = async () => {
@@ -168,6 +198,7 @@ const PhotoGallery = () => {
                     <p className="text-glimps-600">
                       {convertDateTime(data.created_at)} • {data.total_count || data.photos.length}{" "}
                       <FormattedMessage id="photoGallery.photos" />
+                      {venueUsersData && ` • ${venueUsersData.total_count} users`}
                     </p>
                   </div>
                 )}
@@ -224,23 +255,62 @@ const PhotoGallery = () => {
                       onLoad={handleImageLoad}
                     />
                   </div>
-                  <div className="p-4 flex items-center justify-between">
-                    <p className="text-sm text-gray-700 font-medium truncate">{photoName(index)}</p>
-                    <div className="flex items-center gap-2">
+                  
+                  {/* Boomerang Video Display */}
+                  {photo.boomerang?.url && (
+                    <div className="relative pt-[75%] border-t">
+                      <video
+                        ref={(el) => {
+                          if (el) {
+                            el.onplay = () => setPlayingVideos(prev => new Set(prev).add(index));
+                            el.onpause = () => setPlayingVideos(prev => {
+                              const newSet = new Set(prev);
+                              newSet.delete(index);
+                              return newSet;
+                            });
+                          }
+                        }}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        src={photo.boomerang.url}
+                        loop
+                        muted={false}
+                        controls={false}
+                      />
+                      <button
+                        onClick={(e) => {
+                          const video = e.currentTarget.previousElementSibling as HTMLVideoElement;
+                          toggleVideoPlay(index, video);
+                        }}
+                        className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-50 transition-all"
+                      >
+                        {playingVideos.has(index) ? (
+                          <Pause className="w-12 h-12 text-white" />
+                        ) : (
+                          <Play className="w-12 h-12 text-white" />
+                        )}
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="p-4">
+                    <p className="text-sm text-gray-700 font-medium truncate mb-3">{photoName(index)}</p>
+                    
+                    {/* Multiple Download Buttons */}
+                    <div className="flex flex-wrap gap-2">
                       <EnhancedDownloadButton
                         url={photo.photo_url}
                         filename={photoName(index)}
-                        variant="ghost"
-                        size="icon"
+                        variant="outline"
+                        size="sm"
+                        showText={true}
                       />
-                      {photo.boomerang?.url && (
-                        <BoomerangDownloadButton
-                          url={photo.boomerang.url}
-                          filename={`${photoName(index)}_boomerang`}
-                          variant="ghost"
-                          size="icon"
-                        />
-                      )}
+                      
+                      <BoomerangDownloadButton
+                        url={photo.boomerang?.url || ""}
+                        filename={`${photoName(index)}_boomerang`}
+                        variant={photo.boomerang?.url ? "outline" : "outline"}
+                        size="sm"
+                      />
                     </div>
                   </div>
                 </Card>
