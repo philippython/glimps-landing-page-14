@@ -58,11 +58,17 @@ const EnhancedDownloadButton = ({
       setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
       
       console.log(`Download successful: ${filename}`);
-      toast.success(intl.formatMessage({ id: 'photoGallery.download.saveSuccess' }));
+      toast.success(intl.formatMessage({ 
+        id: 'photoGallery.download.saveSuccess',
+        defaultMessage: 'Photo downloaded successfully!'
+      }));
       
     } catch (error) {
       console.error('Download error:', error);
-      toast.error(intl.formatMessage({ id: 'photoGallery.download.downloadFailed' }));
+      toast.error(intl.formatMessage({ 
+        id: 'photoGallery.download.downloadFailed',
+        defaultMessage: 'Download failed. Please try again.'
+      }));
     } finally {
       setIsDownloading(false);
     }
@@ -79,9 +85,15 @@ const EnhancedDownloadButton = ({
       >
         <Download className="w-4 h-4 mr-2" />
         {isDownloading ? (
-          <FormattedMessage id="photoGallery.buttons.downloading" />
+          <FormattedMessage 
+            id="photoGallery.buttons.downloading" 
+            defaultMessage="Downloading..."
+          />
         ) : (
-          <FormattedMessage id="photoGallery.buttons.download" />
+          <FormattedMessage 
+            id="photoGallery.buttons.download" 
+            defaultMessage="Download"
+          />
         )}
       </Button>
     );

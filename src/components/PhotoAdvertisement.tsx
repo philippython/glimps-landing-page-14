@@ -160,13 +160,13 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
               muted
               loop
               playsInline
+              controls={false}
               style={{
                 WebkitAppearance: 'none',
               }}
               onContextMenu={(e) => e.preventDefault()}
-              controlsList="nodownload nofullscreen noremoteplayback"
             >
-              <style jsx>{`
+              <style>{`
                 video::-webkit-media-controls {
                   display: none !important;
                 }
@@ -207,27 +207,27 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
       )}
 
       {fullscreenAd && showFullscreenAd && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-40 p-4">
-          <div className="bg-white rounded-lg overflow-hidden max-w-2xl w-full">
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
             <div
-              className={`p-4 ${fullscreenAd.external_url || fullscreenAd.redirect_url ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
+              className={`flex-1 ${fullscreenAd.external_url || fullscreenAd.redirect_url ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
               onClick={() => handleAdClick(fullscreenAd)}
             >
               {isVideo(fullscreenAd.media_url) ? (
                 <video
                   src={fullscreenAd.media_url}
-                  className="w-full aspect-video object-cover rounded-md"
+                  className="w-full h-full max-h-[70vh] object-cover"
                   autoPlay
                   muted
                   loop
                   playsInline
+                  controls={false}
                   style={{
                     WebkitAppearance: 'none',
                   }}
                   onContextMenu={(e) => e.preventDefault()}
-                  controlsList="nodownload nofullscreen noremoteplayback"
                 >
-                  <style jsx>{`
+                  <style>{`
                     video::-webkit-media-controls {
                       display: none !important;
                     }
@@ -261,15 +261,16 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
                 <ImageWithFallback
                   src={fullscreenAd.media_url}
                   alt="Advertisement"
-                  className="w-full aspect-video object-cover rounded-md"
+                  className="w-full h-full max-h-[70vh] object-cover"
                 />
               )}
             </div>
-            <div className="p-4 bg-gray-50 flex justify-end items-center">
+            <div className="p-6 bg-gray-50 flex justify-end items-center border-t">
               <Button
                 variant="outline"
                 onClick={handleCloseFullscreenAd}
                 disabled={!canCloseFullscreenAd}
+                className="px-6 py-2"
               >
                 {!canCloseFullscreenAd ? (
                   <span className="flex items-center">

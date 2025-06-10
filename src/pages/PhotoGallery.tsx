@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -115,18 +114,30 @@ const PhotoGallery = () => {
       const successCount = await downloadMultiplePhotos(photosToDownload);
       
       if (successCount === data.photos.length) {
-        toast.success(intl.formatMessage({ id: "photoGallery.download.downloadAll" }));
+        toast.success(intl.formatMessage({ 
+          id: "photoGallery.download.downloadAll",
+          defaultMessage: "All photos downloaded successfully!"
+        }));
       } else if (successCount > 0) {
         toast.success(intl.formatMessage(
-          { id: "photoGallery.download.downloadPartial" },
+          { 
+            id: "photoGallery.download.downloadPartial",
+            defaultMessage: `Downloaded ${successCount} of ${data.photos.length} photos successfully.`
+          },
           { success: successCount, total: data.photos.length }
         ));
       } else {
-        toast.error(intl.formatMessage({ id: "photoGallery.download.downloadFailed" }));
+        toast.error(intl.formatMessage({ 
+          id: "photoGallery.download.downloadFailed",
+          defaultMessage: "Download failed. Please try again."
+        }));
       }
     } catch (error) {
       console.error('Batch download error:', error);
-      toast.error(intl.formatMessage({ id: "photoGallery.download.downloadFailed" }));
+      toast.error(intl.formatMessage({ 
+        id: "photoGallery.download.downloadFailed",
+        defaultMessage: "Download failed. Please try again."
+      }));
     } finally {
       setIsDownloadingAll(false);
     }
@@ -202,9 +213,15 @@ const PhotoGallery = () => {
                   >
                     <Download className="w-4 h-4 mr-2" />
                     {isDownloadingAll ? (
-                      <FormattedMessage id="photoGallery.buttons.downloading" />
+                      <FormattedMessage 
+                        id="photoGallery.buttons.downloading" 
+                        defaultMessage="Downloading..."
+                      />
                     ) : (
-                      <FormattedMessage id="photoGallery.buttons.downloadAll" />
+                      <FormattedMessage 
+                        id="photoGallery.buttons.downloadAll" 
+                        defaultMessage="Download All"
+                      />
                     )}
                   </Button>
                 </div>
@@ -239,9 +256,15 @@ const PhotoGallery = () => {
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {isDownloadingAll ? (
-                    <FormattedMessage id="photoGallery.buttons.downloading" />
+                    <FormattedMessage 
+                      id="photoGallery.buttons.downloading" 
+                      defaultMessage="Downloading..."
+                    />
                   ) : (
-                    <FormattedMessage id="photoGallery.buttons.downloadAll" />
+                    <FormattedMessage 
+                      id="photoGallery.buttons.downloadAll" 
+                      defaultMessage="Download All"
+                    />
                   )}
                 </Button>
               </div>
