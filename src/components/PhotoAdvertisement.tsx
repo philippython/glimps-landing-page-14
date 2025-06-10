@@ -66,15 +66,14 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         }
 
         const now = new Date();
-        now.setHours(0, 0, 0, 0); // Set to start of today for accurate comparison
+        now.setHours(0, 0, 0, 0);
 
         const processedAds = ads.map((ad) => {
           const startDate = ad.start_date ? new Date(ad.start_date) : null;
           const expiryDate = ad.expiry_date ? new Date(ad.expiry_date) : null;
 
-          // Set hours to 0 for date-only comparison
           if (startDate) startDate.setHours(0, 0, 0, 0);
-          if (expiryDate) expiryDate.setHours(23, 59, 59, 999); // End of expiry day
+          if (expiryDate) expiryDate.setHours(23, 59, 59, 999);
 
           let status: AdStatus = "ACTIVE";
 
@@ -158,9 +157,45 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
               src={bannerAd.media_url}
               className="w-full h-20 md:h-24 lg:h-28 object-cover rounded-md"
               autoPlay
-              muted={false}
-              controls={false}
-            />
+              muted
+              loop
+              playsInline
+              style={{
+                WebkitAppearance: 'none',
+              }}
+              onContextMenu={(e) => e.preventDefault()}
+              controlsList="nodownload nofullscreen noremoteplayback"
+            >
+              <style jsx>{`
+                video::-webkit-media-controls {
+                  display: none !important;
+                }
+                video::-webkit-media-controls-panel {
+                  display: none !important;
+                }
+                video::-webkit-media-controls-play-button {
+                  display: none !important;
+                }
+                video::-webkit-media-controls-timeline {
+                  display: none !important;
+                }
+                video::-webkit-media-controls-current-time-display {
+                  display: none !important;
+                }
+                video::-webkit-media-controls-time-remaining-display {
+                  display: none !important;
+                }
+                video::-webkit-media-controls-mute-button {
+                  display: none !important;
+                }
+                video::-webkit-media-controls-volume-slider {
+                  display: none !important;
+                }
+                video::-webkit-media-controls-fullscreen-button {
+                  display: none !important;
+                }
+              `}</style>
+            </video>
           ) : (
             <ImageWithFallback
               src={bannerAd.media_url}
@@ -172,7 +207,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
       )}
 
       {fullscreenAd && showFullscreenAd && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-40 p-4">
           <div className="bg-white rounded-lg overflow-hidden max-w-2xl w-full">
             <div
               className={`p-4 ${fullscreenAd.external_url || fullscreenAd.redirect_url ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
@@ -183,9 +218,45 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
                   src={fullscreenAd.media_url}
                   className="w-full aspect-video object-cover rounded-md"
                   autoPlay
-                  muted={false}
-                  controls
-                />
+                  muted
+                  loop
+                  playsInline
+                  style={{
+                    WebkitAppearance: 'none',
+                  }}
+                  onContextMenu={(e) => e.preventDefault()}
+                  controlsList="nodownload nofullscreen noremoteplayback"
+                >
+                  <style jsx>{`
+                    video::-webkit-media-controls {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-panel {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-play-button {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-timeline {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-current-time-display {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-time-remaining-display {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-mute-button {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-volume-slider {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-fullscreen-button {
+                      display: none !important;
+                    }
+                  `}</style>
+                </video>
               ) : (
                 <ImageWithFallback
                   src={fullscreenAd.media_url}

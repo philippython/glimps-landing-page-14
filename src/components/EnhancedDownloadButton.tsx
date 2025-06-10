@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { downloadPhoto } from "@/utils/downloadUtils";
 import { toast } from "sonner";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -12,6 +11,7 @@ interface EnhancedDownloadButtonProps {
   variant?: "ghost" | "outline" | "default";
   size?: "default" | "sm" | "lg" | "icon";
   showText?: boolean;
+  className?: string;
 }
 
 const EnhancedDownloadButton = ({ 
@@ -19,7 +19,8 @@ const EnhancedDownloadButton = ({
   filename, 
   variant = "ghost", 
   size = "icon",
-  showText = false 
+  showText = false,
+  className
 }: EnhancedDownloadButtonProps) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const intl = useIntl();
@@ -29,20 +30,36 @@ const EnhancedDownloadButton = ({
     console.log(`Download initiated for ${filename}`);
 
     try {
-      const success = await downloadPhoto({
-        url,
-        filename,
-        onSuccess: () => {
-          toast.success(intl.formatMessage({ id: 'photoGallery.download.saveSuccess' }));
-        },
-        onError: (error) => {
-          toast.error(`${intl.formatMessage({ id: 'photoGallery.download.downloadFailed' })}: ${error}`);
-        }
+      // Use the proxy-image endpoint for direct download
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const proxyUrl = `${apiUrl}/proxy-image?url=${encodeURIComponent(url)}`;
+      
+      const response = await fetch(proxyUrl, {
+        method: 'GET',
       });
-
-      if (!success) {
-        toast.error(intl.formatMessage({ id: 'photoGallery.download.downloadFailed' }));
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `${filename}.jpg`;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+      
+      console.log(`Download successful: ${filename}`);
+      toast.success(intl.formatMessage({ id: 'photoGallery.download.saveSuccess' }));
+      
     } catch (error) {
       console.error('Download error:', error);
       toast.error(intl.formatMessage({ id: 'photoGallery.download.downloadFailed' }));
@@ -53,7 +70,13 @@ const EnhancedDownloadButton = ({
 
   if (showText) {
     return (
-      <Button variant={variant} size={size} disabled={isDownloading} onClick={handleDownload}>
+      <Button 
+        variant={variant} 
+        size={size} 
+        disabled={isDownloading} 
+        onClick={handleDownload}
+        className={className}
+      >
         <Download className="w-4 h-4 mr-2" />
         {isDownloading ? (
           <FormattedMessage id="photoGallery.buttons.downloading" />
@@ -65,7 +88,13 @@ const EnhancedDownloadButton = ({
   }
 
   return (
-    <Button variant={variant} size={size} disabled={isDownloading} onClick={handleDownload}>
+    <Button 
+      variant={variant} 
+      size={size} 
+      disabled={isDownloading} 
+      onClick={handleDownload}
+      className={className}
+    >
       <Download className="w-4 h-4" />
     </Button>
   );

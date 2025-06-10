@@ -7,7 +7,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import ProgressiveImage from "@/components/ProgressiveImage";
 import EnhancedDownloadButton from "@/components/EnhancedDownloadButton";
-import BoomerangDownloadButton from "@/components/BoomerangDownloadButton";
 import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
 import { fetchVenueUsersFromApi } from "@/service/fetchVenueUsersFromApi";
 import { downloadMultiplePhotos } from "@/utils/downloadUtils";
@@ -25,7 +24,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Play, Pause } from "lucide-react";
+import { Download, Image as ImageIcon } from "lucide-react";
 
 type Photo = {
   photo_url: string,
@@ -53,7 +52,6 @@ const PhotoGallery = () => {
   const [loadedImagesCount, setLoadedImagesCount] = useState(0);
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set());
   const photosPerPage = 12;
   
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
@@ -83,8 +81,8 @@ const PhotoGallery = () => {
       const token = localStorage.getItem('token') || '';
       return venueId ? fetchVenueUsersFromApi(token, venueId) : null;
     },
-    enabled: !!venueId, // Run immediately when venueId is available
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    enabled: !!venueId,
+    staleTime: 5 * 60 * 1000,
   });
 
   const intl = useIntl();
@@ -100,20 +98,6 @@ const PhotoGallery = () => {
 
   const handleImageLoad = () => {
     setLoadedImagesCount(prev => prev + 1);
-  };
-
-  const toggleVideoPlay = (index: number, videoElement: HTMLVideoElement) => {
-    if (playingVideos.has(index)) {
-      videoElement.pause();
-      setPlayingVideos(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(index);
-        return newSet;
-      });
-    } else {
-      videoElement.play();
-      setPlayingVideos(prev => new Set(prev).add(index));
-    }
   };
 
   const handleDownloadAll = async () => {
@@ -133,7 +117,10 @@ const PhotoGallery = () => {
       if (successCount === data.photos.length) {
         toast.success(intl.formatMessage({ id: "photoGallery.download.downloadAll" }));
       } else if (successCount > 0) {
-        toast.success(`Downloaded ${successCount}/${data.photos.length} photos successfully`);
+        toast.success(intl.formatMessage(
+          { id: "photoGallery.download.downloadPartial" },
+          { success: successCount, total: data.photos.length }
+        ));
       } else {
         toast.error(intl.formatMessage({ id: "photoGallery.download.downloadFailed" }));
       }
@@ -168,24 +155,63 @@ const PhotoGallery = () => {
         <h1 className="text-2xl font-bold text-glimps-900 mb-4">
           <FormattedMessage id="photoGallery.error.title" />
         </h1>
-        <p className="text-glimps-600">
+        <p className="text-glimps-600 mb-4">
           <FormattedMessage id="photoGallery.error.message" />
         </p>
+        <Button
+          variant="outline"
+          onClick={() => window.location.reload()}
+        >
+          <FormattedMessage id="photoGallery.buttons.retry" />
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      {photosLoaded && showAds && venueId ? (
-        <header className="bg-white border-b">
-          <div className="container mx-auto px-4 py-6">
-            <PhotoAdvertisement venueId={venueId} />
-          </div>
-        </header>
-      ) : (
-        <header className="bg-white border-b">
-          <div className="container mx-auto px-4 py-6">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      {/* Always show header with app bar */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        <div className="container mx-auto px-4 py-6">
+          {photosLoaded && showAds && venueId ? (
+            <div className="space-y-4">
+              <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+                  <LogoWithText />
+                  {data && (
+                    <div>
+                      <h1 className="text-2xl font-bold text-glimps-900">
+                        <FormattedMessage id="photoGallery.title" />
+                      </h1>
+                      <p className="text-glimps-600">
+                        {convertDateTime(data.created_at)} • {data.total_count || data.photos.length}{" "}
+                        <FormattedMessage id="photoGallery.photos" />
+                        {venueUsersData && ` • ${venueUsersData.total_count} users`}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center space-x-3">
+                  <LanguagePicker />
+                  <Button
+                    variant="default"
+                    size="lg"
+                    onClick={handleDownloadAll}
+                    disabled={isLoading || !data || isDownloadingAll}
+                    className="bg-glimps-900 hover:bg-glimps-800 text-white"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    {isDownloadingAll ? (
+                      <FormattedMessage id="photoGallery.buttons.downloading" />
+                    ) : (
+                      <FormattedMessage id="photoGallery.buttons.downloadAll" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+              <PhotoAdvertisement venueId={venueId} />
+            </div>
+          ) : (
             <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <LogoWithText />
@@ -202,125 +228,88 @@ const PhotoGallery = () => {
                   </div>
                 )}
               </div>
-              <div className="flex flex-col items-center md:items-end gap-1">
-                <div className="flex items-center space-x-3">
-                  <LanguagePicker />
-                  <Button
-                    variant="outline"
-                    onClick={handleDownloadAll}
-                    disabled={isLoading || !data || isDownloadingAll}
-                  >
-                    {isDownloadingAll ? (
-                      <FormattedMessage id="photoGallery.buttons.downloading" />
-                    ) : (
-                      <FormattedMessage id="photoGallery.buttons.downloadAll" />
-                    )}
-                  </Button>
-                </div>
-                <p className="text-red-500 text-md font-semibold text-center">
-                  Чтобы скачать фото, зажмите фотографию, и в открывшемся меню нажмите скачать
-                </p>
+              <div className="flex items-center space-x-3">
+                <LanguagePicker />
+                <Button
+                  variant="default"
+                  size="lg"
+                  onClick={handleDownloadAll}
+                  disabled={isLoading || !data || isDownloadingAll}
+                  className="bg-glimps-900 hover:bg-glimps-800 text-white"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  {isDownloadingAll ? (
+                    <FormattedMessage id="photoGallery.buttons.downloading" />
+                  ) : (
+                    <FormattedMessage id="photoGallery.buttons.downloadAll" />
+                  )}
+                </Button>
               </div>
             </div>
-          </div>
-        </header>
-      )}
+          )}
+        </div>
+      </header>
 
       <main className="flex-grow container mx-auto px-4 py-8">
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, index) => (
-              <Card key={index} className="overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, index) => (
+              <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                 <div className="relative pt-[75%]">
                   <Skeleton className="absolute inset-0" />
                 </div>
                 <div className="p-4">
-                  <Skeleton className="h-4 w-1/2 mb-2" />
-                  <Skeleton className="h-8 w-28" />
+                  <Skeleton className="h-4 w-3/4 mb-2" />
+                  <Skeleton className="h-10 w-full" />
                 </div>
               </Card>
             ))}
           </div>
+        ) : data?.photos.length === 0 ? (
+          <div className="text-center py-16">
+            <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">
+              <FormattedMessage id="photoGallery.noPhotoFound.title" />
+            </h2>
+            <p className="text-gray-500">
+              <FormattedMessage id="photoGallery.noPhotoFound.message" />
+            </p>
+          </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {data?.photos.map((photo, index) => {
-                
-                return (
-                  <Card key={index} className="overflow-hidden">
-                    <div className="relative pt-[75%]">
-                      <ProgressiveImage
-                        className="absolute inset-0"
-                        src={photo.photo_url}
-                        alt={`Photo ${index + 1}`}
-                        onLoad={handleImageLoad}
-                      />
-                    </div>
-                    
-                    {/* Boomerang Video Display - Fixed to use correct nested structure */}
-                    {photo.boomerang?.boomerang_url && (
-                      <div className="relative pt-[75%] border-t">
-                        <video
-                          ref={(el) => {
-                            if (el) {
-                              el.onplay = () => setPlayingVideos(prev => new Set(prev).add(index));
-                              el.onpause = () => setPlayingVideos(prev => {
-                                const newSet = new Set(prev);
-                                newSet.delete(index);
-                                return newSet;
-                              });
-                            }
-                          }}
-                          className="absolute inset-0 w-full h-full object-cover"
-                          src={photo.boomerang.boomerang_url}
-                          loop
-                          muted={false}
-                          controls={false}
-                        />
-                        <button
-                          onClick={(e) => {
-                            const video = e.currentTarget.previousElementSibling as HTMLVideoElement;
-                            toggleVideoPlay(index, video);
-                          }}
-                          className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-50 transition-all"
-                        >
-                          {playingVideos.has(index) ? (
-                            <Pause className="w-12 h-12 text-white" />
-                          ) : (
-                            <Play className="w-12 h-12 text-white" />
-                          )}
-                        </button>
-                      </div>
-                    )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {data?.photos.map((photo, index) => (
+                <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white">
+                  <div className="relative pt-[75%] group">
+                    <ProgressiveImage
+                      className="absolute inset-0 rounded-t-lg"
+                      src={photo.photo_url}
+                      alt={`Photo ${index + 1}`}
+                      onLoad={handleImageLoad}
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-t-lg" />
+                  </div>
 
-                    <div className="p-4">
-                      <p className="text-sm text-gray-700 font-medium truncate mb-3">{photoName(index)}</p>
-                      
-                      {/* Multiple Download Buttons */}
-                      <div className="flex flex-wrap gap-2">
-                        <EnhancedDownloadButton
-                          url={photo.photo_url}
-                          filename={photoName(index)}
-                          variant="outline"
-                          size="sm"
-                          showText={true}
-                        />
-                        
-                        <BoomerangDownloadButton
-                          url={photo.boomerang?.boomerang_url || ""}
-                          filename={`${photoName(index)}_boomerang`}
-                          variant={photo.boomerang?.boomerang_url ? "outline" : "outline"}
-                          size="sm"
-                        />
-                      </div>
-                    </div>
-                  </Card>
-                );
-              })}
+                  <div className="p-4 space-y-3">
+                    <p className="text-sm text-gray-700 font-medium truncate">
+                      {photoName(index)}
+                    </p>
+                    
+                    <EnhancedDownloadButton
+                      url={photo.photo_url}
+                      filename={photoName(index)}
+                      variant="default"
+                      size="sm"
+                      showText={true}
+                      className="w-full bg-glimps-900 hover:bg-glimps-800 text-white"
+                    />
+                  </div>
+                </Card>
+              ))}
             </div>
             
             {totalPages > 1 && (
-              <div className="mt-8 flex justify-center">
+              <div className="mt-12 flex justify-center">
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>

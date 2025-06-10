@@ -11,13 +11,13 @@ export interface DownloadOptions {
 export const downloadPhoto = async ({ url, filename, onSuccess, onError }: DownloadOptions) => {
   console.log(`Starting download for: ${filename}`);
   
-  // Method 1: Try fetch with blob download (most reliable)
   try {
-    const response = await fetch(url, {
+    // Use the proxy-image endpoint for direct download
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const proxyUrl = `${apiUrl}/proxy-image?url=${encodeURIComponent(url)}`;
+    
+    const response = await fetch(proxyUrl, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'image/jpeg',
-      },
     });
     
     if (!response.ok) {
@@ -43,52 +43,11 @@ export const downloadPhoto = async ({ url, filename, onSuccess, onError }: Downl
     onSuccess?.();
     return true;
   } catch (error) {
-    console.error(`Fetch download failed: ${error}`);
+    console.error(`Download failed: ${error}`);
+    const errorMessage = 'Download failed. Please try again.';
+    onError?.(errorMessage);
+    return false;
   }
-  
-  // Method 2: Try direct link download
-  try {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${filename}.jpg`;
-    link.style.display = 'none';
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    console.log(`Direct link download attempted: ${filename}`);
-    onSuccess?.();
-    return true;
-  } catch (error) {
-    console.error(`Direct link download failed: ${error}`);
-  }
-  
-  // Method 3: Background iframe method (no visible tabs)
-  try {
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = url;
-    
-    document.body.appendChild(iframe);
-    
-    // Remove iframe after a delay
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-    }, 3000);
-    
-    console.log(`Background download attempted: ${filename}`);
-    onSuccess?.();
-    return true;
-  } catch (error) {
-    console.error(`Background iframe download failed: ${error}`);
-  }
-  
-  // All methods failed
-  const errorMessage = 'Download failed. Please try again.';
-  console.error(`All download methods failed for: ${filename}`);
-  onError?.(errorMessage);
-  return false;
 };
 
 export const downloadVideo = async ({ url, filename, onSuccess, onError }: DownloadOptions) => {
