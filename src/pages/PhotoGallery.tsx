@@ -197,7 +197,6 @@ const PhotoGallery = () => {
                       <p className="text-glimps-600">
                         {convertDateTime(data.created_at)} • {data.total_count || data.photos.length}{" "}
                         <FormattedMessage id="photoGallery.photos" />
-                        {venueUsersData && ` • ${venueUsersData.total_count} users`}
                       </p>
                     </div>
                   )}
