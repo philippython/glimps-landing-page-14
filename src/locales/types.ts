@@ -268,6 +268,7 @@ export type Messages = {
       userPhoto: string;
       viewSession: string;
       noPhotoFound: string;
+      downloadXLSX: string;
     },
     usersList: {
       UUID: string;

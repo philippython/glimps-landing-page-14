@@ -274,6 +274,7 @@
         "yes": "Да",
         "no": "Нет"
       },
+      "downloadXLSX": "Скачать excel",
       "viewPhoto": "Просмотреть фото",
       "userPhoto": "Фото пользователя",
       "viewSession": "Просмотр фотосессии",

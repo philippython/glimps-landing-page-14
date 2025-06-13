@@ -275,6 +275,7 @@
       },
       "viewPhoto": "View Photo",
       "userPhoto": "User Photo",
+      "downloadXLSX": "Download excel",
       "viewSession": "View photo ession",
       "noPhotoFound": "No photo sessions found."
     },
