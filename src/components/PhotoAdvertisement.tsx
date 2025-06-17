@@ -32,6 +32,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   const [showFullscreenAd, setShowFullscreenAd] = useState(false);
   const [canCloseFullscreenAd, setCanCloseFullscreenAd] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(5);
   const intl = useIntl();
 
   useEffect(() => {
@@ -115,7 +116,21 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         if (activeFullscreen) {
           setShowFullscreenAd(true);
           setCanCloseFullscreenAd(false);
-          setTimeout(() => setCanCloseFullscreenAd(true), 5000);
+          setTimeLeft(5);
+          
+          // Start countdown timer
+          const timer = setInterval(() => {
+            setTimeLeft((prev) => {
+              if (prev <= 1) {
+                setCanCloseFullscreenAd(true);
+                clearInterval(timer);
+                return 0;
+              }
+              return prev - 1;
+            });
+          }, 1000);
+
+          return () => clearInterval(timer);
         }
       } catch (error) {
         toast.error(intl.formatMessage({id: "venueDashboard.advertising.loadFailed", defaultMessage: "Failed to load advertisements"}));
@@ -171,8 +186,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
                   WebkitAppearance: 'none',
                 }}
                 onContextMenu={(e) => e.preventDefault()}
-              >
-              </video>
+              />
             ) : (
               <ImageWithFallback
                 src={fullscreenAd.media_url}
@@ -190,7 +204,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
             >
               {!canCloseFullscreenAd ? (
                 <span className="flex items-center">
-                  <span className="animate-pulse mr-2">•</span>
+                  <span className="mr-2">{timeLeft}s</span>
                   <FormattedMessage
                     id="venueDashboard.advertising.closeAd"
                     defaultMessage="Close"

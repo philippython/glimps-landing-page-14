@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -30,14 +31,15 @@ type Photo = {
   photo_url: string,
   sent: boolean,
   venue_id?: string,
-  boomerang?: {
-    boomerang_link?: string | null
-  } | null
 }
 
 interface PhotosDataFromApi {
   id: string,
   photos: Photo[],
+  boomerang?: {
+    boomerang_url?: string | null,
+    venue_id?: string
+  } | null,
   sent: boolean,
   synced: boolean,
   created_at: string,
@@ -71,6 +73,7 @@ const PhotoGallery = () => {
     if (localStorageVenueId) return localStorageVenueId;
     if (data?.venue_id) return data.venue_id;
     if (data?.photos?.[0]?.venue_id) return data.photos[0].venue_id;
+    if (data?.boomerang?.venue_id) return data.boomerang.venue_id;
     return null;
   };
 
@@ -152,7 +155,7 @@ const PhotoGallery = () => {
     if (selectedPhotoIndex === null || !data?.photos) return null;
     
     const photo = data.photos[selectedPhotoIndex];
-    const hasBoomerang = photo.boomerang?.boomerang_link;
+    const hasBoomerang = data.boomerang?.boomerang_url;
 
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
@@ -195,7 +198,7 @@ const PhotoGallery = () => {
           <div className="flex-1 p-4 flex items-center justify-center">
             {viewMode === 'boomerang' && hasBoomerang ? (
               <video
-                src={photo.boomerang!.boomerang_link!}
+                src={data.boomerang!.boomerang_url!}
                 className="max-w-full max-h-full object-contain"
                 autoPlay
                 loop
@@ -215,7 +218,7 @@ const PhotoGallery = () => {
           <div className="p-4 border-t flex justify-center space-x-2">
             {viewMode === 'boomerang' && hasBoomerang ? (
               <BoomerangDownloadButton
-                url={photo.boomerang!.boomerang_link!}
+                url={data.boomerang!.boomerang_url!}
                 filename={`${photoName(selectedPhotoIndex)}_boomerang`}
                 variant="default"
                 size="sm"
@@ -410,17 +413,17 @@ const PhotoGallery = () => {
                         size="sm"
                         onClick={() => {
                           setSelectedPhotoIndex(index);
-                          setViewMode(photo.boomerang?.boomerang_link ? 'boomerang' : 'photo');
+                          setViewMode(data.boomerang?.boomerang_url ? 'boomerang' : 'photo');
                         }}
                         className="bg-white/90 hover:bg-white text-gray-800"
                       >
                         <Eye className="w-4 h-4 mr-2" />
-                        {photo.boomerang?.boomerang_link ? 'Boomerang' : 'View'}
+                        {data.boomerang?.boomerang_url ? 'Boomerang' : 'View'}
                       </Button>
                     </div>
 
                     {/* Boomerang indicator */}
-                    {photo.boomerang?.boomerang_link && (
+                    {data.boomerang?.boomerang_url && (
                       <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
                         <Video className="w-3 h-3 inline mr-1" />
                         Boomerang
@@ -442,9 +445,9 @@ const PhotoGallery = () => {
                         showText={true}
                         className="flex-1 bg-glimps-900 hover:bg-glimps-800 text-white"
                       />
-                      {photo.boomerang?.boomerang_link && (
+                      {data.boomerang?.boomerang_url && (
                         <BoomerangDownloadButton
-                          url={photo.boomerang.boomerang_link}
+                          url={data.boomerang.boomerang_url}
                           filename={`${photoName(index)}_boomerang`}
                           variant="outline"
                           size="sm"
