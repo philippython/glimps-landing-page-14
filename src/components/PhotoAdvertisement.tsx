@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
@@ -113,6 +114,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
 
         if (activeFullscreen) {
           setShowFullscreenAd(true);
+          setCanCloseFullscreenAd(false);
           setTimeout(() => setCanCloseFullscreenAd(true), 5000);
         }
       } catch (error) {
@@ -135,6 +137,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   };
 
   const handleCloseFullscreenAd = () => {
+    if (!canCloseFullscreenAd) return;
     setShowFullscreenAd(false);
     if (onClose) onClose();
   };
@@ -149,7 +152,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     if (!fullscreenAd || !showFullscreenAd) return null;
 
     return createPortal(
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
         <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
           <div
             className={`flex-1 ${fullscreenAd.external_url || fullscreenAd.redirect_url ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
@@ -162,6 +165,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
                 autoPlay
                 loop
                 playsInline
+                muted={false}
                 controls={false}
                 style={{
                   WebkitAppearance: 'none',
@@ -182,7 +186,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
               variant="outline"
               onClick={handleCloseFullscreenAd}
               disabled={!canCloseFullscreenAd}
-              className="px-6 py-2"
+              className={`px-6 py-2 ${!canCloseFullscreenAd ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
             >
               {!canCloseFullscreenAd ? (
                 <span className="flex items-center">
@@ -208,8 +212,8 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
 
   return (
     <>
-      {/* Banner Ad - only shows images */}
-      {bannerAd && !showFullscreenAd && (
+      {/* Banner Ad - only shows images, confined to header */}
+      {bannerAd && (
         <div
           className={`w-full ${bannerAd.external_url || bannerAd.redirect_url ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
           onClick={() => handleAdClick(bannerAd)}
