@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
@@ -150,7 +149,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     if (!fullscreenAd || !showFullscreenAd) return null;
 
     return createPortal(
-      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md flex items-center justify-center z-[10000] p-4">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
         <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
           <div
             className={`flex-1 ${fullscreenAd.external_url || fullscreenAd.redirect_url ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
@@ -161,7 +160,6 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
                 src={fullscreenAd.media_url}
                 className="w-full h-full max-h-[70vh] object-cover"
                 autoPlay
-                muted
                 loop
                 playsInline
                 controls={false}
@@ -170,35 +168,6 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
                 }}
                 onContextMenu={(e) => e.preventDefault()}
               >
-                <style>{`
-                  video::-webkit-media-controls {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-panel {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-play-button {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-timeline {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-current-time-display {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-time-remaining-display {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-mute-button {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-volume-slider {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-fullscreen-button {
-                    display: none !important;
-                  }
-                `}</style>
               </video>
             ) : (
               <ImageWithFallback
@@ -238,68 +207,24 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   };
 
   return (
-    <div className="w-full">
+    <>
+      {/* Banner Ad - only shows images */}
       {bannerAd && !showFullscreenAd && (
         <div
           className={`w-full ${bannerAd.external_url || bannerAd.redirect_url ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
           onClick={() => handleAdClick(bannerAd)}
         >
-          {isVideo(bannerAd.media_url) ? (
-            <video
-              src={bannerAd.media_url}
-              className="w-full h-20 md:h-24 lg:h-28 object-cover rounded-md"
-              autoPlay
-              muted
-              loop
-              playsInline
-              controls={false}
-              style={{
-                WebkitAppearance: 'none',
-              }}
-              onContextMenu={(e) => e.preventDefault()}
-            >
-              <style>{`
-                video::-webkit-media-controls {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-panel {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-play-button {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-timeline {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-current-time-display {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-time-remaining-display {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-mute-button {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-volume-slider {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-fullscreen-button {
-                  display: none !important;
-                }
-              `}</style>
-            </video>
-          ) : (
-            <ImageWithFallback
-              src={bannerAd.media_url}
-              alt="Advertisement"
-              className="w-full h-20 md:h-24 lg:h-28 object-cover rounded-md"
-            />
-          )}
+          <ImageWithFallback
+            src={bannerAd.media_url}
+            alt="Advertisement"
+            className="w-full h-20 md:h-24 lg:h-28 object-cover rounded-md"
+          />
         </div>
       )}
 
+      {/* Fullscreen Ad Modal */}
       <FullscreenAdModal />
-    </div>
+    </>
   );
 };
 

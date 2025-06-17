@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import ProgressiveImage from "@/components/ProgressiveImage";
 import EnhancedDownloadButton from "@/components/EnhancedDownloadButton";
+import BoomerangDownloadButton from "@/components/BoomerangDownloadButton";
 import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
 import { fetchVenueUsersFromApi } from "@/service/fetchVenueUsersFromApi";
 import { downloadMultiplePhotos } from "@/utils/downloadUtils";
@@ -23,7 +24,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Download, Image as ImageIcon } from "lucide-react";
+import { Download, Image as ImageIcon, Video, Eye } from "lucide-react";
 
 type Photo = {
   photo_url: string,
@@ -51,6 +52,8 @@ const PhotoGallery = () => {
   const [loadedImagesCount, setLoadedImagesCount] = useState(0);
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'photo' | 'boomerang'>('photo');
   const photosPerPage = 12;
   
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
@@ -144,6 +147,90 @@ const PhotoGallery = () => {
   };
 
   const totalPages = data?.total_count ? Math.ceil(data.total_count / photosPerPage) : 1;
+
+  const PhotoViewer = () => {
+    if (selectedPhotoIndex === null || !data?.photos) return null;
+    
+    const photo = data.photos[selectedPhotoIndex];
+    const hasBoomerang = photo.boomerang?.boomerang_url;
+
+    return (
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+        <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
+          <div className="p-4 border-b flex justify-between items-center">
+            <h3 className="text-lg font-semibold">{photoName(selectedPhotoIndex)}</h3>
+            <Button
+              variant="ghost"
+              onClick={() => setSelectedPhotoIndex(null)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </Button>
+          </div>
+          
+          {hasBoomerang && (
+            <div className="p-4 border-b flex justify-center space-x-2">
+              <Button
+                variant={viewMode === 'photo' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('photo')}
+              >
+                <ImageIcon className="w-4 h-4 mr-2" />
+                Photo
+              </Button>
+              <Button
+                variant={viewMode === 'boomerang' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('boomerang')}
+              >
+                <Video className="w-4 h-4 mr-2" />
+                Boomerang
+              </Button>
+            </div>
+          )}
+
+          <div className="flex-1 p-4 flex items-center justify-center">
+            {viewMode === 'photo' ? (
+              <ProgressiveImage
+                src={photo.photo_url}
+                alt={`Photo ${selectedPhotoIndex + 1}`}
+                className="max-w-full max-h-full object-contain"
+              />
+            ) : hasBoomerang ? (
+              <video
+                src={photo.boomerang!.boomerang_url!}
+                className="max-w-full max-h-full object-contain"
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+              />
+            ) : null}
+          </div>
+
+          <div className="p-4 border-t flex justify-center space-x-2">
+            <EnhancedDownloadButton
+              url={photo.photo_url}
+              filename={photoName(selectedPhotoIndex)}
+              variant="default"
+              size="sm"
+              showText={true}
+            />
+            {hasBoomerang && (
+              <BoomerangDownloadButton
+                url={photo.boomerang!.boomerang_url!}
+                filename={`${photoName(selectedPhotoIndex)}_boomerang`}
+                variant="outline"
+                size="sm"
+                showText={true}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   if (!uuid) {
     return (
@@ -311,6 +398,27 @@ const PhotoGallery = () => {
                       onLoad={handleImageLoad}
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-t-lg" />
+                    
+                    {/* View button overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setSelectedPhotoIndex(index)}
+                        className="bg-white/90 hover:bg-white text-gray-800"
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View
+                      </Button>
+                    </div>
+
+                    {/* Boomerang indicator */}
+                    {photo.boomerang?.boomerang_url && (
+                      <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                        <Video className="w-3 h-3 inline mr-1" />
+                        Boomerang
+                      </div>
+                    )}
                   </div>
 
                   <div className="p-4 space-y-3">
@@ -318,14 +426,24 @@ const PhotoGallery = () => {
                       {photoName(index)}
                     </p>
                     
-                    <EnhancedDownloadButton
-                      url={photo.photo_url}
-                      filename={photoName(index)}
-                      variant="default"
-                      size="sm"
-                      showText={true}
-                      className="w-full bg-glimps-900 hover:bg-glimps-800 text-white"
-                    />
+                    <div className="flex space-x-2">
+                      <EnhancedDownloadButton
+                        url={photo.photo_url}
+                        filename={photoName(index)}
+                        variant="default"
+                        size="sm"
+                        showText={true}
+                        className="flex-1 bg-glimps-900 hover:bg-glimps-800 text-white"
+                      />
+                      {photo.boomerang?.boomerang_url && (
+                        <BoomerangDownloadButton
+                          url={photo.boomerang.boomerang_url}
+                          filename={`${photoName(index)}_boomerang`}
+                          variant="outline"
+                          size="sm"
+                        />
+                      )}
+                    </div>
                   </div>
                 </Card>
               ))}
@@ -387,6 +505,8 @@ const PhotoGallery = () => {
           </>
         )}
       </main>
+
+      <PhotoViewer />
     </div>
   );
 };
