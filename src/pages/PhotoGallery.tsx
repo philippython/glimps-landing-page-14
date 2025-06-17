@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -58,6 +57,8 @@ const PhotoGallery = () => {
   const [viewMode, setViewMode] = useState<'photo' | 'boomerang'>('boomerang');
   const photosPerPage = 12;
   
+  console.log('PhotoGallery component rendered', { uuid, currentPage });
+
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
     queryKey: ['photos', uuid, currentPage],
     queryFn: () => fetchPhotosFromApi(uuid || "", {
@@ -66,6 +67,8 @@ const PhotoGallery = () => {
     }),
     enabled: !!uuid,
   });
+
+  console.log('Query state:', { data, isLoading, error, uuid });
 
   // Get venue ID immediately for early venue users fetch
   const getVenueId = () => {
@@ -93,6 +96,7 @@ const PhotoGallery = () => {
   const intl = useIntl();
 
   useEffect(() => {
+    console.log('PhotoGallery useEffect triggered', { data, isLoading });
     if (data && !isLoading) {
       setPhotosLoaded(true);
       setTimeout(() => setShowAds(true), 1000);
@@ -239,7 +243,10 @@ const PhotoGallery = () => {
     );
   };
 
+  console.log('About to render PhotoGallery', { uuid, error, isLoading, data });
+
   if (!uuid) {
+    console.log('No UUID provided');
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <LogoWithText />
@@ -254,6 +261,7 @@ const PhotoGallery = () => {
   }
 
   if (error) {
+    console.log('Error in PhotoGallery:', error);
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <LogoWithText />
@@ -272,6 +280,8 @@ const PhotoGallery = () => {
       </div>
     );
   }
+
+  console.log('Rendering main PhotoGallery content');
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
