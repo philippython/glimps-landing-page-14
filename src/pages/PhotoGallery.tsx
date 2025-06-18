@@ -1,3 +1,4 @@
+// src/pages/PhotoGallery.tsx
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import LanguagePicker from "@/components/LanguagePicker";
 import PhotoAdvertisement from "@/components/PhotoAdvertisement";
 import { useState, useEffect } from "react";
-import { 
+import {
   Pagination,
   PaginationContent,
   PaginationItem,
@@ -26,22 +27,22 @@ import {
 import { Download, Image as ImageIcon } from "lucide-react";
 
 type Photo = {
-  photo_url: string,
-  sent: boolean,
-  venue_id?: string,
+  photo_url: string;
+  sent: boolean;
+  venue_id?: string;
   boomerang?: {
-    boomerang_url?: string | null
-  } | null
-}
+    boomerang_url?: string | null;
+  } | null;
+};
 
 interface PhotosDataFromApi {
-  id: string,
-  photos: Photo[],
-  sent: boolean,
-  synced: boolean,
-  created_at: string,
-  venue_id?: string,
-  total_count?: number
+  id: string;
+  photos: Photo[];
+  sent: boolean;
+  synced: boolean;
+  created_at: string;
+  venue_id?: string;
+  total_count?: number;
 }
 
 const PhotoGallery = () => {
@@ -52,19 +53,20 @@ const PhotoGallery = () => {
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const photosPerPage = 12;
-  
+
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
-    queryKey: ['photos', uuid, currentPage],
-    queryFn: () => fetchPhotosFromApi(uuid || "", {
-      limit: photosPerPage,
-      offset: (currentPage - 1) * photosPerPage
-    }),
+    queryKey: ["photos", uuid, currentPage],
+    queryFn: () =>
+      fetchPhotosFromApi(uuid || "", {
+        limit: photosPerPage,
+        offset: (currentPage - 1) * photosPerPage,
+      }),
     enabled: !!uuid,
   });
 
-  // Get venue ID immediately for early venue users fetch
   const getVenueId = () => {
-    const localStorageVenueId = localStorage.getItem('venueId') || localStorage.getItem('venue_id');
+    const localStorageVenueId =
+      localStorage.getItem("venueId") || localStorage.getItem("venue_id");
     if (localStorageVenueId) return localStorageVenueId;
     if (data?.venue_id) return data.venue_id;
     if (data?.photos?.[0]?.venue_id) return data.photos[0].venue_id;
@@ -73,11 +75,10 @@ const PhotoGallery = () => {
 
   const venueId = getVenueId();
 
-  // Fetch venue users immediately when venue ID is available
   const { data: venueUsersData } = useQuery({
-    queryKey: ['venue-users', venueId],
+    queryKey: ["venue-users", venueId],
     queryFn: () => {
-      const token = localStorage.getItem('token') || '';
+      const token = localStorage.getItem("token") || "";
       return venueId ? fetchVenueUsersFromApi(token, venueId) : null;
     },
     enabled: !!venueId,
@@ -93,57 +94,68 @@ const PhotoGallery = () => {
     }
   }, [data, isLoading]);
 
-  const photoName = (index: number) => `${data && convertOnlyDate(data.created_at)} (${((currentPage - 1) * photosPerPage) + index + 1})`;
+  const photoName = (index: number) =>
+    `${data && convertOnlyDate(data.created_at)} (${
+      (currentPage - 1) * photosPerPage + index + 1
+    })`;
 
   const handleImageLoad = () => {
-    setLoadedImagesCount(prev => prev + 1);
+    setLoadedImagesCount((prev) => prev + 1);
   };
 
   const handleDownloadAll = async () => {
     if (!data?.photos) return;
-    
+
     setIsDownloadingAll(true);
-    console.log(`Starting download of all ${data.photos.length} photos`);
-    
     try {
       const photosToDownload = data.photos.map((photo, index) => ({
         url: photo.photo_url,
-        filename: photoName(index)
+        filename: photoName(index),
       }));
 
       const successCount = await downloadMultiplePhotos(photosToDownload);
-      
+
       if (successCount === data.photos.length) {
-        toast.success(intl.formatMessage({ 
-          id: "photoGallery.download.downloadAll",
-          defaultMessage: "All photos downloaded successfully!"
-        }));
+        toast.success(
+          intl.formatMessage({
+            id: "photoGallery.download.downloadAll",
+            defaultMessage: "All photos downloaded successfully!",
+          })
+        );
       } else if (successCount > 0) {
-        toast.success(intl.formatMessage(
-          { 
-            id: "photoGallery.download.downloadPartial",
-            defaultMessage: `Downloaded ${successCount} of ${data.photos.length} photos successfully.`
-          },
-          { success: successCount, total: data.photos.length }
-        ));
+        toast.success(
+          intl.formatMessage(
+            {
+              id: "photoGallery.download.downloadPartial",
+              defaultMessage:
+                "Downloaded {success} of {total} photos successfully.",
+            },
+            { success: successCount, total: data.photos.length }
+          )
+        );
       } else {
-        toast.error(intl.formatMessage({ 
-          id: "photoGallery.download.downloadFailed",
-          defaultMessage: "Download failed. Please try again."
-        }));
+        toast.error(
+          intl.formatMessage({
+            id: "photoGallery.download.downloadFailed",
+            defaultMessage: "Download failed. Please try again.",
+          })
+        );
       }
     } catch (error) {
-      console.error('Batch download error:', error);
-      toast.error(intl.formatMessage({ 
-        id: "photoGallery.download.downloadFailed",
-        defaultMessage: "Download failed. Please try again."
-      }));
+      toast.error(
+        intl.formatMessage({
+          id: "photoGallery.download.downloadFailed",
+          defaultMessage: "Download failed. Please try again.",
+        })
+      );
     } finally {
       setIsDownloadingAll(false);
     }
   };
 
-  const totalPages = data?.total_count ? Math.ceil(data.total_count / photosPerPage) : 1;
+  const totalPages = data?.total_count
+    ? Math.ceil(data.total_count / photosPerPage)
+    : 1;
 
   if (!uuid) {
     return (
@@ -169,10 +181,7 @@ const PhotoGallery = () => {
         <p className="text-glimps-600 mb-4">
           <FormattedMessage id="photoGallery.error.message" />
         </p>
-        <Button
-          variant="outline"
-          onClick={() => window.location.reload()}
-        >
+        <Button variant="outline" onClick={() => window.location.reload()}>
           <FormattedMessage id="photoGallery.buttons.retry" />
         </Button>
       </div>
@@ -181,94 +190,49 @@ const PhotoGallery = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      {/* Always show header with app bar */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4 py-6">
-          {photosLoaded && showAds && venueId ? (
-            <div className="space-y-4">
-              <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
-                <div className="flex flex-col sm:flex-row items-center gap-6">
-                  <LogoWithText />
-                  {data && (
-                    <div>
-                      <h1 className="text-2xl font-bold text-glimps-900">
-                        <FormattedMessage id="photoGallery.title" />
-                      </h1>
-                      <p className="text-glimps-600">
-                        {convertDateTime(data.created_at)} • {data.total_count || data.photos.length}{" "}
-                        <FormattedMessage id="photoGallery.photos" />
-                      </p>
-                    </div>
-                  )}
+          <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <LogoWithText />
+              {data && (
+                <div>
+                  <h1 className="text-2xl font-bold text-glimps-900">
+                    <FormattedMessage id="photoGallery.title" />
+                  </h1>
+                  <p className="text-glimps-600">
+                    {convertDateTime(data.created_at)} •{" "}
+                    {data.total_count || data.photos.length}{" "}
+                    <FormattedMessage id="photoGallery.photos" />
+                    {venueUsersData && ` • ${venueUsersData.total_count} users`}
+                  </p>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <LanguagePicker />
-                  <Button
-                    variant="default"
-                    size="lg"
-                    onClick={handleDownloadAll}
-                    disabled={isLoading || !data || isDownloadingAll}
-                    className="bg-glimps-900 hover:bg-glimps-800 text-white"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    {isDownloadingAll ? (
-                      <FormattedMessage 
-                        id="photoGallery.buttons.downloading" 
-                        defaultMessage="Downloading..."
-                      />
-                    ) : (
-                      <FormattedMessage 
-                        id="photoGallery.buttons.downloadAll" 
-                        defaultMessage="Download All"
-                      />
-                    )}
-                  </Button>
-                </div>
-              </div>
-              <PhotoAdvertisement venueId={venueId} />
+              )}
             </div>
-          ) : (
-            <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
-              <div className="flex flex-col sm:flex-row items-center gap-6">
-                <LogoWithText />
-                {data && (
-                  <div>
-                    <h1 className="text-2xl font-bold text-glimps-900">
-                      <FormattedMessage id="photoGallery.title" />
-                    </h1>
-                    <p className="text-glimps-600">
-                      {convertDateTime(data.created_at)} • {data.total_count || data.photos.length}{" "}
-                      <FormattedMessage id="photoGallery.photos" />
-                      {venueUsersData && ` • ${venueUsersData.total_count} users`}
-                    </p>
-                  </div>
+            <div className="flex items-center space-x-3">
+              <LanguagePicker />
+              <Button
+                variant="default"
+                size="lg"
+                onClick={handleDownloadAll}
+                disabled={isLoading || !data || isDownloadingAll}
+                className="bg-glimps-900 hover:bg-glimps-800 text-white"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                {isDownloadingAll ? (
+                  <FormattedMessage
+                    id="photoGallery.buttons.downloading"
+                    defaultMessage="Downloading..."
+                  />
+                ) : (
+                  <FormattedMessage
+                    id="photoGallery.buttons.downloadAll"
+                    defaultMessage="Download All"
+                  />
                 )}
-              </div>
-              <div className="flex items-center space-x-3">
-                <LanguagePicker />
-                <Button
-                  variant="default"
-                  size="lg"
-                  onClick={handleDownloadAll}
-                  disabled={isLoading || !data || isDownloadingAll}
-                  className="bg-glimps-900 hover:bg-glimps-800 text-white"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  {isDownloadingAll ? (
-                    <FormattedMessage 
-                      id="photoGallery.buttons.downloading" 
-                      defaultMessage="Downloading..."
-                    />
-                  ) : (
-                    <FormattedMessage 
-                      id="photoGallery.buttons.downloadAll" 
-                      defaultMessage="Download All"
-                    />
-                  )}
-                </Button>
-              </div>
+              </Button>
             </div>
-          )}
+          </div>
         </div>
       </header>
 
@@ -276,7 +240,7 @@ const PhotoGallery = () => {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, index) => (
-              <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+              <Card key={index} className="overflow-hidden shadow-md">
                 <div className="relative pt-[75%]">
                   <Skeleton className="absolute inset-0" />
                 </div>
@@ -301,7 +265,7 @@ const PhotoGallery = () => {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {data?.photos.map((photo, index) => (
-                <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white">
+                <Card key={index} className="shadow hover:shadow-lg">
                   <div className="relative pt-[75%] group">
                     <ProgressiveImage
                       className="absolute inset-0 rounded-t-lg"
@@ -309,14 +273,12 @@ const PhotoGallery = () => {
                       alt={`Photo ${index + 1}`}
                       onLoad={handleImageLoad}
                     />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-t-lg" />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-t-lg transition" />
                   </div>
-
                   <div className="p-4 space-y-3">
                     <p className="text-sm text-gray-700 font-medium truncate">
                       {photoName(index)}
                     </p>
-                    
                     <EnhancedDownloadButton
                       url={photo.photo_url}
                       filename={photoName(index)}
@@ -329,28 +291,30 @@ const PhotoGallery = () => {
                 </Card>
               ))}
             </div>
-            
+
             {totalPages > 1 && (
               <div className="mt-12 flex justify-center">
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
-                      <PaginationPrevious 
+                      <PaginationPrevious
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
                           if (currentPage > 1) setCurrentPage(currentPage - 1);
                         }}
-                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                        className={currentPage === 1 ? "opacity-50" : ""}
                       />
                     </PaginationItem>
-                    
+
                     {[...Array(totalPages)].map((_, i) => {
                       const page = i + 1;
-                      if (page === currentPage || 
-                          page === 1 || 
-                          page === totalPages ||
-                          (page >= currentPage - 1 && page <= currentPage + 1)) {
+                      if (
+                        page === currentPage ||
+                        page === 1 ||
+                        page === totalPages ||
+                        (page >= currentPage - 1 && page <= currentPage + 1)
+                      ) {
                         return (
                           <PaginationItem key={page}>
                             <PaginationLink
@@ -368,15 +332,16 @@ const PhotoGallery = () => {
                       }
                       return null;
                     })}
-                    
+
                     <PaginationItem>
-                      <PaginationNext 
+                      <PaginationNext
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                          if (currentPage < totalPages)
+                            setCurrentPage(currentPage + 1);
                         }}
-                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                        className={currentPage === totalPages ? "opacity-50" : ""}
                       />
                     </PaginationItem>
                   </PaginationContent>
@@ -386,6 +351,11 @@ const PhotoGallery = () => {
           </>
         )}
       </main>
+
+      {/* 🎯 Show Ad Modal */}
+      {photosLoaded && showAds && venueId && (
+        <PhotoAdvertisement venueId={venueId} />
+      )}
     </div>
   );
 };

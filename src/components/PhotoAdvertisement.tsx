@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { FormattedMessage, useIntl } from "react-intl";
 import ImageWithFallback from "./ImageWithFallback";
@@ -146,97 +145,6 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
 
   if (isLoading) return null;
 
-  const FullscreenAdModal = () => {
-    if (!fullscreenAd || !showFullscreenAd) return null;
-
-    return createPortal(
-      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md flex items-center justify-center z-[10000] p-4">
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
-          <div
-            className={`flex-1 ${fullscreenAd.external_url || fullscreenAd.redirect_url ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
-            onClick={() => handleAdClick(fullscreenAd)}
-          >
-            {isVideo(fullscreenAd.media_url) ? (
-              <video
-                src={fullscreenAd.media_url}
-                className="w-full h-full max-h-[70vh] object-cover"
-                autoPlay
-                muted
-                loop
-                playsInline
-                controls={false}
-                style={{
-                  WebkitAppearance: 'none',
-                }}
-                onContextMenu={(e) => e.preventDefault()}
-              >
-                <style>{`
-                  video::-webkit-media-controls {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-panel {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-play-button {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-timeline {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-current-time-display {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-time-remaining-display {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-mute-button {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-volume-slider {
-                    display: none !important;
-                  }
-                  video::-webkit-media-controls-fullscreen-button {
-                    display: none !important;
-                  }
-                `}</style>
-              </video>
-            ) : (
-              <ImageWithFallback
-                src={fullscreenAd.media_url}
-                alt="Advertisement"
-                className="w-full h-full max-h-[70vh] object-cover"
-              />
-            )}
-          </div>
-          <div className="p-6 bg-gray-50 flex justify-end items-center border-t">
-            <Button
-              variant="outline"
-              onClick={handleCloseFullscreenAd}
-              disabled={!canCloseFullscreenAd}
-              className="px-6 py-2"
-            >
-              {!canCloseFullscreenAd ? (
-                <span className="flex items-center">
-                  <span className="animate-pulse mr-2">•</span>
-                  <FormattedMessage
-                    id="venueDashboard.advertising.closeAd"
-                    defaultMessage="Close"
-                  />
-                </span>
-              ) : (
-                <FormattedMessage
-                  id="venueDashboard.advertising.closeAd"
-                  defaultMessage="Close"
-                />
-              )}
-            </Button>
-          </div>
-        </div>
-      </div>,
-      document.body
-    );
-  };
-
   return (
     <div className="w-full">
       {bannerAd && !showFullscreenAd && (
@@ -298,7 +206,91 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         </div>
       )}
 
-      <FullscreenAdModal />
+      {fullscreenAd && showFullscreenAd && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
+            <div
+              className={`flex-1 ${fullscreenAd.external_url || fullscreenAd.redirect_url ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
+              onClick={() => handleAdClick(fullscreenAd)}
+            >
+              {isVideo(fullscreenAd.media_url) ? (
+                <video
+                  src={fullscreenAd.media_url}
+                  className="w-full h-full max-h-[70vh] object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls={false}
+                  style={{
+                    WebkitAppearance: 'none',
+                  }}
+                  onContextMenu={(e) => e.preventDefault()}
+                >
+                  <style>{`
+                    video::-webkit-media-controls {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-panel {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-play-button {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-timeline {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-current-time-display {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-time-remaining-display {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-mute-button {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-volume-slider {
+                      display: none !important;
+                    }
+                    video::-webkit-media-controls-fullscreen-button {
+                      display: none !important;
+                    }
+                  `}</style>
+                </video>
+              ) : (
+                <ImageWithFallback
+                  src={fullscreenAd.media_url}
+                  alt="Advertisement"
+                  className="w-full h-full max-h-[70vh] object-cover"
+                />
+              )}
+            </div>
+            <div className="p-6 bg-gray-50 flex justify-end items-center border-t">
+              <Button
+                variant="outline"
+                onClick={handleCloseFullscreenAd}
+                disabled={!canCloseFullscreenAd}
+                className="px-6 py-2"
+              >
+                {!canCloseFullscreenAd ? (
+                  <span className="flex items-center">
+                    <span className="animate-pulse mr-2">•</span>
+                    <FormattedMessage
+                      id="venueDashboard.advertising.closeAd"
+                      defaultMessage="Close"
+                    />
+                  </span>
+                ) : (
+                  <FormattedMessage
+                    id="venueDashboard.advertising.closeAd"
+                    defaultMessage="Close"
+                  />
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
