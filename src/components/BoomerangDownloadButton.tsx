@@ -12,6 +12,7 @@ interface BoomerangDownloadButtonProps {
   variant?: "ghost" | "outline" | "default";
   size?: "default" | "sm" | "lg" | "icon";
   showText?: boolean;
+  className?: string;
 }
 
 const BoomerangDownloadButton = ({ 
@@ -19,7 +20,8 @@ const BoomerangDownloadButton = ({
   filename, 
   variant = "ghost", 
   size = "icon",
-  showText = false
+  showText = false,
+  className
 }: BoomerangDownloadButtonProps) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const intl = useIntl();
@@ -61,6 +63,7 @@ const BoomerangDownloadButton = ({
         size={size} 
         disabled={isDownloading || isDisabled} 
         onClick={handleDownload}
+        className={className}
         title={isDisabled ? "No boomerang available" : "Download Boomerang"}
       >
         <Video className="w-4 h-4 mr-2" />
@@ -79,6 +82,7 @@ const BoomerangDownloadButton = ({
       size={size} 
       disabled={isDownloading || isDisabled} 
       onClick={handleDownload}
+      className={className}
       title={isDisabled ? "No boomerang available" : "Download Boomerang"}
     >
       <Video className="w-4 h-4" />
