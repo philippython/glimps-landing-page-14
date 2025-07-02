@@ -71,14 +71,23 @@ const PhotoGallery = () => {
   const isMobile = useIsMobile();
   
   console.log('PhotoGallery component rendered', { uuid, currentPage });
+  console.log('Environment check:', { 
+    VITE_API_URL: import.meta.env.VITE_API_URL,
+    isDevelopment: import.meta.env.DEV 
+  });
 
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
     queryKey: ['photos', uuid, currentPage],
-    queryFn: () => fetchPhotosFromApi(uuid || "", {
-      limit: photosPerPage,
-      offset: (currentPage - 1) * photosPerPage
-    }),
+    queryFn: () => {
+      console.log('Fetching photos for UUID:', uuid);
+      return fetchPhotosFromApi(uuid || "", {
+        limit: photosPerPage,
+        offset: (currentPage - 1) * photosPerPage
+      });
+    },
     enabled: !!uuid,
+    retry: 3,
+    retryDelay: 1000
   });
 
   console.log('Query state:', { data, isLoading, error, uuid });
@@ -109,10 +118,14 @@ const PhotoGallery = () => {
   const intl = useIntl();
 
   useEffect(() => {
-    console.log('PhotoGallery useEffect triggered', { data, isLoading });
+    console.log('PhotoGallery useEffect triggered', { data, isLoading, error });
     if (data && !isLoading) {
+      console.log('Setting photos loaded to true');
       setPhotosLoaded(true);
-      setTimeout(() => setShowAds(true), 1000);
+      setTimeout(() => {
+        console.log('Setting showAds to true');
+        setShowAds(true);
+      }, 1000);
     }
   }, [data, isLoading]);
 
@@ -274,15 +287,15 @@ const PhotoGallery = () => {
   console.log('About to render PhotoGallery', { uuid, error, isLoading, data });
 
   if (!uuid) {
-    console.log('No UUID provided');
+    console.log('No UUID provided, showing invalid ID message');
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <LogoWithText />
         <h1 className="text-2xl font-bold text-glimps-900 mb-4">
-          <FormattedMessage id="photoGallery.invalidId.title" />
+          <FormattedMessage id="photoGallery.invalidId.title" defaultMessage="Invalid Gallery ID" />
         </h1>
         <p className="text-glimps-600">
-          <FormattedMessage id="photoGallery.invalidId.message" />
+          <FormattedMessage id="photoGallery.invalidId.message" defaultMessage="Please check the URL and try again." />
         </p>
       </div>
     );
@@ -294,22 +307,68 @@ const PhotoGallery = () => {
       <div className="container mx-auto px-4 py-16 text-center">
         <LogoWithText />
         <h1 className="text-2xl font-bold text-glimps-900 mb-4">
-          <FormattedMessage id="photoGallery.error.title" />
+          <FormattedMessage id="photoGallery.error.title" defaultMessage="Error Loading Photos" />
         </h1>
         <p className="text-glimps-600 mb-4">
-          <FormattedMessage id="photoGallery.error.message" />
+          <FormattedMessage id="photoGallery.error.message" defaultMessage="Unable to load photos. Please try again." />
         </p>
         <Button
           variant="outline"
           onClick={() => window.location.reload()}
         >
-          <FormattedMessage id="photoGallery.buttons.retry" />
+          <FormattedMessage id="photoGallery.buttons.retry" defaultMessage="Retry" />
         </Button>
       </div>
     );
   }
 
-  console.log('Rendering main PhotoGallery content');
+  if (isLoading) {
+    console.log('Showing loading state');
+    return (
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+        <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+          <div className="container mx-auto px-4 py-6">
+            <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <LogoWithText />
+                <div>
+                  <h1 className="text-2xl font-bold text-glimps-900">
+                    <FormattedMessage id="photoGallery.title" defaultMessage="Photo Gallery" />
+                  </h1>
+                  <p className="text-glimps-600">Loading...</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <LanguagePicker />
+                <Button variant="default" size="lg" disabled className="bg-glimps-900">
+                  <Download className="w-4 h-4 mr-2" />
+                  <FormattedMessage id="photoGallery.buttons.downloadAll" defaultMessage="Download All" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-grow container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, index) => (
+              <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                <div className="relative pt-[75%]">
+                  <Skeleton className="absolute inset-0" />
+                </div>
+                <div className="p-4">
+                  <Skeleton className="h-4 w-3/4 mb-2" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  console.log('Rendering main PhotoGallery content with data:', data);
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
@@ -406,28 +465,14 @@ const PhotoGallery = () => {
       </header>
 
       <main className="flex-grow container mx-auto px-4 py-8">
-        {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, index) => (
-              <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                <div className="relative pt-[75%]">
-                  <Skeleton className="absolute inset-0" />
-                </div>
-                <div className="p-4">
-                  <Skeleton className="h-4 w-3/4 mb-2" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-              </Card>
-            ))}
-          </div>
-        ) : data?.photos.length === 0 ? (
+        {data?.photos.length === 0 ? (
           <div className="text-center py-16">
             <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-700 mb-2">
-              <FormattedMessage id="photoGallery.noPhotoFound.title" />
+              <FormattedMessage id="photoGallery.noPhotoFound.title" defaultMessage="No Photos Found" />
             </h2>
             <p className="text-gray-500">
-              <FormattedMessage id="photoGallery.noPhotoFound.message" />
+              <FormattedMessage id="photoGallery.noPhotoFound.message" defaultMessage="This gallery doesn't contain any photos yet." />
             </p>
           </div>
         ) : (
