@@ -15,7 +15,8 @@ import LogoWithText from "@/components/LogoWithText";
 import { FormattedMessage, useIntl } from "react-intl";
 import LanguagePicker from "@/components/LanguagePicker";
 import PhotoAdvertisement from "@/components/PhotoAdvertisement";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   Pagination,
   PaginationContent,
@@ -67,6 +68,7 @@ const PhotoGallery = () => {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'photo' | 'boomerang'>('boomerang');
   const photosPerPage = 12;
+  const isMobile = useIsMobile();
   
   console.log('PhotoGallery component rendered', { uuid, currentPage });
 
@@ -164,9 +166,21 @@ const PhotoGallery = () => {
     }
   };
 
+  const handleVideoLoad = async (video: HTMLVideoElement) => {
+    if (isMobile) {
+      try {
+        await video.play();
+      } catch (error) {
+        console.log('Video autoplay failed on mobile, will try on user interaction:', error);
+      }
+    }
+  };
+
   const totalPages = data?.total_count ? Math.ceil(data.total_count / photosPerPage) : 1;
 
   const PhotoViewer = () => {
+    const viewerVideoRef = useRef<HTMLVideoElement>(null);
+    
     if (selectedPhotoIndex === null || !data?.photos) return null;
     
     const photo = data.photos[selectedPhotoIndex];
@@ -213,6 +227,7 @@ const PhotoGallery = () => {
           <div className="flex-1 p-4 flex items-center justify-center">
             {viewMode === 'boomerang' && hasBoomerang ? (
               <video
+                ref={viewerVideoRef}
                 src={photo.boomerang!.boomerang_url}
                 className="max-w-full max-h-full object-contain"
                 autoPlay
@@ -220,6 +235,8 @@ const PhotoGallery = () => {
                 muted
                 playsInline
                 controls
+                onLoadedData={() => viewerVideoRef.current && handleVideoLoad(viewerVideoRef.current)}
+                onCanPlay={() => viewerVideoRef.current && handleVideoLoad(viewerVideoRef.current)}
               />
             ) : (
               <ProgressiveImage
@@ -418,6 +435,7 @@ const PhotoGallery = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {data?.photos.map((photo, index) => {
                 const hasBoomerang = photo.boomerang?.boomerang_url;
+                const cardVideoRef = useRef<HTMLVideoElement>(null);
                 
                 return (
                   <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white">
@@ -425,12 +443,15 @@ const PhotoGallery = () => {
                       {/* Show boomerang as default preview if available */}
                       {hasBoomerang ? (
                         <video
+                          ref={cardVideoRef}
                           src={photo.boomerang!.boomerang_url}
                           className="absolute inset-0 rounded-t-lg object-cover w-full h-full"
                           autoPlay
                           loop
                           muted
                           playsInline
+                          onLoadedData={() => cardVideoRef.current && handleVideoLoad(cardVideoRef.current)}
+                          onCanPlay={() => cardVideoRef.current && handleVideoLoad(cardVideoRef.current)}
                           onError={(e) => {
                             console.error('Video failed to load:', e);
                             // Fallback to photo if video fails
@@ -445,8 +466,6 @@ const PhotoGallery = () => {
                           onLoad={handleImageLoad}
                         />
                       )}
-                      
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-t-lg" />
                       
                       {/* View button overlay */}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">

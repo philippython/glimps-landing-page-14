@@ -1,10 +1,10 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { FormattedMessage, useIntl } from "react-intl";
 import ImageWithFallback from "./ImageWithFallback";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type AdSize = "BANNER" | "FULLSCREEN";
 type AdStatus = "ACTIVE" | "EXPIRED" | "SCHEDULED";
@@ -33,6 +33,8 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   const [canCloseFullscreenAd, setCanCloseFullscreenAd] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(5);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const isMobile = useIsMobile();
   const intl = useIntl();
 
   useEffect(() => {
@@ -161,6 +163,16 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     return url.includes('.mp4') || url.includes('.webm') || url.includes('.mov') || url.includes('.avi');
   };
 
+  const handleVideoLoad = async (video: HTMLVideoElement) => {
+    if (isMobile) {
+      try {
+        await video.play();
+      } catch (error) {
+        console.log('Video autoplay failed on mobile, will try on user interaction:', error);
+      }
+    }
+  };
+
   if (isLoading) return null;
 
   const FullscreenAdModal = () => {
@@ -175,6 +187,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
           >
             {isVideo(fullscreenAd.media_url) ? (
               <video
+                ref={videoRef}
                 src={fullscreenAd.media_url}
                 className="w-full h-full max-h-[70vh] object-cover"
                 autoPlay
@@ -186,6 +199,8 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
                   WebkitAppearance: 'none',
                 }}
                 onContextMenu={(e) => e.preventDefault()}
+                onLoadedData={() => videoRef.current && handleVideoLoad(videoRef.current)}
+                onCanPlay={() => videoRef.current && handleVideoLoad(videoRef.current)}
               />
             ) : (
               <ImageWithFallback
