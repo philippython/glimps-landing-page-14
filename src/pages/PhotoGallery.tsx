@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -31,15 +30,26 @@ type Photo = {
   photo_url: string,
   sent: boolean,
   venue_id?: string,
+  boomerang?: {
+    id: string,
+    boomerang_url: string,
+    user_id: string,
+    venue_id: string,
+    link_id: string,
+    created_at: string
+  }
+}
+
+type BoomerangItem = {
+  boomerang_url: string,
+  venue_id: string,
+  photo: Photo
 }
 
 interface PhotosDataFromApi {
   id: string,
   photos: Photo[],
-  boomerang?: {
-    boomerang_url?: string | null,
-    venue_id?: string
-  } | null,
+  boomerang?: BoomerangItem[] | null,
   sent: boolean,
   synced: boolean,
   created_at: string,
@@ -77,7 +87,7 @@ const PhotoGallery = () => {
     if (localStorageVenueId) return localStorageVenueId;
     if (data?.venue_id) return data.venue_id;
     if (data?.photos?.[0]?.venue_id) return data.photos[0].venue_id;
-    if (data?.boomerang?.venue_id) return data.boomerang.venue_id;
+    if (data?.boomerang?.[0]?.venue_id) return data.boomerang[0].venue_id;
     return null;
   };
 
@@ -160,7 +170,7 @@ const PhotoGallery = () => {
     if (selectedPhotoIndex === null || !data?.photos) return null;
     
     const photo = data.photos[selectedPhotoIndex];
-    const hasBoomerang = data.boomerang?.boomerang_url;
+    const hasBoomerang = photo.boomerang?.boomerang_url;
 
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
@@ -203,7 +213,7 @@ const PhotoGallery = () => {
           <div className="flex-1 p-4 flex items-center justify-center">
             {viewMode === 'boomerang' && hasBoomerang ? (
               <video
-                src={data.boomerang!.boomerang_url!}
+                src={photo.boomerang!.boomerang_url}
                 className="max-w-full max-h-full object-contain"
                 autoPlay
                 loop
@@ -223,7 +233,7 @@ const PhotoGallery = () => {
           <div className="p-4 border-t flex justify-center space-x-2">
             {viewMode === 'boomerang' && hasBoomerang ? (
               <BoomerangDownloadButton
-                url={data.boomerang!.boomerang_url!}
+                url={photo.boomerang!.boomerang_url}
                 filename={`${photoName(selectedPhotoIndex)}_boomerang`}
                 variant="default"
                 size="sm"
@@ -406,68 +416,96 @@ const PhotoGallery = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {data?.photos.map((photo, index) => (
-                <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white">
-                  <div className="relative pt-[75%] group">
-                    <ProgressiveImage
-                      className="absolute inset-0 rounded-t-lg"
-                      src={photo.photo_url}
-                      alt={`Photo ${index + 1}`}
-                      onLoad={handleImageLoad}
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-t-lg" />
-                    
-                    {/* View button overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedPhotoIndex(index);
-                          setViewMode(data.boomerang?.boomerang_url ? 'boomerang' : 'photo');
-                        }}
-                        className="bg-white/90 hover:bg-white text-gray-800"
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        {data.boomerang?.boomerang_url ? 'Boomerang' : 'View'}
-                      </Button>
-                    </div>
-
-                    {/* Boomerang indicator */}
-                    {data.boomerang?.boomerang_url && (
-                      <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
-                        <Video className="w-3 h-3 inline mr-1" />
-                        Boomerang
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-4 space-y-3">
-                    <p className="text-sm text-gray-700 font-medium truncate">
-                      {photoName(index)}
-                    </p>
-                    
-                    <div className="flex space-x-2">
-                      <EnhancedDownloadButton
-                        url={photo.photo_url}
-                        filename={photoName(index)}
-                        variant="default"
-                        size="sm"
-                        showText={true}
-                        className="flex-1 bg-glimps-900 hover:bg-glimps-800 text-white"
-                      />
-                      {data.boomerang?.boomerang_url && (
-                        <BoomerangDownloadButton
-                          url={data.boomerang.boomerang_url}
-                          filename={`${photoName(index)}_boomerang`}
-                          variant="outline"
-                          size="sm"
+              {data?.photos.map((photo, index) => {
+                const hasBoomerang = photo.boomerang?.boomerang_url;
+                
+                return (
+                  <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white">
+                    <div className="relative pt-[75%] group">
+                      {/* Show boomerang as default preview if available */}
+                      {hasBoomerang ? (
+                        <video
+                          src={photo.boomerang!.boomerang_url}
+                          className="absolute inset-0 rounded-t-lg object-cover w-full h-full"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                        />
+                      ) : (
+                        <ProgressiveImage
+                          className="absolute inset-0 rounded-t-lg"
+                          src={photo.photo_url}
+                          alt={`Photo ${index + 1}`}
+                          onLoad={handleImageLoad}
                         />
                       )}
+                      
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-t-lg" />
+                      
+                      {/* View button overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedPhotoIndex(index);
+                            setViewMode(hasBoomerang ? 'boomerang' : 'photo');
+                          }}
+                          className="bg-white/90 hover:bg-white text-gray-800"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          {hasBoomerang ? 'View Boomerang' : 'View Photo'}
+                        </Button>
+                      </div>
+
+                      {/* Boomerang indicator */}
+                      {hasBoomerang && (
+                        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                          <Video className="w-3 h-3 inline mr-1" />
+                          Boomerang
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </Card>
-              ))}
+
+                    <div className="p-4 space-y-3">
+                      <p className="text-sm text-gray-700 font-medium truncate">
+                        {photoName(index)}
+                      </p>
+                      
+                      <div className="flex space-x-2">
+                        {hasBoomerang ? (
+                          <>
+                            <BoomerangDownloadButton
+                              url={photo.boomerang!.boomerang_url}
+                              filename={`${photoName(index)}_boomerang`}
+                              variant="default"
+                              size="sm"
+                              showText={true}
+                              className="flex-1 bg-glimps-900 hover:bg-glimps-800 text-white"
+                            />
+                            <EnhancedDownloadButton
+                              url={photo.photo_url}
+                              filename={photoName(index)}
+                              variant="outline"
+                              size="sm"
+                            />
+                          </>
+                        ) : (
+                          <EnhancedDownloadButton
+                            url={photo.photo_url}
+                            filename={photoName(index)}
+                            variant="default"
+                            size="sm"
+                            showText={true}
+                            className="flex-1 bg-glimps-900 hover:bg-glimps-800 text-white"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
             
             {totalPages > 1 && (
