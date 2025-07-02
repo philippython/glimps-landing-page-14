@@ -431,6 +431,11 @@ const PhotoGallery = () => {
                           loop
                           muted
                           playsInline
+                          onError={(e) => {
+                            console.error('Video failed to load:', e);
+                            // Fallback to photo if video fails
+                            e.currentTarget.style.display = 'none';
+                          }}
                         />
                       ) : (
                         <ProgressiveImage

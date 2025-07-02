@@ -180,8 +180,8 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
                 autoPlay
                 loop
                 playsInline
-                muted={false}
-                controls={false}
+                muted
+                controls
                 style={{
                   WebkitAppearance: 'none',
                 }}
