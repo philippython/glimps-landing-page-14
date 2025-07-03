@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
@@ -36,16 +35,23 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   const intl = useIntl();
 
   useEffect(() => {
-    if (!venueId) return;
+    console.log('PhotoAdvertisement useEffect triggered', { venueId });
+    if (!venueId) {
+      console.log('No venueId provided to PhotoAdvertisement');
+      return;
+    }
 
     const fetchAds = async () => {
       setIsLoading(true);
       try {
         const apiUrl = import.meta.env.VITE_API_URL;
+        console.log('Fetching ads with API URL:', apiUrl);
         let response: Response;
 
         try {
-          response = await fetch(`${apiUrl}/ads/all/${venueId}`);
+          const fetchUrl = `${apiUrl}/ads/all/${venueId}`;
+          console.log('Fetching ads from:', fetchUrl);
+          response = await fetch(fetchUrl);
         } catch (error) {
           console.error("Failed to fetch ads from API:", error);
           setBannerAd(null);
@@ -55,12 +61,15 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         }
 
         if (!response.ok) {
+          console.error(`Failed to fetch ads: ${response.status} ${response.statusText}`);
           throw new Error(`Failed to fetch ads: ${response.statusText}`);
         }
 
         const ads: Advertisement[] = await response.json();
+        console.log('Fetched ads:', ads);
 
         if (!ads || ads.length === 0) {
+          console.log('No ads found');
           setBannerAd(null);
           setFullscreenAd(null);
           setIsLoading(false);
@@ -110,15 +119,19 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
           (ad) => ad.ads_size === "FULLSCREEN"
         ) || null;
 
+        console.log('Active ads found:', { activeBanner, activeFullscreen });
+
         setBannerAd(activeBanner);
         setFullscreenAd(activeFullscreen);
 
         if (activeFullscreen) {
+          console.log('Setting up fullscreen ad');
           setShowFullscreenAd(true);
           setCanCloseFullscreenAd(false);
           setTimeLeft(5);
         }
       } catch (error) {
+        console.error('Error fetching ads:', error);
         toast.error(intl.formatMessage({id: "venueDashboard.advertising.loadFailed", defaultMessage: "Failed to load advertisements"}));
         setBannerAd(null);
         setFullscreenAd(null);
@@ -132,10 +145,15 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
 
   // Separate useEffect for the countdown timer
   useEffect(() => {
+    console.log('Timer useEffect triggered', { showFullscreenAd, fullscreenAd: !!fullscreenAd, canCloseFullscreenAd, timeLeft });
+    
     if (showFullscreenAd && fullscreenAd && !canCloseFullscreenAd) {
+      console.log('Starting countdown timer');
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
+          console.log('Timer tick, time left:', prev - 1);
           if (prev <= 1) {
+            console.log('Timer finished, enabling close button');
             setCanCloseFullscreenAd(true);
             clearInterval(timer);
             return 0;
@@ -144,7 +162,10 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         });
       }, 1000);
 
-      return () => clearInterval(timer);
+      return () => {
+        console.log('Cleaning up timer');
+        clearInterval(timer);
+      };
     }
   }, [showFullscreenAd, fullscreenAd, canCloseFullscreenAd]);
 
@@ -156,6 +177,13 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   };
 
   const handleCloseFullscreenAd = () => {
+    console.log('Close button clicked', { canCloseFullscreenAd });
+    if (!canCloseFullscreenAd) {
+      console.log('Close button disabled, ignoring click');
+      return;
+    }
+    
+    console.log('Closing fullscreen ad');
     setShowFullscreenAd(false);
     if (onClose) onClose();
   };
@@ -169,10 +197,18 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     return url.replace(/\.webm$/i, '.mp4');
   };
 
-  if (isLoading) return null;
+  if (isLoading) {
+    console.log('PhotoAdvertisement is loading');
+    return null;
+  }
 
   const FullscreenAdModal = () => {
-    if (!fullscreenAd || !showFullscreenAd) return null;
+    if (!fullscreenAd || !showFullscreenAd) {
+      console.log('FullscreenAdModal not rendering', { fullscreenAd: !!fullscreenAd, showFullscreenAd });
+      return null;
+    }
+
+    console.log('Rendering FullscreenAdModal');
 
     return createPortal(
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10001] p-4">
@@ -232,6 +268,8 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
       document.body
     );
   };
+
+  console.log('PhotoAdvertisement rendering', { bannerAd: !!bannerAd, fullscreenAd: !!fullscreenAd, showFullscreenAd });
 
   return (
     <>
