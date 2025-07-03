@@ -1,12 +1,14 @@
-// src/pages/PhotoGallery.tsx
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { toast } from "sonner";
 import ProgressiveImage from "@/components/ProgressiveImage";
 import EnhancedDownloadButton from "@/components/EnhancedDownloadButton";
+import BoomerangDownloadButton from "@/components/BoomerangDownloadButton";
 import { fetchPhotosFromApi } from "@/service/fetchPhotosFromApi";
 import { fetchVenueUsersFromApi } from "@/service/fetchVenueUsersFromApi";
 import { downloadMultiplePhotos } from "@/utils/downloadUtils";
@@ -16,7 +18,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import LanguagePicker from "@/components/LanguagePicker";
 import PhotoAdvertisement from "@/components/PhotoAdvertisement";
 import { useState, useEffect } from "react";
-import {
+import { 
   Pagination,
   PaginationContent,
   PaginationItem,
@@ -24,25 +26,37 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Download, Image as ImageIcon } from "lucide-react";
+import { Download, Image as ImageIcon, Video, Eye } from "lucide-react";
 
 type Photo = {
-  photo_url: string;
-  sent: boolean;
-  venue_id?: string;
+  photo_url: string,
+  sent: boolean,
+  venue_id?: string,
   boomerang?: {
-    boomerang_url?: string | null;
-  } | null;
-};
+    id: string,
+    boomerang_url: string,
+    user_id: string,
+    venue_id: string,
+    link_id: string,
+    created_at: string
+  }
+}
+
+type BoomerangItem = {
+  boomerang_url: string,
+  venue_id: string,
+  photo: Photo
+}
 
 interface PhotosDataFromApi {
-  id: string;
-  photos: Photo[];
-  sent: boolean;
-  synced: boolean;
-  created_at: string;
-  venue_id?: string;
-  total_count?: number;
+  id: string,
+  photos: Photo[],
+  boomerang?: BoomerangItem[] | null,
+  sent: boolean,
+  synced: boolean,
+  created_at: string,
+  venue_id?: string,
+  total_count?: number
 }
 
 const PhotoGallery = () => {
@@ -52,33 +66,41 @@ const PhotoGallery = () => {
   const [loadedImagesCount, setLoadedImagesCount] = useState(0);
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'photo' | 'boomerang'>('photo');
+  const [cardViewModes, setCardViewModes] = useState<{[key: number]: 'photo' | 'boomerang'}>({});
   const photosPerPage = 12;
+  
+  console.log('PhotoGallery component rendered', { uuid, currentPage });
 
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
-    queryKey: ["photos", uuid, currentPage],
-    queryFn: () =>
-      fetchPhotosFromApi(uuid || "", {
-        limit: photosPerPage,
-        offset: (currentPage - 1) * photosPerPage,
-      }),
+    queryKey: ['photos', uuid, currentPage],
+    queryFn: () => fetchPhotosFromApi(uuid || "", {
+      limit: photosPerPage,
+      offset: (currentPage - 1) * photosPerPage
+    }),
     enabled: !!uuid,
   });
 
+  console.log('Query state:', { data, isLoading, error, uuid });
+
+  // Get venue ID immediately for early venue users fetch
   const getVenueId = () => {
-    const localStorageVenueId =
-      localStorage.getItem("venueId") || localStorage.getItem("venue_id");
+    const localStorageVenueId = localStorage.getItem('venueId') || localStorage.getItem('venue_id');
     if (localStorageVenueId) return localStorageVenueId;
     if (data?.venue_id) return data.venue_id;
     if (data?.photos?.[0]?.venue_id) return data.photos[0].venue_id;
+    if (data?.boomerang?.[0]?.venue_id) return data.boomerang[0].venue_id;
     return null;
   };
 
   const venueId = getVenueId();
 
+  // Fetch venue users immediately when venue ID is available
   const { data: venueUsersData } = useQuery({
-    queryKey: ["venue-users", venueId],
+    queryKey: ['venue-users', venueId],
     queryFn: () => {
-      const token = localStorage.getItem("token") || "";
+      const token = localStorage.getItem('token') || '';
       return venueId ? fetchVenueUsersFromApi(token, venueId) : null;
     },
     enabled: !!venueId,
@@ -88,76 +110,176 @@ const PhotoGallery = () => {
   const intl = useIntl();
 
   useEffect(() => {
+    console.log('PhotoGallery useEffect triggered', { data, isLoading });
     if (data && !isLoading) {
       setPhotosLoaded(true);
       setTimeout(() => setShowAds(true), 1000);
+
+      // Initialize card view modes to 'photo' for all cards
+      const initialViewModes: {[key: number]: 'photo' | 'boomerang'} = {};
+      data.photos.forEach((_, index) => {
+        initialViewModes[index] = 'photo';
+      });
+      setCardViewModes(initialViewModes);
     }
   }, [data, isLoading]);
 
-  const photoName = (index: number) =>
-    `${data && convertOnlyDate(data.created_at)} (${
-      (currentPage - 1) * photosPerPage + index + 1
-    })`;
+  const photoName = (index: number) => `${data && convertOnlyDate(data.created_at)} (${((currentPage - 1) * photosPerPage) + index + 1})`;
 
   const handleImageLoad = () => {
-    setLoadedImagesCount((prev) => prev + 1);
+    setLoadedImagesCount(prev => prev + 1);
   };
 
   const handleDownloadAll = async () => {
     if (!data?.photos) return;
-
+    
     setIsDownloadingAll(true);
+    console.log(`Starting download of all ${data.photos.length} photos`);
+    
     try {
       const photosToDownload = data.photos.map((photo, index) => ({
         url: photo.photo_url,
-        filename: photoName(index),
+        filename: photoName(index)
       }));
 
       const successCount = await downloadMultiplePhotos(photosToDownload);
-
+      
       if (successCount === data.photos.length) {
-        toast.success(
-          intl.formatMessage({
-            id: "photoGallery.download.downloadAll",
-            defaultMessage: "All photos downloaded successfully!",
-          })
-        );
+        toast.success(intl.formatMessage({ 
+          id: "photoGallery.download.downloadAll",
+          defaultMessage: "All photos downloaded successfully!"
+        }));
       } else if (successCount > 0) {
-        toast.success(
-          intl.formatMessage(
-            {
-              id: "photoGallery.download.downloadPartial",
-              defaultMessage:
-                "Downloaded {success} of {total} photos successfully.",
-            },
-            { success: successCount, total: data.photos.length }
-          )
-        );
+        toast.success(intl.formatMessage(
+          { 
+            id: "photoGallery.download.downloadPartial",
+            defaultMessage: `Downloaded ${successCount} of ${data.photos.length} photos successfully.`
+          },
+          { success: successCount, total: data.photos.length }
+        ));
       } else {
-        toast.error(
-          intl.formatMessage({
-            id: "photoGallery.download.downloadFailed",
-            defaultMessage: "Download failed. Please try again.",
-          })
-        );
+        toast.error(intl.formatMessage({ 
+          id: "photoGallery.download.downloadFailed",
+          defaultMessage: "Download failed. Please try again."
+        }));
       }
     } catch (error) {
-      toast.error(
-        intl.formatMessage({
-          id: "photoGallery.download.downloadFailed",
-          defaultMessage: "Download failed. Please try again.",
-        })
-      );
+      console.error('Batch download error:', error);
+      toast.error(intl.formatMessage({ 
+        id: "photoGallery.download.downloadFailed",
+        defaultMessage: "Download failed. Please try again."
+      }));
     } finally {
       setIsDownloadingAll(false);
     }
   };
 
-  const totalPages = data?.total_count
-    ? Math.ceil(data.total_count / photosPerPage)
-    : 1;
+  const totalPages = data?.total_count ? Math.ceil(data.total_count / photosPerPage) : 1;
+
+  const handleCardViewModeChange = (index: number, mode: 'photo' | 'boomerang') => {
+    setCardViewModes(prev => ({
+      ...prev,
+      [index]: mode
+    }));
+  };
+
+  const convertBoomerangUrl = (url: string) => {
+    // Convert webm to mp4 for better compatibility
+    return url.replace(/\.webm$/i, '.mp4');
+  };
+
+  const PhotoViewer = () => {
+    if (selectedPhotoIndex === null || !data?.photos) return null;
+    
+    const photo = data.photos[selectedPhotoIndex];
+    const hasBoomerang = photo.boomerang?.boomerang_url;
+
+    return (
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9998] p-4">
+        <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
+          <div className="p-4 border-b flex justify-between items-center">
+            <h3 className="text-lg font-semibold">{photoName(selectedPhotoIndex)}</h3>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setSelectedPhotoIndex(null);
+                setViewMode('photo');
+              }}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </Button>
+          </div>
+          
+          {hasBoomerang && (
+            <div className="p-4 border-b flex justify-center space-x-2">
+              <Button
+                variant={viewMode === 'photo' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('photo')}
+              >
+                <ImageIcon className="w-4 h-4 mr-2" />
+                Photo
+              </Button>
+              <Button
+                variant={viewMode === 'boomerang' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('boomerang')}
+              >
+                <Video className="w-4 h-4 mr-2" />
+                Boomerang
+              </Button>
+            </div>
+          )}
+
+          <div className="flex-1 p-4 flex items-center justify-center">
+            {viewMode === 'boomerang' && hasBoomerang ? (
+              <video
+                src={convertBoomerangUrl(photo.boomerang!.boomerang_url)}
+                className="max-w-full max-h-full object-contain"
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+              />
+            ) : (
+              <ProgressiveImage
+                src={photo.photo_url}
+                alt={`Photo ${selectedPhotoIndex + 1}`}
+                className="max-w-full max-h-full object-contain"
+              />
+            )}
+          </div>
+
+          <div className="p-4 border-t flex justify-center space-x-2">
+            {viewMode === 'boomerang' && hasBoomerang ? (
+              <BoomerangDownloadButton
+                url={convertBoomerangUrl(photo.boomerang!.boomerang_url)}
+                filename={`${photoName(selectedPhotoIndex)}_boomerang`}
+                variant="default"
+                size="sm"
+                showText={true}
+              />
+            ) : (
+              <EnhancedDownloadButton
+                url={photo.photo_url}
+                filename={photoName(selectedPhotoIndex)}
+                variant="default"
+                size="sm"
+                showText={true}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  console.log('About to render PhotoGallery', { uuid, error, isLoading, data });
 
   if (!uuid) {
+    console.log('No UUID provided');
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <LogoWithText />
@@ -172,6 +294,7 @@ const PhotoGallery = () => {
   }
 
   if (error) {
+    console.log('Error in PhotoGallery:', error);
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <LogoWithText />
@@ -181,16 +304,29 @@ const PhotoGallery = () => {
         <p className="text-glimps-600 mb-4">
           <FormattedMessage id="photoGallery.error.message" />
         </p>
-        <Button variant="outline" onClick={() => window.location.reload()}>
+        <Button
+          variant="outline"
+          onClick={() => window.location.reload()}
+        >
           <FormattedMessage id="photoGallery.buttons.retry" />
         </Button>
       </div>
     );
   }
 
+  console.log('Rendering main PhotoGallery content');
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+      {/* Advertisement with highest z-index */}
+      {photosLoaded && showAds && venueId && (
+        <div className="fixed top-0 left-0 right-0 z-[10000]">
+          <PhotoAdvertisement venueId={venueId} />
+        </div>
+      )}
+
+      {/* Always show header with app bar */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm relative z-[9997]">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
             <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -201,8 +337,7 @@ const PhotoGallery = () => {
                     <FormattedMessage id="photoGallery.title" />
                   </h1>
                   <p className="text-glimps-600">
-                    {convertDateTime(data.created_at)} •{" "}
-                    {data.total_count || data.photos.length}{" "}
+                    {convertDateTime(data.created_at)} • {data.total_count || data.photos.length}{" "}
                     <FormattedMessage id="photoGallery.photos" />
                     {venueUsersData && ` • ${venueUsersData.total_count} users`}
                   </p>
@@ -236,17 +371,17 @@ const PhotoGallery = () => {
         </div>
       </header>
 
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 py-8 relative z-[9996]">
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, index) => (
-              <Card key={index} className="overflow-hidden shadow-md">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, index) => (
+              <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                 <div className="relative pt-[75%]">
                   <Skeleton className="absolute inset-0" />
                 </div>
-                <div className="p-4">
-                  <Skeleton className="h-4 w-3/4 mb-2" />
-                  <Skeleton className="h-10 w-full" />
+                <div className="p-6">
+                  <Skeleton className="h-4 w-3/4 mb-4" />
+                  <Skeleton className="h-12 w-full" />
                 </div>
               </Card>
             ))}
@@ -263,58 +398,143 @@ const PhotoGallery = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {data?.photos.map((photo, index) => (
-                <Card key={index} className="shadow hover:shadow-lg">
-                  <div className="relative pt-[75%] group">
-                    <ProgressiveImage
-                      className="absolute inset-0 rounded-t-lg"
-                      src={photo.photo_url}
-                      alt={`Photo ${index + 1}`}
-                      onLoad={handleImageLoad}
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-t-lg transition" />
-                  </div>
-                  <div className="p-4 space-y-3">
-                    <p className="text-sm text-gray-700 font-medium truncate">
-                      {photoName(index)}
-                    </p>
-                    <EnhancedDownloadButton
-                      url={photo.photo_url}
-                      filename={photoName(index)}
-                      variant="default"
-                      size="sm"
-                      showText={true}
-                      className="w-full bg-glimps-900 hover:bg-glimps-800 text-white"
-                    />
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {data?.photos.map((photo, index) => {
+                const hasBoomerang = photo.boomerang?.boomerang_url;
+                const currentViewMode = cardViewModes[index] || 'photo';
+                
+                return (
+                  <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white w-full max-w-sm mx-auto">
+                    <div className="relative pt-[75%] group">
+                      {/* Show photo or boomerang based on toggle */}
+                      {currentViewMode === 'boomerang' && hasBoomerang ? (
+                        <video
+                          src={convertBoomerangUrl(photo.boomerang!.boomerang_url)}
+                          className="absolute inset-0 rounded-t-lg object-cover w-full h-full"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          preload="metadata"
+                        />
+                      ) : (
+                        <ProgressiveImage
+                          className="absolute inset-0 rounded-t-lg"
+                          src={photo.photo_url}
+                          alt={`Photo ${index + 1}`}
+                          onLoad={handleImageLoad}
+                        />
+                      )}
+                      
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-t-lg" />
 
+                      {/* View button overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedPhotoIndex(index);
+                            setViewMode(currentViewMode);
+                          }}
+                          className="bg-white/90 hover:bg-white text-gray-800"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          View {currentViewMode === 'boomerang' ? 'Boomerang' : 'Photo'}
+                        </Button>
+                      </div>
+
+                      {/* Content type indicator */}
+                      {hasBoomerang && (
+                        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                          {currentViewMode === 'boomerang' ? (
+                            <>
+                              <Video className="w-3 h-3 inline mr-1" />
+                              Boomerang
+                            </>
+                          ) : (
+                            <>
+                              <ImageIcon className="w-3 h-3 inline mr-1" />
+                              Photo
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="p-6 space-y-4">
+                      <p className="text-sm text-gray-700 font-medium truncate">
+                        {photoName(index)}
+                      </p>
+                      
+                      {/* Toggle buttons for photo/boomerang when available */}
+                      {hasBoomerang && (
+                        <ToggleGroup
+                          type="single"
+                          value={currentViewMode}
+                          onValueChange={(value) => value && handleCardViewModeChange(index, value as 'photo' | 'boomerang')}
+                          className="justify-center"
+                        >
+                          <ToggleGroupItem value="photo" variant="outline" size="sm">
+                            <ImageIcon className="w-4 h-4 mr-1" />
+                            Photo
+                          </ToggleGroupItem>
+                          <ToggleGroupItem value="boomerang" variant="outline" size="sm">
+                            <Video className="w-4 h-4 mr-1" />
+                            Boomerang
+                          </ToggleGroupItem>
+                        </ToggleGroup>
+                      )}
+
+                      {/* Download button based on current view mode */}
+                      <div className="flex justify-center">
+                        {currentViewMode === 'boomerang' && hasBoomerang ? (
+                          <BoomerangDownloadButton
+                            url={convertBoomerangUrl(photo.boomerang!.boomerang_url)}
+                            filename={`${photoName(index)}_boomerang`}
+                            variant="default"
+                            size="sm"
+                            showText={true}
+                            className="w-full bg-glimps-900 hover:bg-glimps-800 text-white"
+                          />
+                        ) : (
+                          <EnhancedDownloadButton
+                            url={photo.photo_url}
+                            filename={photoName(index)}
+                            variant="default"
+                            size="sm"
+                            showText={true}
+                            className="w-full bg-glimps-900 hover:bg-glimps-800 text-white"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+            
             {totalPages > 1 && (
               <div className="mt-12 flex justify-center">
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
-                      <PaginationPrevious
+                      <PaginationPrevious 
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
                           if (currentPage > 1) setCurrentPage(currentPage - 1);
                         }}
-                        className={currentPage === 1 ? "opacity-50" : ""}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                       />
                     </PaginationItem>
-
+                    
                     {[...Array(totalPages)].map((_, i) => {
                       const page = i + 1;
-                      if (
-                        page === currentPage ||
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1)
-                      ) {
+                      if (page === currentPage || 
+                          page === 1 || 
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)) {
                         return (
                           <PaginationItem key={page}>
                             <PaginationLink
@@ -332,16 +552,15 @@ const PhotoGallery = () => {
                       }
                       return null;
                     })}
-
+                    
                     <PaginationItem>
-                      <PaginationNext
+                      <PaginationNext 
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          if (currentPage < totalPages)
-                            setCurrentPage(currentPage + 1);
+                          if (currentPage < totalPages) setCurrentPage(currentPage + 1);
                         }}
-                        className={currentPage === totalPages ? "opacity-50" : ""}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                       />
                     </PaginationItem>
                   </PaginationContent>
@@ -352,10 +571,7 @@ const PhotoGallery = () => {
         )}
       </main>
 
-      {/* 🎯 Show Ad Modal */}
-      {photosLoaded && showAds && venueId && (
-        <PhotoAdvertisement venueId={venueId} />
-      )}
+      <PhotoViewer />
     </div>
   );
 };

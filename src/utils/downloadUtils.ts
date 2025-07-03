@@ -54,7 +54,10 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
   console.log(`Starting video download for: ${filename}`);
   
   try {
-    const response = await fetch(url, {
+    // Convert webm to mp4 URL for better compatibility
+    const convertedUrl = url.replace(/\.webm$/i, '.mp4');
+
+    const response = await fetch(convertedUrl, {
       method: 'GET',
     });
     

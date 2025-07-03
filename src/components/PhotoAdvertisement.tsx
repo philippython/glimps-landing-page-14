@@ -66,14 +66,15 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
         }
 
         const now = new Date();
-        now.setHours(0, 0, 0, 0);
+        now.setHours(0, 0, 0, 0); // Set to start of today for accurate comparison
 
         const processedAds = ads.map((ad) => {
           const startDate = ad.start_date ? new Date(ad.start_date) : null;
           const expiryDate = ad.expiry_date ? new Date(ad.expiry_date) : null;
 
+          // Set hours to 0 for date-only comparison
           if (startDate) startDate.setHours(0, 0, 0, 0);
-          if (expiryDate) expiryDate.setHours(23, 59, 59, 999);
+          if (expiryDate) expiryDate.setHours(23, 59, 59, 999); // End of expiry day
 
           let status: AdStatus = "ACTIVE";
 
@@ -157,45 +158,9 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
               src={bannerAd.media_url}
               className="w-full h-20 md:h-24 lg:h-28 object-cover rounded-md"
               autoPlay
-              muted
-              loop
-              playsInline
+              muted={false}
               controls={false}
-              style={{
-                WebkitAppearance: 'none',
-              }}
-              onContextMenu={(e) => e.preventDefault()}
-            >
-              <style>{`
-                video::-webkit-media-controls {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-panel {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-play-button {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-timeline {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-current-time-display {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-time-remaining-display {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-mute-button {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-volume-slider {
-                  display: none !important;
-                }
-                video::-webkit-media-controls-fullscreen-button {
-                  display: none !important;
-                }
-              `}</style>
-            </video>
+            />
           ) : (
             <ImageWithFallback
               src={bannerAd.media_url}
@@ -207,70 +172,33 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
       )}
 
       {fullscreenAd && showFullscreenAd && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg overflow-hidden max-w-2xl w-full">
             <div
-              className={`flex-1 ${fullscreenAd.external_url || fullscreenAd.redirect_url ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
+              className={`p-4 ${fullscreenAd.external_url || fullscreenAd.redirect_url ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
               onClick={() => handleAdClick(fullscreenAd)}
             >
               {isVideo(fullscreenAd.media_url) ? (
                 <video
                   src={fullscreenAd.media_url}
-                  className="w-full h-full max-h-[70vh] object-cover"
+                  className="w-full aspect-video object-cover rounded-md"
                   autoPlay
-                  muted
-                  loop
-                  playsInline
-                  controls={false}
-                  style={{
-                    WebkitAppearance: 'none',
-                  }}
-                  onContextMenu={(e) => e.preventDefault()}
-                >
-                  <style>{`
-                    video::-webkit-media-controls {
-                      display: none !important;
-                    }
-                    video::-webkit-media-controls-panel {
-                      display: none !important;
-                    }
-                    video::-webkit-media-controls-play-button {
-                      display: none !important;
-                    }
-                    video::-webkit-media-controls-timeline {
-                      display: none !important;
-                    }
-                    video::-webkit-media-controls-current-time-display {
-                      display: none !important;
-                    }
-                    video::-webkit-media-controls-time-remaining-display {
-                      display: none !important;
-                    }
-                    video::-webkit-media-controls-mute-button {
-                      display: none !important;
-                    }
-                    video::-webkit-media-controls-volume-slider {
-                      display: none !important;
-                    }
-                    video::-webkit-media-controls-fullscreen-button {
-                      display: none !important;
-                    }
-                  `}</style>
-                </video>
+                  muted={false}
+                  controls
+                />
               ) : (
                 <ImageWithFallback
                   src={fullscreenAd.media_url}
                   alt="Advertisement"
-                  className="w-full h-full max-h-[70vh] object-cover"
+                  className="w-full aspect-video object-cover rounded-md"
                 />
               )}
             </div>
-            <div className="p-6 bg-gray-50 flex justify-end items-center border-t">
+            <div className="p-4 bg-gray-50 flex justify-end items-center">
               <Button
                 variant="outline"
                 onClick={handleCloseFullscreenAd}
                 disabled={!canCloseFullscreenAd}
-                className="px-6 py-2"
               >
                 {!canCloseFullscreenAd ? (
                   <span className="flex items-center">
