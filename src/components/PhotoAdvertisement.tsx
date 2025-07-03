@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
@@ -144,20 +143,28 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     fetchAds();
   }, [venueId, intl]);
 
-  // Fixed timer useEffect - simplified logic
+  // Simplified timer logic
   useEffect(() => {
-    console.log('Timer useEffect triggered', { showFullscreenAd, fullscreenAd: !!fullscreenAd, canCloseFullscreenAd, timeLeft });
-    
+    console.log('=== TIMER DEBUG ===', {
+      showFullscreenAd,
+      hasFullscreenAd: !!fullscreenAd,
+      canCloseFullscreenAd,
+      timeLeft
+    });
+
+    // Only run timer if we have a fullscreen ad showing and close button is disabled
     if (showFullscreenAd && fullscreenAd && !canCloseFullscreenAd && timeLeft > 0) {
-      console.log('Starting countdown timer, time left:', timeLeft);
+      console.log('Starting timer for', timeLeft, 'seconds');
+      
       const timer = setTimeout(() => {
+        console.log('Timer tick - reducing time from', timeLeft, 'to', timeLeft - 1);
+        
         if (timeLeft === 1) {
-          console.log('Timer finished, enabling close button');
+          console.log('🎉 TIMER COMPLETE - Enabling close button');
           setCanCloseFullscreenAd(true);
-          setTimeLeft(0);
-        } else {
-          setTimeLeft(prev => prev - 1);
         }
+        
+        setTimeLeft(prev => prev - 1);
       }, 1000);
 
       return () => {
@@ -167,6 +174,15 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     }
   }, [showFullscreenAd, fullscreenAd, canCloseFullscreenAd, timeLeft]);
 
+  // Reset timer when fullscreen ad is shown
+  useEffect(() => {
+    if (showFullscreenAd && fullscreenAd) {
+      console.log('🚀 Fullscreen ad shown - resetting timer');
+      setTimeLeft(5);
+      setCanCloseFullscreenAd(false);
+    }
+  }, [showFullscreenAd, fullscreenAd?.id]); // Include ad ID to reset on new ads
+
   const handleAdClick = (ad: Advertisement) => {
     const url = ad.external_url || ad.redirect_url;
     if (url) {
@@ -175,13 +191,18 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   };
 
   const handleCloseFullscreenAd = () => {
-    console.log('Close button clicked', { canCloseFullscreenAd });
+    console.log('=== CLOSE BUTTON CLICKED ===', { 
+      canCloseFullscreenAd, 
+      timeLeft,
+      showFullscreenAd 
+    });
+    
     if (!canCloseFullscreenAd) {
-      console.log('Close button disabled, ignoring click');
+      console.log('❌ Close button disabled - ignoring click');
       return;
     }
     
-    console.log('Closing fullscreen ad');
+    console.log('✅ Closing fullscreen ad');
     setShowFullscreenAd(false);
     setCanCloseFullscreenAd(false);
     setTimeLeft(5);
@@ -204,11 +225,18 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
 
   const FullscreenAdModal = () => {
     if (!fullscreenAd || !showFullscreenAd) {
-      console.log('FullscreenAdModal not rendering', { fullscreenAd: !!fullscreenAd, showFullscreenAd });
+      console.log('FullscreenAdModal not rendering', { 
+        hasFullscreenAd: !!fullscreenAd, 
+        showFullscreenAd 
+      });
       return null;
     }
 
-    console.log('Rendering FullscreenAdModal', { canCloseFullscreenAd, timeLeft });
+    console.log('🎬 Rendering FullscreenAdModal', { 
+      canCloseFullscreenAd, 
+      timeLeft,
+      adName: fullscreenAd.campaign_name 
+    });
 
     return createPortal(
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10001] p-4">
@@ -269,7 +297,13 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     );
   };
 
-  console.log('PhotoAdvertisement rendering', { bannerAd: !!bannerAd, fullscreenAd: !!fullscreenAd, showFullscreenAd });
+  console.log('PhotoAdvertisement rendering', { 
+    bannerAd: !!bannerAd, 
+    fullscreenAd: !!fullscreenAd, 
+    showFullscreenAd,
+    canCloseFullscreenAd,
+    timeLeft
+  });
 
   return (
     <>
