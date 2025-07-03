@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
@@ -143,31 +144,28 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     fetchAds();
   }, [venueId, intl]);
 
-  // Separate useEffect for the countdown timer
+  // Fixed timer useEffect - simplified logic
   useEffect(() => {
     console.log('Timer useEffect triggered', { showFullscreenAd, fullscreenAd: !!fullscreenAd, canCloseFullscreenAd, timeLeft });
     
-    if (showFullscreenAd && fullscreenAd && !canCloseFullscreenAd) {
-      console.log('Starting countdown timer');
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          console.log('Timer tick, time left:', prev - 1);
-          if (prev <= 1) {
-            console.log('Timer finished, enabling close button');
-            setCanCloseFullscreenAd(true);
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
+    if (showFullscreenAd && fullscreenAd && !canCloseFullscreenAd && timeLeft > 0) {
+      console.log('Starting countdown timer, time left:', timeLeft);
+      const timer = setTimeout(() => {
+        if (timeLeft === 1) {
+          console.log('Timer finished, enabling close button');
+          setCanCloseFullscreenAd(true);
+          setTimeLeft(0);
+        } else {
+          setTimeLeft(prev => prev - 1);
+        }
       }, 1000);
 
       return () => {
         console.log('Cleaning up timer');
-        clearInterval(timer);
+        clearTimeout(timer);
       };
     }
-  }, [showFullscreenAd, fullscreenAd, canCloseFullscreenAd]);
+  }, [showFullscreenAd, fullscreenAd, canCloseFullscreenAd, timeLeft]);
 
   const handleAdClick = (ad: Advertisement) => {
     const url = ad.external_url || ad.redirect_url;
@@ -185,6 +183,8 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     
     console.log('Closing fullscreen ad');
     setShowFullscreenAd(false);
+    setCanCloseFullscreenAd(false);
+    setTimeLeft(5);
     if (onClose) onClose();
   };
 
@@ -208,7 +208,7 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
       return null;
     }
 
-    console.log('Rendering FullscreenAdModal');
+    console.log('Rendering FullscreenAdModal', { canCloseFullscreenAd, timeLeft });
 
     return createPortal(
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10001] p-4">
