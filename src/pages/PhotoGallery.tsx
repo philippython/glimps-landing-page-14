@@ -15,8 +15,7 @@ import LogoWithText from "@/components/LogoWithText";
 import { FormattedMessage, useIntl } from "react-intl";
 import LanguagePicker from "@/components/LanguagePicker";
 import PhotoAdvertisement from "@/components/PhotoAdvertisement";
-import { useState, useEffect, useRef } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useState, useEffect } from "react";
 import { 
   Pagination,
   PaginationContent,
@@ -68,26 +67,16 @@ const PhotoGallery = () => {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'photo' | 'boomerang'>('boomerang');
   const photosPerPage = 12;
-  const isMobile = useIsMobile();
   
   console.log('PhotoGallery component rendered', { uuid, currentPage });
-  console.log('Environment check:', { 
-    VITE_API_URL: import.meta.env.VITE_API_URL,
-    isDevelopment: import.meta.env.DEV 
-  });
 
   const { data, isLoading, error } = useQuery<PhotosDataFromApi>({
     queryKey: ['photos', uuid, currentPage],
-    queryFn: () => {
-      console.log('Fetching photos for UUID:', uuid);
-      return fetchPhotosFromApi(uuid || "", {
-        limit: photosPerPage,
-        offset: (currentPage - 1) * photosPerPage
-      });
-    },
+    queryFn: () => fetchPhotosFromApi(uuid || "", {
+      limit: photosPerPage,
+      offset: (currentPage - 1) * photosPerPage
+    }),
     enabled: !!uuid,
-    retry: 3,
-    retryDelay: 1000
   });
 
   console.log('Query state:', { data, isLoading, error, uuid });
@@ -118,14 +107,10 @@ const PhotoGallery = () => {
   const intl = useIntl();
 
   useEffect(() => {
-    console.log('PhotoGallery useEffect triggered', { data, isLoading, error });
+    console.log('PhotoGallery useEffect triggered', { data, isLoading });
     if (data && !isLoading) {
-      console.log('Setting photos loaded to true');
       setPhotosLoaded(true);
-      setTimeout(() => {
-        console.log('Setting showAds to true');
-        setShowAds(true);
-      }, 1000);
+      setTimeout(() => setShowAds(true), 1000);
     }
   }, [data, isLoading]);
 
@@ -179,21 +164,9 @@ const PhotoGallery = () => {
     }
   };
 
-  const handleVideoLoad = async (video: HTMLVideoElement) => {
-    if (isMobile) {
-      try {
-        await video.play();
-      } catch (error) {
-        console.log('Video autoplay failed on mobile, will try on user interaction:', error);
-      }
-    }
-  };
-
   const totalPages = data?.total_count ? Math.ceil(data.total_count / photosPerPage) : 1;
 
   const PhotoViewer = () => {
-    const viewerVideoRef = useRef<HTMLVideoElement>(null);
-    
     if (selectedPhotoIndex === null || !data?.photos) return null;
     
     const photo = data.photos[selectedPhotoIndex];
@@ -240,7 +213,6 @@ const PhotoGallery = () => {
           <div className="flex-1 p-4 flex items-center justify-center">
             {viewMode === 'boomerang' && hasBoomerang ? (
               <video
-                ref={viewerVideoRef}
                 src={photo.boomerang!.boomerang_url}
                 className="max-w-full max-h-full object-contain"
                 autoPlay
@@ -248,8 +220,6 @@ const PhotoGallery = () => {
                 muted
                 playsInline
                 controls
-                onLoadedData={() => viewerVideoRef.current && handleVideoLoad(viewerVideoRef.current)}
-                onCanPlay={() => viewerVideoRef.current && handleVideoLoad(viewerVideoRef.current)}
               />
             ) : (
               <ProgressiveImage
@@ -287,15 +257,15 @@ const PhotoGallery = () => {
   console.log('About to render PhotoGallery', { uuid, error, isLoading, data });
 
   if (!uuid) {
-    console.log('No UUID provided, showing invalid ID message');
+    console.log('No UUID provided');
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <LogoWithText />
         <h1 className="text-2xl font-bold text-glimps-900 mb-4">
-          <FormattedMessage id="photoGallery.invalidId.title" defaultMessage="Invalid Gallery ID" />
+          <FormattedMessage id="photoGallery.invalidId.title" />
         </h1>
         <p className="text-glimps-600">
-          <FormattedMessage id="photoGallery.invalidId.message" defaultMessage="Please check the URL and try again." />
+          <FormattedMessage id="photoGallery.invalidId.message" />
         </p>
       </div>
     );
@@ -307,68 +277,22 @@ const PhotoGallery = () => {
       <div className="container mx-auto px-4 py-16 text-center">
         <LogoWithText />
         <h1 className="text-2xl font-bold text-glimps-900 mb-4">
-          <FormattedMessage id="photoGallery.error.title" defaultMessage="Error Loading Photos" />
+          <FormattedMessage id="photoGallery.error.title" />
         </h1>
         <p className="text-glimps-600 mb-4">
-          <FormattedMessage id="photoGallery.error.message" defaultMessage="Unable to load photos. Please try again." />
+          <FormattedMessage id="photoGallery.error.message" />
         </p>
         <Button
           variant="outline"
           onClick={() => window.location.reload()}
         >
-          <FormattedMessage id="photoGallery.buttons.retry" defaultMessage="Retry" />
+          <FormattedMessage id="photoGallery.buttons.retry" />
         </Button>
       </div>
     );
   }
 
-  if (isLoading) {
-    console.log('Showing loading state');
-    return (
-      <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-        <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
-              <div className="flex flex-col sm:flex-row items-center gap-6">
-                <LogoWithText />
-                <div>
-                  <h1 className="text-2xl font-bold text-glimps-900">
-                    <FormattedMessage id="photoGallery.title" defaultMessage="Photo Gallery" />
-                  </h1>
-                  <p className="text-glimps-600">Loading...</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                <LanguagePicker />
-                <Button variant="default" size="lg" disabled className="bg-glimps-900">
-                  <Download className="w-4 h-4 mr-2" />
-                  <FormattedMessage id="photoGallery.buttons.downloadAll" defaultMessage="Download All" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <main className="flex-grow container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, index) => (
-              <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                <div className="relative pt-[75%]">
-                  <Skeleton className="absolute inset-0" />
-                </div>
-                <div className="p-4">
-                  <Skeleton className="h-4 w-3/4 mb-2" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-              </Card>
-            ))}
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  console.log('Rendering main PhotoGallery content with data:', data);
+  console.log('Rendering main PhotoGallery content');
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
@@ -465,14 +389,28 @@ const PhotoGallery = () => {
       </header>
 
       <main className="flex-grow container mx-auto px-4 py-8">
-        {data?.photos.length === 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, index) => (
+              <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                <div className="relative pt-[75%]">
+                  <Skeleton className="absolute inset-0" />
+                </div>
+                <div className="p-4">
+                  <Skeleton className="h-4 w-3/4 mb-2" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : data?.photos.length === 0 ? (
           <div className="text-center py-16">
             <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-700 mb-2">
-              <FormattedMessage id="photoGallery.noPhotoFound.title" defaultMessage="No Photos Found" />
+              <FormattedMessage id="photoGallery.noPhotoFound.title" />
             </h2>
             <p className="text-gray-500">
-              <FormattedMessage id="photoGallery.noPhotoFound.message" defaultMessage="This gallery doesn't contain any photos yet." />
+              <FormattedMessage id="photoGallery.noPhotoFound.message" />
             </p>
           </div>
         ) : (
@@ -480,7 +418,6 @@ const PhotoGallery = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {data?.photos.map((photo, index) => {
                 const hasBoomerang = photo.boomerang?.boomerang_url;
-                const cardVideoRef = useRef<HTMLVideoElement>(null);
                 
                 return (
                   <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white">
@@ -488,20 +425,12 @@ const PhotoGallery = () => {
                       {/* Show boomerang as default preview if available */}
                       {hasBoomerang ? (
                         <video
-                          ref={cardVideoRef}
                           src={photo.boomerang!.boomerang_url}
                           className="absolute inset-0 rounded-t-lg object-cover w-full h-full"
                           autoPlay
                           loop
                           muted
                           playsInline
-                          onLoadedData={() => cardVideoRef.current && handleVideoLoad(cardVideoRef.current)}
-                          onCanPlay={() => cardVideoRef.current && handleVideoLoad(cardVideoRef.current)}
-                          onError={(e) => {
-                            console.error('Video failed to load:', e);
-                            // Fallback to photo if video fails
-                            e.currentTarget.style.display = 'none';
-                          }}
                         />
                       ) : (
                         <ProgressiveImage
@@ -511,6 +440,8 @@ const PhotoGallery = () => {
                           onLoad={handleImageLoad}
                         />
                       )}
+                      
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-t-lg" />
                       
                       {/* View button overlay */}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
