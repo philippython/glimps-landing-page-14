@@ -117,20 +117,6 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
           setShowFullscreenAd(true);
           setCanCloseFullscreenAd(false);
           setTimeLeft(5);
-          
-          // Start countdown timer
-          const timer = setInterval(() => {
-            setTimeLeft((prev) => {
-              if (prev <= 1) {
-                setCanCloseFullscreenAd(true);
-                clearInterval(timer);
-                return 0;
-              }
-              return prev - 1;
-            });
-          }, 1000);
-
-          return () => clearInterval(timer);
         }
       } catch (error) {
         toast.error(intl.formatMessage({id: "venueDashboard.advertising.loadFailed", defaultMessage: "Failed to load advertisements"}));
@@ -144,6 +130,24 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     fetchAds();
   }, [venueId, intl]);
 
+  // Separate useEffect for the countdown timer
+  useEffect(() => {
+    if (showFullscreenAd && fullscreenAd && !canCloseFullscreenAd) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            setCanCloseFullscreenAd(true);
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [showFullscreenAd, fullscreenAd, canCloseFullscreenAd]);
+
   const handleAdClick = (ad: Advertisement) => {
     const url = ad.external_url || ad.redirect_url;
     if (url) {
@@ -152,7 +156,6 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
   };
 
   const handleCloseFullscreenAd = () => {
-    if (!canCloseFullscreenAd) return;
     setShowFullscreenAd(false);
     if (onClose) onClose();
   };
