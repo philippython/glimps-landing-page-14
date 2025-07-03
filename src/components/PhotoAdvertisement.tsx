@@ -161,13 +161,18 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
     return url.includes('.mp4') || url.includes('.webm') || url.includes('.mov') || url.includes('.avi');
   };
 
+  const convertVideoUrl = (url: string) => {
+    // Convert webm to mp4 for better compatibility
+    return url.replace(/\.webm$/i, '.mp4');
+  };
+
   if (isLoading) return null;
 
   const FullscreenAdModal = () => {
     if (!fullscreenAd || !showFullscreenAd) return null;
 
     return createPortal(
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10001] p-4">
         <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
           <div
             className={`flex-1 ${fullscreenAd.external_url || fullscreenAd.redirect_url ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
@@ -175,13 +180,14 @@ const PhotoAdvertisement = ({ venueId, onClose }: PhotoAdvertisementProps) => {
           >
             {isVideo(fullscreenAd.media_url) ? (
               <video
-                src={fullscreenAd.media_url}
+                src={convertVideoUrl(fullscreenAd.media_url)}
                 className="w-full h-full max-h-[70vh] object-cover"
                 autoPlay
                 loop
                 playsInline
-                muted={false}
+                muted
                 controls={false}
+                preload="metadata"
                 style={{
                   WebkitAppearance: 'none',
                 }}
