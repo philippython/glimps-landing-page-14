@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -67,8 +66,8 @@ const PhotoGallery = () => {
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
-  const [viewMode, setViewMode] = useState<'photo' | 'boomerang'>('photo');
-  const [cardViewModes, setCardViewModes] = useState<{[key: number]: 'photo' | 'boomerang'}>({});
+  const [viewMode, setViewMode<'photo' | 'boomerang'>('photo');
+  const [cardViewModes, setCardViewModes<{[key: number]: 'photo' | 'boomerang'}>({});
   const photosPerPage = 12;
   
   console.log('PhotoGallery component rendered', { uuid, currentPage });
@@ -255,7 +254,7 @@ const PhotoGallery = () => {
           <div className="p-4 border-t flex justify-center space-x-2">
             {viewMode === 'boomerang' && hasBoomerang ? (
               <BoomerangDownloadButton
-                url={convertBoomerangUrl(photo.boomerang!.boomerang_url)}
+                url={photo.boomerang!.boomerang_url}
                 filename={`${photoName(selectedPhotoIndex)}_boomerang`}
                 variant="default"
                 size="sm"
@@ -490,7 +489,7 @@ const PhotoGallery = () => {
                       <div className="flex justify-center">
                         {currentViewMode === 'boomerang' && hasBoomerang ? (
                           <BoomerangDownloadButton
-                            url={convertBoomerangUrl(photo.boomerang!.boomerang_url)}
+                            url={photo.boomerang!.boomerang_url}
                             filename={`${photoName(index)}_boomerang`}
                             variant="default"
                             size="sm"
