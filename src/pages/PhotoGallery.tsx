@@ -66,8 +66,8 @@ const PhotoGallery = () => {
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
-  const [viewMode, setViewMode<'photo' | 'boomerang'>('photo');
-  const [cardViewModes, setCardViewModes<{[key: number]: 'photo' | 'boomerang'}>({});
+  const [viewMode, setViewMode] = useState<'photo' | 'boomerang'>('photo');
+  const [cardViewModes, setCardViewModes] = useState<{[key: number]: 'photo' | 'boomerang'}>({});
   const photosPerPage = 12;
   
   console.log('PhotoGallery component rendered', { uuid, currentPage });
