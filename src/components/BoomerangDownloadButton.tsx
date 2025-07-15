@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Video } from "lucide-react";
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { downloadVideo } from "@/utils/downloadUtils";
 import { toast } from "sonner";
@@ -66,11 +66,11 @@ const BoomerangDownloadButton = ({
         className={className}
         title={isDisabled ? "No boomerang available" : "Download Boomerang"}
       >
-        <Video className="w-4 h-4 mr-2" />
+        <Download className="w-4 h-4 mr-2" />
         {isDownloading ? (
           <FormattedMessage id="photoGallery.buttons.downloading" />
         ) : (
-          "Boomerang"
+          <FormattedMessage id="photoGallery.buttons.download" />
         )}
       </Button>
     );
@@ -85,7 +85,7 @@ const BoomerangDownloadButton = ({
       className={className}
       title={isDisabled ? "No boomerang available" : "Download Boomerang"}
     >
-      <Video className="w-4 h-4" />
+      <Download className="w-4 h-4" />
     </Button>
   );
 };

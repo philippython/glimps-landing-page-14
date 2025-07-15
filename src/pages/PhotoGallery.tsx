@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -183,16 +182,18 @@ const PhotoGallery = () => {
     }));
   };
 
-  const convertBoomerangUrl = (url: string) => {
-    // Convert webm to mp4 for better compatibility
-    return url.replace(/\.webm$/i, '.mp4');
-  };
-
   const PhotoViewer = () => {
     if (selectedPhotoIndex === null || !data?.photos) return null;
     
     const photo = data.photos[selectedPhotoIndex];
     const hasBoomerang = photo.boomerang?.boomerang_url;
+
+    console.log('PhotoViewer rendering:', {
+      selectedPhotoIndex,
+      hasBoomerang: !!hasBoomerang,
+      boomerangUrl: photo.boomerang?.boomerang_url,
+      viewMode
+    });
 
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9998] p-4">
@@ -235,13 +236,19 @@ const PhotoGallery = () => {
           <div className="flex-1 p-4 flex items-center justify-center">
             {viewMode === 'boomerang' && hasBoomerang ? (
               <video
-                src={convertBoomerangUrl(photo.boomerang!.boomerang_url)}
+                src={photo.boomerang!.boomerang_url}
                 className="max-w-full max-h-full object-contain"
                 autoPlay
                 loop
                 muted
                 playsInline
                 controls
+                onError={(e) => {
+                  console.error('Video loading error:', e);
+                  console.log('Video URL:', photo.boomerang!.boomerang_url);
+                }}
+                onLoadStart={() => console.log('Video loading started')}
+                onCanPlay={() => console.log('Video can play')}
               />
             ) : (
               <ProgressiveImage
@@ -255,7 +262,7 @@ const PhotoGallery = () => {
           <div className="p-4 border-t flex justify-center space-x-2">
             {viewMode === 'boomerang' && hasBoomerang ? (
               <BoomerangDownloadButton
-                url={convertBoomerangUrl(photo.boomerang!.boomerang_url)}
+                url={photo.boomerang!.boomerang_url}
                 filename={`${photoName(selectedPhotoIndex)}_boomerang`}
                 variant="default"
                 size="sm"
@@ -403,19 +410,31 @@ const PhotoGallery = () => {
                 const hasBoomerang = photo.boomerang?.boomerang_url;
                 const currentViewMode = cardViewModes[index] || 'photo';
                 
+                console.log(`Photo ${index}:`, {
+                  hasBoomerang: !!hasBoomerang,
+                  boomerangUrl: photo.boomerang?.boomerang_url,
+                  currentViewMode
+                });
+
                 return (
                   <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white w-full max-w-sm mx-auto">
                     <div className="relative pt-[75%] group">
                       {/* Show photo or boomerang based on toggle */}
                       {currentViewMode === 'boomerang' && hasBoomerang ? (
                         <video
-                          src={convertBoomerangUrl(photo.boomerang!.boomerang_url)}
+                          src={photo.boomerang!.boomerang_url}
                           className="absolute inset-0 rounded-t-lg object-cover w-full h-full"
                           autoPlay
                           loop
                           muted
                           playsInline
                           preload="metadata"
+                          onError={(e) => {
+                            console.error(`Video error for photo ${index}:`, e);
+                            console.log('Video URL:', photo.boomerang!.boomerang_url);
+                          }}
+                          onLoadStart={() => console.log(`Video ${index} loading started`)}
+                          onCanPlay={() => console.log(`Video ${index} can play`)}
                         />
                       ) : (
                         <ProgressiveImage
@@ -490,7 +509,7 @@ const PhotoGallery = () => {
                       <div className="flex justify-center">
                         {currentViewMode === 'boomerang' && hasBoomerang ? (
                           <BoomerangDownloadButton
-                            url={convertBoomerangUrl(photo.boomerang!.boomerang_url)}
+                            url={photo.boomerang!.boomerang_url}
                             filename={`${photoName(index)}_boomerang`}
                             variant="default"
                             size="sm"

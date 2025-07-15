@@ -54,10 +54,11 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
   console.log(`Starting video download for: ${filename}`);
   
   try {
-    // Convert webm to mp4 URL for better compatibility
-    const convertedUrl = url.replace(/\.webm$/i, '.mp4');
+    // Use the new boomerang-proxy endpoint
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const proxyUrl = `${apiUrl}/photos/boomerang-proxy?boomerang_path=${encodeURIComponent(url)}`;
 
-    const response = await fetch(convertedUrl, {
+    const response = await fetch(proxyUrl, {
       method: 'GET',
     });
     
