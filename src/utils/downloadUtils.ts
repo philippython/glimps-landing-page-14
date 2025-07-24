@@ -79,10 +79,11 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
     }
     
     const blob = await response.blob();
-    console.log(`Original video type: ${blob.type}`);
+    console.log(`Original video type: ${blob.type}, size: ${blob.size} bytes`);
     
     // If it's already MP4, download directly
     if (blob.type.includes('mp4')) {
+      console.log('Video is already MP4, downloading directly');
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = blobUrl;
@@ -98,46 +99,72 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
       return true;
     }
     
-    // Convert to MP4 using FFmpeg
-    const ffmpeg = await initFFmpeg();
+    console.log('Video needs conversion, initializing FFmpeg...');
     
-    // Write input file
-    await ffmpeg.writeFile('input.webm', await fetchFile(blob));
+    // Show loading toast
+    toast.loading('Converting video for WhatsApp compatibility...', { id: 'video-conversion' });
     
-    // Convert to MP4 with WhatsApp-compatible settings
-    await ffmpeg.exec([
-      '-i', 'input.webm',
-      '-c:v', 'libx264',
-      '-c:a', 'aac',
-      '-preset', 'fast',
-      '-crf', '23',
-      '-movflags', '+faststart',
-      'output.mp4'
-    ]);
+    try {
+      // Convert to MP4 using FFmpeg
+      const ffmpeg = await initFFmpeg();
+      console.log('FFmpeg initialized successfully');
+      
+      // Write input file
+      await ffmpeg.writeFile('input.webm', await fetchFile(blob));
+      console.log('Input file written to FFmpeg');
+      
+      // Convert to MP4 with WhatsApp-compatible settings
+      console.log('Starting video conversion...');
+      await ffmpeg.exec([
+        '-i', 'input.webm',
+        '-c:v', 'libx264',
+        '-c:a', 'aac',
+        '-preset', 'fast',
+        '-crf', '23',
+        '-movflags', '+faststart',
+        'output.mp4'
+      ]);
+      console.log('Video conversion completed');
+      
+      // Read the output
+      const data = await ffmpeg.readFile('output.mp4');
+      const mp4Blob = new Blob([data], { type: 'video/mp4' });
+      console.log(`Converted MP4 size: ${mp4Blob.size} bytes`);
+      
+      // Dismiss loading toast
+      toast.dismiss('video-conversion');
+      
+      // Download the converted MP4
+      const blobUrl = window.URL.createObjectURL(mp4Blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `${filename}.mp4`;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+      
+      console.log(`Video conversion and download successful: ${filename}.mp4`);
+      onSuccess?.();
+      return true;
+      
+    } catch (conversionError) {
+      console.error('FFmpeg conversion failed:', conversionError);
+      toast.dismiss('video-conversion');
+      
+      // Fallback: inform user that conversion failed
+      const errorMessage = 'Video conversion failed. The original format may not be compatible with WhatsApp.';
+      onError?.(errorMessage);
+      return false;
+    }
     
-    // Read the output
-    const data = await ffmpeg.readFile('output.mp4');
-    const mp4Blob = new Blob([data], { type: 'video/mp4' });
-    
-    // Download the converted MP4
-    const blobUrl = window.URL.createObjectURL(mp4Blob);
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = `${filename}.mp4`;
-    link.style.display = 'none';
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Clean up
-    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
-    
-    console.log(`Video conversion and download successful: ${filename}.mp4`);
-    onSuccess?.();
-    return true;
   } catch (error) {
     console.error(`Video download failed: ${error}`);
+    toast.dismiss('video-conversion');
     const errorMessage = 'Video download failed. Please try again.';
     onError?.(errorMessage);
     return false;
