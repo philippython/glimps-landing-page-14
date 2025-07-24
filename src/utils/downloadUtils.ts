@@ -52,19 +52,22 @@ export const downloadPhoto = async ({ url, filename, onSuccess, onError }: Downl
 
 export const downloadVideo = async ({ url, filename, onSuccess, onError }: DownloadOptions) => {
   console.log(`Starting video download for: ${filename}`);
+  console.log(`Video URL: ${url}`);
   
   try {
-    // Fetch video directly and convert to MP4 format quickly
+    // Fetch video directly
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const blob = await response.blob();
+    console.log(`Original blob type: ${blob.type}, size: ${blob.size}`);
     
-    // Create a new blob with MP4 mime type for better compatibility
-    const mp4Blob = new Blob([blob], { type: 'video/mp4' });
-    const blobUrl = window.URL.createObjectURL(mp4Blob);
+    // Try to convert WebM to MP4 using a canvas-based approach
+    const convertedBlob = await convertWebMToMP4(blob, url);
+    
+    const blobUrl = window.URL.createObjectURL(convertedBlob);
     
     const link = document.createElement('a');
     link.href = blobUrl;
@@ -87,6 +90,67 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
     onError?.(errorMessage);
     return false;
   }
+};
+
+const convertWebMToMP4 = async (blob: Blob, url: string): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) {
+      reject(new Error('Canvas context not available'));
+      return;
+    }
+
+    video.crossOrigin = 'anonymous';
+    video.muted = true;
+    
+    video.onloadedmetadata = () => {
+      console.log(`Video metadata loaded: ${video.videoWidth}x${video.videoHeight}, duration: ${video.duration}`);
+      
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      const stream = canvas.captureStream(30);
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=vp8'
+      });
+      
+      const chunks: BlobPart[] = [];
+      
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+        }
+      };
+      
+      mediaRecorder.onstop = () => {
+        const convertedBlob = new Blob(chunks, { type: 'video/mp4' });
+        console.log(`Converted blob type: ${convertedBlob.type}, size: ${convertedBlob.size}`);
+        resolve(convertedBlob);
+      };
+      
+      mediaRecorder.start();
+      
+      video.currentTime = 0;
+      video.play();
+      
+      const drawFrame = () => {
+        if (!video.ended && !video.paused) {
+          ctx.drawImage(video, 0, 0);
+          requestAnimationFrame(drawFrame);
+        } else {
+          mediaRecorder.stop();
+        }
+      };
+      
+      video.onplay = () => drawFrame();
+    };
+    
+    video.onerror = () => reject(new Error('Video loading failed'));
+    video.src = url;
+  });
 };
 
 export const downloadMultiplePhotos = async (photos: Array<{ url: string; filename: string }>) => {
