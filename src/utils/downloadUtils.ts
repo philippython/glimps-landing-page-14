@@ -54,24 +54,20 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
   console.log(`Starting video download for: ${filename}`);
   
   try {
-    // Use the new boomerang-proxy endpoint
-    const apiUrl = import.meta.env.VITE_API_URL;
-    const proxyUrl = `${apiUrl}/boomerang-proxy?url=${encodeURIComponent(url)}`;
+    // Import video processor
+    const { processVideoForSocialMedia } = await import('./videoProcessor');
     
-    const response = await fetch(proxyUrl, {
-      method: 'GET',
-    });
+    console.log('Processing video for social media compatibility...');
+    onSuccess?.(); // Show initial success to indicate processing started
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    // Process the video for social media compatibility
+    const processedBlob = await processVideoForSocialMedia(url, filename);
     
-    const blob = await response.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
+    const blobUrl = window.URL.createObjectURL(processedBlob);
     
     const link = document.createElement('a');
     link.href = blobUrl;
-    link.download = `${filename}.mp4`;
+    link.download = `${filename}_social.mp4`;
     link.style.display = 'none';
     
     document.body.appendChild(link);
@@ -81,12 +77,11 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
     // Clean up
     setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
     
-    console.log(`Video download successful: ${filename}`);
-    onSuccess?.();
+    console.log(`Processed video download successful: ${filename}`);
     return true;
   } catch (error) {
-    console.error(`Video download failed: ${error}`);
-    const errorMessage = 'Video download failed. Please try again.';
+    console.error(`Video processing/download failed: ${error}`);
+    const errorMessage = 'Video processing failed. Please try again.';
     onError?.(errorMessage);
     return false;
   }
