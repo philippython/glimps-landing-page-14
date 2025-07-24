@@ -1,5 +1,7 @@
 
 import { toast } from "sonner";
+import { FFmpeg } from '@ffmpeg/ffmpeg';
+import { fetchFile, toBlobURL } from '@ffmpeg/util';
 
 export interface DownloadOptions {
   url: string;
@@ -50,31 +52,78 @@ export const downloadPhoto = async ({ url, filename, onSuccess, onError }: Downl
   }
 };
 
+let ffmpeg: FFmpeg | null = null;
+
+const initFFmpeg = async () => {
+  if (ffmpeg) return ffmpeg;
+  
+  ffmpeg = new FFmpeg();
+  
+  const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
+  await ffmpeg.load({
+    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+  });
+  
+  return ffmpeg;
+};
+
 export const downloadVideo = async ({ url, filename, onSuccess, onError }: DownloadOptions) => {
   console.log(`Starting video download for: ${filename}`);
   
   try {
-    // Fetch video directly and download in original format
+    // Fetch video
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const blob = await response.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
+    console.log(`Original video type: ${blob.type}`);
     
-    // Determine file extension based on content type
-    const contentType = blob.type;
-    let extension = '.mp4'; // default
-    if (contentType.includes('webm')) {
-      extension = '.webm';
-    } else if (contentType.includes('mov')) {
-      extension = '.mov';
+    // If it's already MP4, download directly
+    if (blob.type.includes('mp4')) {
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `${filename}.mp4`;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+      onSuccess?.();
+      return true;
     }
     
+    // Convert to MP4 using FFmpeg
+    const ffmpeg = await initFFmpeg();
+    
+    // Write input file
+    await ffmpeg.writeFile('input.webm', await fetchFile(blob));
+    
+    // Convert to MP4 with WhatsApp-compatible settings
+    await ffmpeg.exec([
+      '-i', 'input.webm',
+      '-c:v', 'libx264',
+      '-c:a', 'aac',
+      '-preset', 'fast',
+      '-crf', '23',
+      '-movflags', '+faststart',
+      'output.mp4'
+    ]);
+    
+    // Read the output
+    const data = await ffmpeg.readFile('output.mp4');
+    const mp4Blob = new Blob([data], { type: 'video/mp4' });
+    
+    // Download the converted MP4
+    const blobUrl = window.URL.createObjectURL(mp4Blob);
     const link = document.createElement('a');
     link.href = blobUrl;
-    link.download = `${filename}${extension}`;
+    link.download = `${filename}.mp4`;
     link.style.display = 'none';
     
     document.body.appendChild(link);
@@ -84,7 +133,7 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
     // Clean up
     setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
     
-    console.log(`Video download successful: ${filename}${extension}`);
+    console.log(`Video conversion and download successful: ${filename}.mp4`);
     onSuccess?.();
     return true;
   } catch (error) {
