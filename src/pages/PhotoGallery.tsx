@@ -182,106 +182,6 @@ const PhotoGallery = () => {
     }));
   };
 
-  const PhotoViewer = () => {
-    if (selectedPhotoIndex === null || !data?.photos) return null;
-    
-    const photo = data.photos[selectedPhotoIndex];
-    const hasBoomerang = photo.boomerang?.boomerang_url;
-
-    console.log('PhotoViewer rendering:', {
-      selectedPhotoIndex,
-      hasBoomerang: !!hasBoomerang,
-      boomerangUrl: photo.boomerang?.boomerang_url,
-      viewMode
-    });
-
-    return (
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9998] p-4">
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
-          <div className="p-4 border-b flex justify-between items-center">
-            <h3 className="text-lg font-semibold">{photoName(selectedPhotoIndex)}</h3>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setSelectedPhotoIndex(null);
-                setViewMode('photo');
-              }}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              ✕
-            </Button>
-          </div>
-          
-          {hasBoomerang && (
-            <div className="p-4 border-b flex justify-center space-x-2">
-              <Button
-                variant={viewMode === 'photo' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('photo')}
-              >
-                <ImageIcon className="w-4 h-4 mr-2" />
-                Photo
-              </Button>
-              <Button
-                variant={viewMode === 'boomerang' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('boomerang')}
-              >
-                <Video className="w-4 h-4 mr-2" />
-                Boomerang
-              </Button>
-            </div>
-          )}
-
-          <div className="flex-1 p-4 flex items-center justify-center">
-            {viewMode === 'boomerang' && hasBoomerang ? (
-              <video
-                src={photo.boomerang!.boomerang_url}
-                className="max-w-full max-h-full object-contain"
-                autoPlay
-                loop
-                muted
-                playsInline
-                controls
-                onError={(e) => {
-                  console.error('Video loading error:', e);
-                  console.log('Video URL:', photo.boomerang!.boomerang_url);
-                }}
-                onLoadStart={() => console.log('Video loading started')}
-                onCanPlay={() => console.log('Video can play')}
-              />
-            ) : (
-              <ProgressiveImage
-                src={photo.photo_url}
-                alt={`Photo ${selectedPhotoIndex + 1}`}
-                className="max-w-full max-h-full object-contain"
-              />
-            )}
-          </div>
-
-          <div className="p-4 border-t flex justify-center space-x-2">
-            {viewMode === 'boomerang' && hasBoomerang ? (
-              <BoomerangDownloadButton
-                url={photo.boomerang!.boomerang_url}
-                filename={`${photoName(selectedPhotoIndex)}_boomerang`}
-                variant="default"
-                size="sm"
-                showText={true}
-              />
-            ) : (
-              <EnhancedDownloadButton
-                url={photo.photo_url}
-                filename={photoName(selectedPhotoIndex)}
-                variant="default"
-                size="sm"
-                showText={true}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   console.log('About to render PhotoGallery', { uuid, error, isLoading, data });
 
@@ -344,9 +244,7 @@ const PhotoGallery = () => {
                     <FormattedMessage id="photoGallery.title" />
                   </h1>
                   <p className="text-glimps-600">
-                    {convertDateTime(data.created_at)} • {data.total_count || data.photos.length}{" "}
                     <FormattedMessage id="photoGallery.photos" />
-                    {venueUsersData && ` • ${venueUsersData.total_count} users`}
                   </p>
                 </div>
               )}
@@ -445,23 +343,7 @@ const PhotoGallery = () => {
                         />
                       )}
                       
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-t-lg" />
-
-                      {/* View button overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedPhotoIndex(index);
-                            setViewMode(currentViewMode);
-                          }}
-                          className="bg-white/90 hover:bg-white text-gray-800"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View {currentViewMode === 'boomerang' ? 'Boomerang' : 'Photo'}
-                        </Button>
-                      </div>
+                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-t-lg" />
 
                       {/* Content type indicator */}
                       {hasBoomerang && (
@@ -513,8 +395,6 @@ const PhotoGallery = () => {
                             filename={`${photoName(index)}_boomerang`}
                             variant="default"
                             size="sm"
-                            showText={true}
-                            className="w-full bg-glimps-900 hover:bg-glimps-800 text-white"
                           />
                         ) : (
                           <EnhancedDownloadButton
@@ -522,8 +402,6 @@ const PhotoGallery = () => {
                             filename={photoName(index)}
                             variant="default"
                             size="sm"
-                            showText={true}
-                            className="w-full bg-glimps-900 hover:bg-glimps-800 text-white"
                           />
                         )}
                       </div>
@@ -590,7 +468,7 @@ const PhotoGallery = () => {
         )}
       </main>
 
-      <PhotoViewer />
+      
     </div>
   );
 };
