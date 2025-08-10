@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { FormattedMessage } from "react-intl";
 import { Advertisement } from "@/types/advertisement";
-import AdPreview from "../AdPreview";
+
 
 interface AdListProps {
   ads: Advertisement[];
@@ -125,11 +125,6 @@ const AdList = ({ ads, isLoading, onEdit, onDelete, onCreateNew }: AdListProps) 
                 </div>
               </div>
               <div className="flex gap-2 ml-4">
-                <AdPreview 
-                  mediaUrl={ad.media_url} 
-                  adSize={ad.ads_size} 
-                  campaignName={ad.campaign_name}
-                />
                 <Button
                   variant="outline"
                   size="sm"

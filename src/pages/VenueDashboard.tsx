@@ -135,7 +135,7 @@ const VenueDashboard = () => {
                   setTimeout(() => {
                     deleteExportUsersProcess(token, process.id);
                   }, 5000);
-                  resolve();
+                  resolve(undefined);
                 }
               });
           }, 1000);
@@ -655,7 +655,7 @@ const VenueDashboard = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      loading={xlsxReportLoading}
+                      disabled={xlsxReportLoading}
                       onClick={exportXlsxReport}
                     >
                       <FormattedMessage id="venueDashboard.sessions.downloadXLSX" />
