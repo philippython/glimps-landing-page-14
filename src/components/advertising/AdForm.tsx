@@ -150,7 +150,7 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
             id="campaign-name" 
             value={campaignName} 
             onChange={(e) => setCampaignName(e.target.value)} 
-            placeholder="Summer Promotion 2025"
+            placeholder={intl.formatMessage({id: "venueDashboard.advertising.campaignNamePlaceholder"})}
           />
         </div>
 
@@ -162,7 +162,7 @@ const AdForm = ({ adToEdit, isLoading, onCancel, onSubmit }: AdFormProps) => {
             id="external-url" 
             value={externalUrl} 
             onChange={(e) => setExternalUrl(e.target.value)} 
-            placeholder="https://example.com"
+            placeholder={intl.formatMessage({id: "venueDashboard.advertising.externalUrlPlaceholder"})}
             type="url"
           />
         </div>

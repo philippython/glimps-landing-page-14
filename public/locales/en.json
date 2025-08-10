@@ -201,7 +201,12 @@
     },
     "buttons": {
       "downloadAll": "Download All",
-      "download": "Download"
+      "download": "Download",
+      "downloading": "Downloading..."
+    },
+    "tooltips": {
+      "noBoomerangAvailable": "No boomerang available",
+      "downloadBoomerang": "Download Boomerang"
     },
     "footer": {
       "trademark": "Glimps. All rights reserved.",
@@ -438,7 +443,9 @@
       "expired": "Expired",
       "noAds": "No advertisements found. Create your first ad campaign!",
       "uploadMedia": "Upload Media",
-      "uploadMediaHelper": "Recommended: JPG, PNG or MP4 (Max 10MB)"
+      "uploadMediaHelper": "Recommended: JPG, PNG or MP4 (Max 10MB)",
+      "campaignNamePlaceholder": "Summer Promotion 2025",
+      "externalUrlPlaceholder": "https://example.com"
     },
     "messages": {
       "successUpdateVenue": "Venue settings updated successfully!",

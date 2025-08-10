@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { downloadVideo } from "@/utils/downloadUtils";
+import { downloadVideo, DownloadOptions } from "@/utils/downloadUtils";
 import { toast } from "sonner";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -40,7 +40,7 @@ const BoomerangDownloadButton = ({
         onSuccess: () => {
           toast.success(intl.formatMessage({ id: 'photoGallery.download.saveSuccess' }));
         },
-        onError: (error) => {
+        onError: (error: string) => {
           toast.error(`${intl.formatMessage({ id: 'photoGallery.download.downloadFailed' })}: ${error}`);
         }
       });
@@ -64,7 +64,7 @@ const BoomerangDownloadButton = ({
         disabled={isDownloading || isDisabled} 
         onClick={handleDownload}
         className={className}
-        title={isDisabled ? "No boomerang available" : "Download Boomerang"}
+        title={isDisabled ? intl.formatMessage({id: "photoGallery.tooltips.noBoomerangAvailable"}) : intl.formatMessage({id: "photoGallery.tooltips.downloadBoomerang"})}
       >
         <Download className="w-4 h-4 mr-2" />
         {isDownloading ? (
@@ -83,7 +83,7 @@ const BoomerangDownloadButton = ({
       disabled={isDownloading || isDisabled} 
       onClick={handleDownload}
       className={className}
-      title={isDisabled ? "No boomerang available" : "Download Boomerang"}
+      title={isDisabled ? intl.formatMessage({id: "photoGallery.tooltips.noBoomerangAvailable"}) : intl.formatMessage({id: "photoGallery.tooltips.downloadBoomerang"})}
     >
       <Download className="w-4 h-4" />
     </Button>

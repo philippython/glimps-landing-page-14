@@ -202,7 +202,12 @@
     },
     "buttons": {
       "downloadAll": "Скачать все",
-      "download": "Скачать"
+      "download": "Скачать",
+      "downloading": "Загрузка..."
+    },
+    "tooltips": {
+      "noBoomerangAvailable": "Бумеранг недоступен",
+      "downloadBoomerang": "Скачать бумеранг"
     },
     "footer": {
       "trademark": "Глимпс. Все права защищены.",
@@ -444,6 +449,8 @@
       "noAds": "Рекламные кампании не найдены. Создайте свою первую кампанию!",
       "uploadMedia": "Загрузить медиа",
       "uploadMediaHelper": "Рекомендуемые форматы: JPG, PNG или MP4 (макс. 10МБ)",
+      "campaignNamePlaceholder": "Летняя акция 2025",
+      "externalUrlPlaceholder": "https://example.com",
       "editAd": "Редактировать рекламу",
       "update": "Обновить"
     },

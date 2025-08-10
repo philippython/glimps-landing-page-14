@@ -50,7 +50,7 @@ export const downloadPhoto = async ({ url, filename, onSuccess, onError }: Downl
   }
 };
 
-export const downloadVideo = async ({ url, filename, onSuccess, onError }: DownloadOptions) => {
+export const downloadVideo = async ({ url, filename, onSuccess, onError }: DownloadOptions): Promise<boolean> => {
   console.log(`Starting video download for: ${filename}`);
   
   try {
