@@ -54,14 +54,8 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
   console.log(`Starting video download for: ${filename}`);
   
   try {
-    // Use the new boomerang-proxy endpoint
-    const apiUrl = import.meta.env.VITE_API_URL;
-    const proxyUrl = `${apiUrl}/photos/boomerang-proxy?boomerang_path=${encodeURIComponent(url)}`;
-
-    const response = await fetch(proxyUrl, {
-      method: 'GET',
-    });
-    
+    // Fetch video directly and download in original format
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -69,9 +63,18 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
     const blob = await response.blob();
     const blobUrl = window.URL.createObjectURL(blob);
     
+    // Determine file extension based on content type
+    const contentType = blob.type;
+    let extension = '.mp4'; // default
+    if (contentType.includes('webm')) {
+      extension = '.webm';
+    } else if (contentType.includes('mov')) {
+      extension = '.mov';
+    }
+    
     const link = document.createElement('a');
     link.href = blobUrl;
-    link.download = `${filename}.mp4`;
+    link.download = `${filename}${extension}`;
     link.style.display = 'none';
     
     document.body.appendChild(link);
@@ -81,7 +84,7 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
     // Clean up
     setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
     
-    console.log(`Video download successful: ${filename}`);
+    console.log(`Video download successful: ${filename}${extension}`);
     onSuccess?.();
     return true;
   } catch (error) {
@@ -91,6 +94,7 @@ export const downloadVideo = async ({ url, filename, onSuccess, onError }: Downl
     return false;
   }
 };
+
 
 export const downloadMultiplePhotos = async (photos: Array<{ url: string; filename: string }>) => {
   console.log(`Starting batch download of ${photos.length} photos`);
