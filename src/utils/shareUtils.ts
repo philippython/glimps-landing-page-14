@@ -70,26 +70,32 @@ export const getSharePlatforms = (isRussian: boolean): SharePlatform[] => {
 };
 
 export const shareToSocialMedia = async (url: string, filename: string) => {
-  const isRussian = await getUserLocation();
-  const platforms = getSharePlatforms(isRussian);
-  
-  // Create share data
-  const shareData = {
-    title: filename,
-    text: `Check out this photo: ${filename}`,
-    url: url
-  };
+  // Auto-detect location and handle sharing
+  try {
+    const isRussian = await getUserLocation();
+    const platforms = getSharePlatforms(isRussian);
+    
+    // Create share data
+    const shareData = {
+      title: filename,
+      text: `Check out this photo: ${filename}`,
+      url: url
+    };
 
-  // Try native Web Share API first
-  if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-    try {
-      await navigator.share(shareData);
-      return true;
-    } catch (error) {
-      console.log('Native share cancelled or failed:', error);
+    // Try native Web Share API first
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+        return true;
+      } catch (error) {
+        console.log('Native share cancelled or failed:', error);
+      }
     }
-  }
 
-  // Fallback to custom share modal
-  return { platforms, shareData };
+    // Fallback to custom share modal
+    return { platforms, shareData };
+  } catch (error) {
+    console.error('Error in shareToSocialMedia:', error);
+    return false;
+  }
 };

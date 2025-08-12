@@ -267,9 +267,6 @@ const PhotoGallery = () => {
                   <h1 className="text-2xl font-bold text-glimps-900">
                     <FormattedMessage id="photoGallery.title" />
                   </h1>
-                  <p className="text-glimps-600">
-                    <FormattedMessage id="photoGallery.photos" />
-                  </p>
                 </div>
               )}
             </div>
@@ -373,37 +370,23 @@ const PhotoGallery = () => {
                       {/* Content type indicator */}
                       {hasBoomerang && (
                         <div className="absolute top-3 right-3 bg-black/80 text-white px-3 py-1.5 rounded-full text-xs font-medium">
-                          {currentViewMode === 'boomerang' ? (
-                            <>
-                              <Video className="w-3 h-3 inline mr-1.5" />
-                              Boomerang
-                            </>
-                          ) : (
-                            <>
-                              <ImageIcon className="w-3 h-3 inline mr-1.5" />
-                              Photo
-                            </>
-                          )}
+                           {currentViewMode === 'boomerang' ? (
+                             <>
+                               <Video className="w-3 h-3 inline mr-1.5" />
+                               <FormattedMessage id="photoGallery.viewMode.boomerang" defaultMessage="Boomerang" />
+                             </>
+                           ) : (
+                             <>
+                               <ImageIcon className="w-3 h-3 inline mr-1.5" />
+                               <FormattedMessage id="photoGallery.viewMode.photo" defaultMessage="Photo" />
+                             </>
+                           )}
                         </div>
                       )}
 
-                      {/* Share button */}
-                      <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => handleShare(photo, index)}
-                          className="bg-white/90 hover:bg-white text-gray-700 shadow-md border-0 h-8 w-8 p-0"
-                        >
-                          <Share2 className="w-3.5 h-3.5" />
-                        </Button>
-                      </div>
                     </div>
 
                     <div className="p-6 space-y-4">
-                      <p className="text-sm text-gray-700 font-medium truncate">
-                        {photoName(index)}
-                      </p>
                       
                       {/* Toggle buttons for photo/boomerang when available */}
                       {hasBoomerang && (
@@ -415,23 +398,24 @@ const PhotoGallery = () => {
                         >
                           <ToggleGroupItem value="photo" variant="outline" size="sm">
                             <ImageIcon className="w-4 h-4 mr-1" />
-                            Photo
+                            <FormattedMessage id="photoGallery.viewMode.photo" defaultMessage="Photo" />
                           </ToggleGroupItem>
                           <ToggleGroupItem value="boomerang" variant="outline" size="sm">
                             <Video className="w-4 h-4 mr-1" />
-                            Boomerang
+                            <FormattedMessage id="photoGallery.viewMode.boomerang" defaultMessage="Boomerang" />
                           </ToggleGroupItem>
                         </ToggleGroup>
                       )}
 
-                      {/* Download button based on current view mode */}
-                      <div className="flex justify-center">
+                      {/* Download and Share buttons */}
+                      <div className="flex justify-center gap-2">
                         {currentViewMode === 'boomerang' && hasBoomerang ? (
                           <BoomerangDownloadButton
                             url={photo.boomerang!.boomerang_url}
                             filename={`${photoName(index)}_boomerang`}
                             variant="default"
                             size="sm"
+                            showText={true}
                           />
                         ) : (
                           <EnhancedDownloadButton
@@ -439,8 +423,18 @@ const PhotoGallery = () => {
                             filename={photoName(index)}
                             variant="default"
                             size="sm"
+                            showText={true}
                           />
                         )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleShare(photo, index)}
+                          className="border-glimps-200 hover:bg-glimps-50 text-glimps-700"
+                        >
+                          <Share2 className="w-4 h-4 mr-2" />
+                          <FormattedMessage id="photoGallery.buttons.share" defaultMessage="Share" />
+                        </Button>
                       </div>
                     </div>
                   </Card>

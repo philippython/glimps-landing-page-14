@@ -85,10 +85,10 @@ const EnhancedDownloadButton = ({
       >
         <Download className="w-4 h-4 mr-2" />
         {isDownloading ? (
-          <FormattedMessage 
-            id="photoGallery.buttons.downloading" 
-            defaultMessage="Downloading..."
-          />
+              <FormattedMessage
+                id="photoGallery.buttons.downloading"
+                defaultMessage="Downloading..."
+              />
         ) : (
           <FormattedMessage 
             id="photoGallery.buttons.download" 

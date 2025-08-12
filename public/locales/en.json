@@ -215,6 +215,10 @@
       "redirected": "Redirected to {platform}",
       "loading": "Loading platforms..."
     },
+    "viewMode": {
+      "photo": "Photo",
+      "boomerang": "Boomerang"
+    },
     "footer": {
       "trademark": "Glimps. All rights reserved.",
       "message": "Photos are available for 30 days from the event date."

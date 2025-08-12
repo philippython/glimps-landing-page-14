@@ -21,6 +21,7 @@ const ShareModal = ({ isOpen, onClose, url, filename }: ShareModalProps) => {
   useEffect(() => {
     const loadPlatforms = async () => {
       try {
+        // Auto-detect location without asking permission
         const isRussian = await getUserLocation();
         const sharePlatforms = getSharePlatforms(isRussian);
         setPlatforms(sharePlatforms);
