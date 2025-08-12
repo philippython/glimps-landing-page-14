@@ -3,7 +3,7 @@
     "glimps": "Glimps",
     "navbar": {
       "home": "Home",
-      "pricing": "Pricing",
+      "pricing": "Pricing", 
       "about": "About",
       "login": "Login",
       "getStarted": "Get Started",
@@ -202,7 +202,8 @@
     "buttons": {
       "downloadAll": "Download All",
       "download": "Download",
-      "downloading": "Downloading..."
+      "downloading": "Downloading...",
+      "share": "Share"
     },
     "tooltips": {
       "noBoomerangAvailable": "No boomerang available",
@@ -213,7 +214,8 @@
       "linkCopied": "Link copied to clipboard!",
       "copyFailed": "Failed to copy link",
       "redirected": "Redirected to {platform}",
-      "loading": "Loading platforms..."
+      "loading": "Loading platforms...",
+      "storySharing": "Share to Story"
     },
     "viewMode": {
       "photo": "Photo",

@@ -206,7 +206,6 @@ const PhotoGallery = () => {
     }
   };
 
-
   console.log('About to render PhotoGallery', { uuid, error, isLoading, data });
 
   if (!uuid) {
@@ -499,7 +498,7 @@ const PhotoGallery = () => {
         )}
       </main>
 
-      {/* Share Modal */}
+      {/* Share Modal with increased z-index for iPhone compatibility */}
       <ShareModal 
         isOpen={shareModalOpen}
         onClose={() => setShareModalOpen(false)}

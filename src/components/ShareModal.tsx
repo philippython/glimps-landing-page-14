@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { SharePlatform, getUserLocation, getSharePlatforms } from "@/utils/shareUtils";
+import { SharePlatform, getUserLocation, getSharePlatforms, shareToStory } from "@/utils/shareUtils";
 import { toast } from "sonner";
 import { FormattedMessage, useIntl } from "react-intl";
-import { ExternalLink, Copy } from "lucide-react";
+import { ExternalLink, Copy, Plus } from "lucide-react";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -66,9 +67,20 @@ const ShareModal = ({ isOpen, onClose, url, filename }: ShareModalProps) => {
     ));
   };
 
+  const handleStoryShare = (platform: SharePlatform) => {
+    shareToStory(platform, url, filename);
+    toast.success(intl.formatMessage(
+      { 
+        id: "photoGallery.share.redirected",
+        defaultMessage: "Redirected to {platform}"
+      },
+      { platform: `${platform.name} Stories` }
+    ));
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md z-[10001] fixed">
         <DialogHeader>
           <DialogTitle>
             <FormattedMessage 
@@ -102,19 +114,56 @@ const ShareModal = ({ isOpen, onClose, url, filename }: ShareModalProps) => {
               />
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3">
-              {platforms.map((platform) => (
-                <Button
-                  key={platform.name}
-                  variant="outline"
-                  onClick={() => handlePlatformClick(platform)}
-                  className="flex items-center justify-center space-x-2 h-12"
-                >
-                  <span className="text-lg">{platform.icon}</span>
-                  <span className="text-sm">{platform.name}</span>
-                  <ExternalLink className="w-3 h-3" />
-                </Button>
-              ))}
+            <div className="space-y-4">
+              {/* Regular sharing */}
+              <div>
+                <h4 className="text-sm font-medium mb-3">
+                  <FormattedMessage 
+                    id="photoGallery.share.regularSharing"
+                    defaultMessage="Share to Feed"
+                  />
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {platforms.map((platform) => (
+                    <Button
+                      key={platform.name}
+                      variant="outline"
+                      onClick={() => handlePlatformClick(platform)}
+                      className="flex items-center justify-center space-x-2 h-12"
+                    >
+                      <span className="text-lg">{platform.icon}</span>
+                      <span className="text-sm">{platform.name}</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Story sharing */}
+              <div>
+                <h4 className="text-sm font-medium mb-3">
+                  <FormattedMessage 
+                    id="photoGallery.share.storySharing"
+                    defaultMessage="Share to Story"
+                  />
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {platforms
+                    .filter(platform => platform.supportsStories)
+                    .map((platform) => (
+                      <Button
+                        key={`${platform.name}-story`}
+                        variant="outline"
+                        onClick={() => handleStoryShare(platform)}
+                        className="flex items-center justify-center space-x-2 h-12 border-dashed"
+                      >
+                        <span className="text-lg">{platform.icon}</span>
+                        <span className="text-sm">{platform.name}</span>
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                    ))}
+                </div>
+              </div>
             </div>
           )}
         </div>
