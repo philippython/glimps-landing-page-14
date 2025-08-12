@@ -208,6 +208,13 @@
       "noBoomerangAvailable": "No boomerang available",
       "downloadBoomerang": "Download Boomerang"
     },
+    "share": {
+      "title": "Share Photo",
+      "linkCopied": "Link copied to clipboard!",
+      "copyFailed": "Failed to copy link",
+      "redirected": "Redirected to {platform}",
+      "loading": "Loading platforms..."
+    },
     "footer": {
       "trademark": "Glimps. All rights reserved.",
       "message": "Photos are available for 30 days from the event date."

@@ -16,6 +16,8 @@ import LogoWithText from "@/components/LogoWithText";
 import { FormattedMessage, useIntl } from "react-intl";
 import LanguagePicker from "@/components/LanguagePicker";
 import PhotoAdvertisement from "@/components/PhotoAdvertisement";
+import ShareModal from "@/components/ShareModal";
+import { shareToSocialMedia } from "@/utils/shareUtils";
 import { useState, useEffect } from "react";
 import { 
   Pagination,
@@ -25,7 +27,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Download, Image as ImageIcon, Video, Eye } from "lucide-react";
+import { Download, Image as ImageIcon, Video, Share2 } from "lucide-react";
 
 type Photo = {
   photo_url: string,
@@ -68,6 +70,9 @@ const PhotoGallery = () => {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'photo' | 'boomerang'>('photo');
   const [cardViewModes, setCardViewModes] = useState<{[key: number]: 'photo' | 'boomerang'}>({});
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [shareFilename, setShareFilename] = useState('');
   const photosPerPage = 12;
   
   console.log('PhotoGallery component rendered', { uuid, currentPage });
@@ -180,6 +185,25 @@ const PhotoGallery = () => {
       ...prev,
       [index]: mode
     }));
+  };
+
+  const handleShare = async (photo: Photo, index: number) => {
+    const currentViewMode = cardViewModes[index] || 'photo';
+    const url = currentViewMode === 'boomerang' && photo.boomerang?.boomerang_url 
+      ? photo.boomerang.boomerang_url 
+      : photo.photo_url;
+    const filename = currentViewMode === 'boomerang' 
+      ? `${photoName(index)}_boomerang` 
+      : photoName(index);
+
+    const shareResult = await shareToSocialMedia(url, filename);
+    
+    if (shareResult !== true) {
+      // Native share not available, open custom modal
+      setShareUrl(url);
+      setShareFilename(filename);
+      setShareModalOpen(true);
+    }
   };
 
 
@@ -315,13 +339,13 @@ const PhotoGallery = () => {
                 });
 
                 return (
-                  <Card key={index} className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white w-full max-w-sm mx-auto">
-                    <div className="relative pt-[75%] group">
+                  <Card key={index} className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-white w-full max-w-sm mx-auto border-0 ring-1 ring-gray-200">
+                    <div className="relative pt-[100%] group bg-gray-50 rounded-t-lg overflow-hidden">
                       {/* Show photo or boomerang based on toggle */}
                       {currentViewMode === 'boomerang' && hasBoomerang ? (
                         <video
                           src={photo.boomerang!.boomerang_url}
-                          className="absolute inset-0 rounded-t-lg object-cover w-full h-full"
+                          className="absolute inset-0 w-full h-full object-contain bg-gray-50"
                           autoPlay
                           loop
                           muted
@@ -336,31 +360,44 @@ const PhotoGallery = () => {
                         />
                       ) : (
                         <ProgressiveImage
-                          className="absolute inset-0 rounded-t-lg"
+                          className="absolute inset-0 w-full h-full bg-gray-50"
                           src={photo.photo_url}
                           alt={`Photo ${index + 1}`}
+                          objectFit="contain"
                           onLoad={handleImageLoad}
                         />
                       )}
                       
-                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-t-lg" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
 
                       {/* Content type indicator */}
                       {hasBoomerang && (
-                        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
+                        <div className="absolute top-3 right-3 bg-black/80 text-white px-3 py-1.5 rounded-full text-xs font-medium">
                           {currentViewMode === 'boomerang' ? (
                             <>
-                              <Video className="w-3 h-3 inline mr-1" />
+                              <Video className="w-3 h-3 inline mr-1.5" />
                               Boomerang
                             </>
                           ) : (
                             <>
-                              <ImageIcon className="w-3 h-3 inline mr-1" />
+                              <ImageIcon className="w-3 h-3 inline mr-1.5" />
                               Photo
                             </>
                           )}
                         </div>
                       )}
+
+                      {/* Share button */}
+                      <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleShare(photo, index)}
+                          className="bg-white/90 hover:bg-white text-gray-700 shadow-md border-0 h-8 w-8 p-0"
+                        >
+                          <Share2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
                     </div>
 
                     <div className="p-6 space-y-4">
@@ -468,7 +505,13 @@ const PhotoGallery = () => {
         )}
       </main>
 
-      
+      {/* Share Modal */}
+      <ShareModal 
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        url={shareUrl}
+        filename={shareFilename}
+      />
     </div>
   );
 };

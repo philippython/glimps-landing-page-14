@@ -6,10 +6,11 @@ interface ProgressiveImageProps {
   src: string;
   alt: string;
   className?: string;
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
   onLoad?: () => void;
 }
 
-const ProgressiveImage = ({ src, alt, className, onLoad }: ProgressiveImageProps) => {
+const ProgressiveImage = ({ src, alt, className, objectFit = 'cover', onLoad }: ProgressiveImageProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageSrc, setImageSrc] = useState<string>("");
   const [lowQualitySrc, setLowQualitySrc] = useState<string>("");
@@ -30,6 +31,12 @@ const ProgressiveImage = ({ src, alt, className, onLoad }: ProgressiveImageProps
     };
   }, [src, onLoad]);
 
+  const objectFitClass = objectFit === 'contain' ? 'object-contain' : 
+                        objectFit === 'fill' ? 'object-fill' :
+                        objectFit === 'none' ? 'object-none' :
+                        objectFit === 'scale-down' ? 'object-scale-down' :
+                        'object-cover';
+
   return (
     <div className={cn("relative overflow-hidden", className)}>
       {/* Low quality image */}
@@ -37,7 +44,8 @@ const ProgressiveImage = ({ src, alt, className, onLoad }: ProgressiveImageProps
         src={lowQualitySrc}
         alt={alt}
         className={cn(
-          "absolute inset-0 w-full h-full object-cover transition-opacity duration-500",
+          "absolute inset-0 w-full h-full transition-opacity duration-500",
+          objectFitClass,
           imageLoaded ? "opacity-0" : "opacity-100 blur-sm"
         )}
       />
@@ -48,7 +56,8 @@ const ProgressiveImage = ({ src, alt, className, onLoad }: ProgressiveImageProps
           src={imageSrc}
           alt={alt}
           className={cn(
-            "absolute inset-0 w-full h-full object-cover transition-opacity duration-500",
+            "absolute inset-0 w-full h-full transition-opacity duration-500",
+            objectFitClass,
             imageLoaded ? "opacity-100" : "opacity-0"
           )}
         />
