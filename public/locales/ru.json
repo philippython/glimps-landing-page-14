@@ -206,8 +206,8 @@
       "downloading": "Загрузка..."
     },
     "tooltips": {
-      "noBoomerangAvailable": "Бумеранг недоступен",
-      "downloadBoomerang": "Скачать бумеранг"
+      "noBoomerangAvailable": "Видео недоступен",
+      "downloadBoomerang": "Скачать Видео"
     },
     "share": {
       "title": "Поделиться фото",
@@ -218,7 +218,7 @@
     },
     "viewMode": {
       "photo": "Фото",
-      "boomerang": "Бумеранг"
+      "boomerang": "Видео"
     },
     "footer": {
       "trademark": "Глимпс. Все права защищены.",
