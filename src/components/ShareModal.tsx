@@ -6,6 +6,7 @@ import { SharePlatform, getUserLocation, getSharePlatforms, shareToStory } from 
 import { toast } from "sonner";
 import { FormattedMessage, useIntl } from "react-intl";
 import { ExternalLink, Copy, Plus } from "lucide-react";
+import SocialMediaIcon from "./SocialMediaIcon";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -137,7 +138,7 @@ const ShareModal = ({ isOpen, onClose, url, filename }: ShareModalProps) => {
                       onClick={() => handleStoryShare(platform)}
                       className="flex items-center justify-center space-x-2 h-12"
                     >
-                      <span className="text-lg">{platform.icon}</span>
+                      <SocialMediaIcon platform={platform.icon} className="w-6 h-6" />
                       <span className="text-sm">{platform.name}</span>
                       <Plus className="w-3 h-3" />
                     </Button>

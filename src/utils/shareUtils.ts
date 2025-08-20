@@ -2,7 +2,7 @@
 export interface SharePlatform {
   name: string;
   url: string;
-  icon: string;
+  icon: 'instagram' | 'snapchat' | 'tiktok' | 'whatsapp' | 'vk';
   storyUrl?: string; // For story sharing
   supportsStories?: boolean;
 }
@@ -39,13 +39,13 @@ export const getSharePlatforms = (isRussian: boolean): SharePlatform[] => {
         name: 'Instagram',
         url: 'https://www.instagram.com/',
         storyUrl: 'instagram-stories://share',
-        icon: '📷',
+        icon: 'instagram',
         supportsStories: true
       },
       {
         name: 'VK',
         url: 'https://vk.com/share.php',
-        icon: '🔵',
+        icon: 'vk',
         supportsStories: false
       }
     ];
@@ -56,27 +56,27 @@ export const getSharePlatforms = (isRussian: boolean): SharePlatform[] => {
       name: 'Instagram',
       url: 'https://www.instagram.com/',
       storyUrl: 'instagram-stories://share',
-      icon: '📷',
+      icon: 'instagram',
       supportsStories: true
     },
     {
       name: 'Snapchat',
       url: 'https://www.snapchat.com/',
       storyUrl: 'snapchat://camera',
-      icon: '👻',
+      icon: 'snapchat',
       supportsStories: true
     },
     {
       name: 'TikTok',
       url: 'https://www.tiktok.com/',
-      icon: '🎵',
+      icon: 'tiktok',
       supportsStories: false
     },
     {
       name: 'WhatsApp Status',
       url: 'https://wa.me/',
       storyUrl: 'whatsapp://send',
-      icon: '💬',
+      icon: 'whatsapp',
       supportsStories: true
     }
   ];
