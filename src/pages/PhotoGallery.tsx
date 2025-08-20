@@ -196,14 +196,10 @@ const PhotoGallery = () => {
       ? `${photoName(index)}_boomerang` 
       : photoName(index);
 
-    const shareResult = await shareToSocialMedia(url, filename);
-    
-    if (shareResult !== true) {
-      // Native share not available, open custom modal
-      setShareUrl(url);
-      setShareFilename(filename);
-      setShareModalOpen(true);
-    }
+    // Always open story sharing modal with media download
+    setShareUrl(url);
+    setShareFilename(filename);
+    setShareModalOpen(true);
   };
 
   console.log('About to render PhotoGallery', { uuid, error, isLoading, data });

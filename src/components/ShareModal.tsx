@@ -115,31 +115,7 @@ const ShareModal = ({ isOpen, onClose, url, filename }: ShareModalProps) => {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Regular sharing */}
-              <div>
-                <h4 className="text-sm font-medium mb-3">
-                  <FormattedMessage 
-                    id="photoGallery.share.regularSharing"
-                    defaultMessage="Share to Feed"
-                  />
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {platforms.map((platform) => (
-                    <Button
-                      key={platform.name}
-                      variant="outline"
-                      onClick={() => handlePlatformClick(platform)}
-                      className="flex items-center justify-center space-x-2 h-12"
-                    >
-                      <span className="text-lg">{platform.icon}</span>
-                      <span className="text-sm">{platform.name}</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Story sharing */}
+              {/* Story sharing only */}
               <div>
                 <h4 className="text-sm font-medium mb-3">
                   <FormattedMessage 
@@ -147,21 +123,25 @@ const ShareModal = ({ isOpen, onClose, url, filename }: ShareModalProps) => {
                     defaultMessage="Share to Story"
                   />
                 </h4>
+                <p className="text-xs text-muted-foreground mb-3">
+                  <FormattedMessage 
+                    id="photoGallery.share.storyDescription"
+                    defaultMessage="Photo will be downloaded automatically. Upload it to your story!"
+                  />
+                </p>
                 <div className="grid grid-cols-2 gap-3">
-                  {platforms
-                    .filter(platform => platform.supportsStories)
-                    .map((platform) => (
-                      <Button
-                        key={`${platform.name}-story`}
-                        variant="outline"
-                        onClick={() => handleStoryShare(platform)}
-                        className="flex items-center justify-center space-x-2 h-12 border-dashed"
-                      >
-                        <span className="text-lg">{platform.icon}</span>
-                        <span className="text-sm">{platform.name}</span>
-                        <Plus className="w-3 h-3" />
-                      </Button>
-                    ))}
+                  {platforms.map((platform) => (
+                    <Button
+                      key={`${platform.name}-story`}
+                      variant="outline"
+                      onClick={() => handleStoryShare(platform)}
+                      className="flex items-center justify-center space-x-2 h-12"
+                    >
+                      <span className="text-lg">{platform.icon}</span>
+                      <span className="text-sm">{platform.name}</span>
+                      <Plus className="w-3 h-3" />
+                    </Button>
+                  ))}
                 </div>
               </div>
             </div>

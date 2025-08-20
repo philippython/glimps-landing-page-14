@@ -215,7 +215,8 @@
       "copyFailed": "Failed to copy link",
       "redirected": "Redirected to {platform}",
       "loading": "Loading platforms...",
-      "storySharing": "Share to Story"
+      "storySharing": "Share to Story",
+      "storyDescription": "Photo will be downloaded and you'll be redirected to upload it to your story!"
     },
     "viewMode": {
       "photo": "Photo",

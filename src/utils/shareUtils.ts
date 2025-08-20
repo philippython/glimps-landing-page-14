@@ -82,74 +82,121 @@ export const getSharePlatforms = (isRussian: boolean): SharePlatform[] => {
   ];
 };
 
+// Download media and prepare for story sharing
+export const downloadMediaForStory = async (url: string, filename: string): Promise<string> => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    
+    // Create a blob URL for sharing
+    const blobUrl = URL.createObjectURL(blob);
+    return blobUrl;
+  } catch (error) {
+    console.error('Error downloading media:', error);
+    return url; // Fallback to original URL
+  }
+};
+
 export const shareToSocialMedia = async (url: string, filename: string) => {
   // Auto-detect location and handle sharing
   try {
     const isRussian = await getUserLocation();
     const platforms = getSharePlatforms(isRussian);
     
-    // Create share data
-    const shareData = {
-      title: filename,
-      text: `Check out this photo: ${filename}`,
-      url: url
-    };
-
-    // Try native Web Share API first
-    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData);
-        return true;
-      } catch (error) {
-        console.log('Native share cancelled or failed:', error);
-      }
-    }
-
-    // Fallback to custom share modal
-    return { platforms, shareData };
+    // Always return platforms for story sharing modal
+    return { platforms, shareData: { url, filename } };
   } catch (error) {
     console.error('Error in shareToSocialMedia:', error);
     return false;
   }
 };
 
-// Helper function to share to specific platform stories
-export const shareToStory = (platform: SharePlatform, mediaUrl: string, filename: string) => {
+// Helper function to download media and share to specific platform stories
+export const shareToStory = async (platform: SharePlatform, mediaUrl: string, filename: string) => {
+  // Download the media first
+  try {
+    const response = await fetch(mediaUrl);
+    const blob = await response.blob();
+    
+    // Create a temporary link to download the file
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    console.error('Error downloading media:', error);
+  }
+
+  // Then redirect to platform story
   if (!platform.supportsStories || !platform.storyUrl) {
-    // Fallback to regular sharing
     window.open(platform.url, '_blank');
     return;
   }
 
-  // For Instagram Stories
+  // For Instagram Stories - redirect to story creation
   if (platform.name === 'Instagram') {
-    // Try to open Instagram app with story sharing
-    const instagramUrl = `${platform.storyUrl}?media=${encodeURIComponent(mediaUrl)}`;
-    window.location.href = instagramUrl;
-    
-    // Fallback to web version after a delay
-    setTimeout(() => {
-      window.open('https://www.instagram.com/', '_blank');
-    }, 1000);
+    // Try mobile app first
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = 'instagram://story-camera';
+      setTimeout(() => {
+        window.open('https://www.instagram.com/accounts/login/', '_blank');
+      }, 1500);
+    } else {
+      window.open('https://www.instagram.com/accounts/login/', '_blank');
+    }
     return;
   }
 
-  // For Snapchat
+  // For Snapchat - redirect to camera
   if (platform.name === 'Snapchat') {
-    window.location.href = platform.storyUrl;
-    setTimeout(() => {
-      window.open('https://www.snapchat.com/', '_blank');
-    }, 1000);
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = 'snapchat://camera';
+      setTimeout(() => {
+        window.open('https://web.snapchat.com/', '_blank');
+      }, 1500);
+    } else {
+      window.open('https://web.snapchat.com/', '_blank');
+    }
+    return;
+  }
+
+  // For TikTok - redirect to upload
+  if (platform.name === 'TikTok') {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = 'tiktok://camera';
+      setTimeout(() => {
+        window.open('https://www.tiktok.com/upload', '_blank');
+      }, 1500);
+    } else {
+      window.open('https://www.tiktok.com/upload', '_blank');
+    }
     return;
   }
 
   // For WhatsApp Status
   if (platform.name === 'WhatsApp Status') {
-    const whatsappUrl = `${platform.storyUrl}?text=${encodeURIComponent(`Check out this photo: ${filename} ${mediaUrl}`)}`;
-    window.location.href = whatsappUrl;
-    setTimeout(() => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = 'whatsapp://send';
+      setTimeout(() => {
+        window.open('https://web.whatsapp.com/', '_blank');
+      }, 1500);
+    } else {
       window.open('https://web.whatsapp.com/', '_blank');
-    }, 1000);
+    }
+    return;
+  }
+
+  // For VK - redirect to story creation
+  if (platform.name === 'VK') {
+    window.open('https://vk.com/story', '_blank');
     return;
   }
 
