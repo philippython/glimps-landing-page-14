@@ -131,75 +131,74 @@ export const shareToStory = async (platform: SharePlatform, mediaUrl: string, fi
     console.error('Error downloading media:', error);
   }
 
-  // Then redirect to platform story
-  if (!platform.supportsStories || !platform.storyUrl) {
-    window.open(platform.url, '_blank');
-    return;
-  }
+  // Wait a moment for download to start
+  await new Promise(resolve => setTimeout(resolve, 500));
 
-  // For Instagram Stories - redirect to story creation
+  // Detect mobile device
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+
+  // Try to open the appropriate app/website
   if (platform.name === 'Instagram') {
-    // Try mobile app first
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if (isMobile) {
-      window.location.href = 'instagram://story-camera';
+      // Try to open Instagram app first
+      const appUrl = isIOS ? 'instagram://story-camera' : 'intent://story-camera#Intent;package=com.instagram.android;scheme=instagram;end';
+      window.open(appUrl, '_self');
+      
+      // Fallback to web after a delay
       setTimeout(() => {
         window.open('https://www.instagram.com/accounts/login/', '_blank');
-      }, 1500);
+      }, 2000);
     } else {
       window.open('https://www.instagram.com/accounts/login/', '_blank');
     }
-    return;
-  }
-
-  // For Snapchat - redirect to camera
-  if (platform.name === 'Snapchat') {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  } else if (platform.name === 'Snapchat') {
     if (isMobile) {
-      window.location.href = 'snapchat://camera';
+      const appUrl = isIOS ? 'snapchat://camera' : 'intent://camera#Intent;package=com.snapchat.android;scheme=snapchat;end';
+      window.open(appUrl, '_self');
+      
       setTimeout(() => {
         window.open('https://web.snapchat.com/', '_blank');
-      }, 1500);
+      }, 2000);
     } else {
       window.open('https://web.snapchat.com/', '_blank');
     }
-    return;
-  }
-
-  // For TikTok - redirect to upload
-  if (platform.name === 'TikTok') {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  } else if (platform.name === 'TikTok') {
     if (isMobile) {
-      window.location.href = 'tiktok://camera';
+      const appUrl = isIOS ? 'tiktok://camera' : 'intent://camera#Intent;package=com.zhiliaoapp.musically;scheme=tiktok;end';
+      window.open(appUrl, '_self');
+      
       setTimeout(() => {
         window.open('https://www.tiktok.com/upload', '_blank');
-      }, 1500);
+      }, 2000);
     } else {
       window.open('https://www.tiktok.com/upload', '_blank');
     }
-    return;
-  }
-
-  // For WhatsApp Status
-  if (platform.name === 'WhatsApp Status') {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  } else if (platform.name === 'WhatsApp Status') {
     if (isMobile) {
-      window.location.href = 'whatsapp://send';
+      const appUrl = isIOS ? 'whatsapp://camera' : 'intent://camera#Intent;package=com.whatsapp;scheme=whatsapp;end';
+      window.open(appUrl, '_self');
+      
       setTimeout(() => {
         window.open('https://web.whatsapp.com/', '_blank');
-      }, 1500);
+      }, 2000);
     } else {
       window.open('https://web.whatsapp.com/', '_blank');
     }
-    return;
+  } else if (platform.name === 'VK') {
+    if (isMobile) {
+      const appUrl = isIOS ? 'vk://story' : 'intent://story#Intent;package=com.vkontakte.android;scheme=vk;end';
+      window.open(appUrl, '_self');
+      
+      setTimeout(() => {
+        window.open('https://vk.com/story', '_blank');
+      }, 2000);
+    } else {
+      window.open('https://vk.com/story', '_blank');
+    }
+  } else {
+    // Default fallback
+    window.open(platform.url, '_blank');
   }
-
-  // For VK - redirect to story creation
-  if (platform.name === 'VK') {
-    window.open('https://vk.com/story', '_blank');
-    return;
-  }
-
-  // Default fallback
-  window.open(platform.url, '_blank');
 };

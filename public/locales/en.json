@@ -210,13 +210,15 @@
       "downloadBoomerang": "Download Boomerang"
     },
     "share": {
-      "title": "Share Photo",
+      "title": "Share to Story",
       "linkCopied": "Link copied to clipboard!",
       "copyFailed": "Failed to copy link",
       "redirected": "Redirected to {platform}",
       "loading": "Loading platforms...",
-      "storySharing": "Share to Story",
-      "storyDescription": "Photo will be downloaded and you'll be redirected to upload it to your story!"
+      "storySharing": "Download & Share to Story",
+      "storyDescription": "Download your photo and share it on your favorite platform",
+      "copyLink": "Copy Link",
+      "downloadAndOpen": "Download photo & open app"
     },
     "viewMode": {
       "photo": "Photo",
