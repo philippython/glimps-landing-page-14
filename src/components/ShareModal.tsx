@@ -22,13 +22,11 @@ const ShareModal = ({ isOpen, onClose, url, filename }: ShareModalProps) => {
   useEffect(() => {
     const loadPlatforms = async () => {
       try {
-        // Auto-detect location without asking permission
-        const isRussian = await getUserLocation();
-        const sharePlatforms = getSharePlatforms(isRussian);
+        const sharePlatforms = getSharePlatforms();
         setPlatforms(sharePlatforms);
       } catch (error) {
         console.error('Error loading share platforms:', error);
-        setPlatforms(getSharePlatforms(false)); // Default to non-Russian
+        setPlatforms(getSharePlatforms());
       } finally {
         setIsLoading(false);
       }

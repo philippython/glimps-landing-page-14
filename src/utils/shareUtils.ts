@@ -32,25 +32,7 @@ export const getUserLocation = (): Promise<boolean> => {
   });
 };
 
-export const getSharePlatforms = (isRussian: boolean): SharePlatform[] => {
-  if (isRussian) {
-    return [
-      {
-        name: 'Instagram',
-        url: 'https://www.instagram.com/',
-        storyUrl: 'instagram-stories://share',
-        icon: 'instagram',
-        supportsStories: true
-      },
-      {
-        name: 'VK',
-        url: 'https://vk.com/share.php',
-        icon: 'vk',
-        supportsStories: false
-      }
-    ];
-  }
-
+export const getSharePlatforms = (): SharePlatform[] => {
   return [
     {
       name: 'Instagram',
@@ -60,23 +42,10 @@ export const getSharePlatforms = (isRussian: boolean): SharePlatform[] => {
       supportsStories: true
     },
     {
-      name: 'Snapchat',
-      url: 'https://www.snapchat.com/',
-      storyUrl: 'snapchat://camera',
-      icon: 'snapchat',
-      supportsStories: true
-    },
-    {
-      name: 'TikTok',
-      url: 'https://www.tiktok.com/',
-      icon: 'tiktok',
-      supportsStories: false
-    },
-    {
-      name: 'WhatsApp Status',
-      url: 'https://wa.me/',
-      storyUrl: 'whatsapp://send',
-      icon: 'whatsapp',
+      name: 'VK',
+      url: 'https://vk.com/share.php',
+      storyUrl: 'vk://story',
+      icon: 'vk',
       supportsStories: true
     }
   ];
@@ -98,12 +67,8 @@ export const downloadMediaForStory = async (url: string, filename: string): Prom
 };
 
 export const shareToSocialMedia = async (url: string, filename: string) => {
-  // Auto-detect location and handle sharing
   try {
-    const isRussian = await getUserLocation();
-    const platforms = getSharePlatforms(isRussian);
-    
-    // Always return platforms for story sharing modal
+    const platforms = getSharePlatforms();
     return { platforms, shareData: { url, filename } };
   } catch (error) {
     console.error('Error in shareToSocialMedia:', error);
@@ -111,94 +76,113 @@ export const shareToSocialMedia = async (url: string, filename: string) => {
   }
 };
 
-// Helper function to download media and share to specific platform stories
-export const shareToStory = async (platform: SharePlatform, mediaUrl: string, filename: string) => {
-  // Download the media first
-  try {
-    const response = await fetch(mediaUrl);
-    const blob = await response.blob();
-    
-    // Create a temporary link to download the file
-    const downloadUrl = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(downloadUrl);
-  } catch (error) {
-    console.error('Error downloading media:', error);
-  }
-
-  // Wait a moment for download to start
-  await new Promise(resolve => setTimeout(resolve, 500));
-
-  // Detect mobile device
+// Share to Instagram Stories with proper API integration
+const shareToInstagramStory = async (mediaUrl: string, filename: string) => {
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const isAndroid = /Android/.test(navigator.userAgent);
 
-  // Try to open the appropriate app/website
-  if (platform.name === 'Instagram') {
-    if (isMobile) {
-      // Try to open Instagram app first
-      const appUrl = isIOS ? 'instagram://story-camera' : 'intent://story-camera#Intent;package=com.instagram.android;scheme=instagram;end';
-      window.open(appUrl, '_self');
-      
-      // Fallback to web after a delay
-      setTimeout(() => {
-        window.open('https://www.instagram.com/accounts/login/', '_blank');
-      }, 2000);
-    } else {
-      window.open('https://www.instagram.com/accounts/login/', '_blank');
+  if (isMobile) {
+    try {
+      // For mobile, try to use Instagram's native sharing
+      const response = await fetch(mediaUrl);
+      const blob = await response.blob();
+      const file = new File([blob], filename, { type: blob.type });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Share to Instagram Story',
+        });
+        return;
+      }
+    } catch (error) {
+      console.error('Native sharing failed:', error);
     }
-  } else if (platform.name === 'Snapchat') {
-    if (isMobile) {
-      const appUrl = isIOS ? 'snapchat://camera' : 'intent://camera#Intent;package=com.snapchat.android;scheme=snapchat;end';
-      window.open(appUrl, '_self');
-      
-      setTimeout(() => {
-        window.open('https://web.snapchat.com/', '_blank');
-      }, 2000);
-    } else {
-      window.open('https://web.snapchat.com/', '_blank');
-    }
-  } else if (platform.name === 'TikTok') {
-    if (isMobile) {
-      const appUrl = isIOS ? 'tiktok://camera' : 'intent://camera#Intent;package=com.zhiliaoapp.musically;scheme=tiktok;end';
-      window.open(appUrl, '_self');
-      
-      setTimeout(() => {
-        window.open('https://www.tiktok.com/upload', '_blank');
-      }, 2000);
-    } else {
-      window.open('https://www.tiktok.com/upload', '_blank');
-    }
-  } else if (platform.name === 'WhatsApp Status') {
-    if (isMobile) {
-      const appUrl = isIOS ? 'whatsapp://camera' : 'intent://camera#Intent;package=com.whatsapp;scheme=whatsapp;end';
-      window.open(appUrl, '_self');
-      
-      setTimeout(() => {
-        window.open('https://web.whatsapp.com/', '_blank');
-      }, 2000);
-    } else {
-      window.open('https://web.whatsapp.com/', '_blank');
-    }
-  } else if (platform.name === 'VK') {
-    if (isMobile) {
-      const appUrl = isIOS ? 'vk://story' : 'intent://story#Intent;package=com.vkontakte.android;scheme=vk;end';
-      window.open(appUrl, '_self');
-      
-      setTimeout(() => {
-        window.open('https://vk.com/story', '_blank');
-      }, 2000);
-    } else {
-      window.open('https://vk.com/story', '_blank');
-    }
+
+    // Fallback: Open Instagram app directly to story camera
+    const appUrl = isIOS 
+      ? 'instagram://story-camera' 
+      : 'intent://story-camera#Intent;package=com.instagram.android;scheme=instagram;end';
+    
+    window.location.href = appUrl;
   } else {
-    // Default fallback
-    window.open(platform.url, '_blank');
+    // Desktop: Download file and open Instagram web
+    try {
+      const response = await fetch(mediaUrl);
+      const blob = await response.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+    
+    window.open('https://www.instagram.com/', '_blank');
+  }
+};
+
+// Share to VK Stories with proper API integration
+const shareToVKStory = async (mediaUrl: string, filename: string) => {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+  if (isMobile) {
+    try {
+      // For mobile, try to use VK's native sharing
+      const response = await fetch(mediaUrl);
+      const blob = await response.blob();
+      const file = new File([blob], filename, { type: blob.type });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Share to VK Story',
+        });
+        return;
+      }
+    } catch (error) {
+      console.error('Native sharing failed:', error);
+    }
+
+    // Fallback: Open VK app directly to story camera
+    const appUrl = isIOS 
+      ? 'vk://story' 
+      : 'intent://story#Intent;package=com.vkontakte.android;scheme=vk;end';
+    
+    window.location.href = appUrl;
+  } else {
+    // Desktop: Download file and open VK web
+    try {
+      const response = await fetch(mediaUrl);
+      const blob = await response.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+    
+    window.open('https://vk.com/story', '_blank');
+  }
+};
+
+// Main share function
+export const shareToStory = async (platform: SharePlatform, mediaUrl: string, filename: string) => {
+  if (platform.name === 'Instagram') {
+    await shareToInstagramStory(mediaUrl, filename);
+  } else if (platform.name === 'VK') {
+    await shareToVKStory(mediaUrl, filename);
   }
 };
