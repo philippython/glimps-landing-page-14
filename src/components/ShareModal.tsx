@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { SharePlatform, getSharePlatforms, shareToStory } from "@/utils/shareUtils";
+import SocialMediaIcon from "@/components/SocialMediaIcon";
 import { toast } from "sonner";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Copy, Download } from "lucide-react";
@@ -148,9 +149,7 @@ const ShareModal = ({ isOpen, onClose, url, filename }: ShareModalProps) => {
                     className="w-full justify-start h-12 text-left hover:bg-primary/5 hover:border-primary/20 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-sm font-medium">
-                        {platform.name.charAt(0)}
-                      </div>
+                      <SocialMediaIcon platform={platform.icon} className="w-8 h-8" />
                       <div>
                         <div className="font-medium text-sm">{platform.name}</div>
                         <div className="text-xs text-muted-foreground">
