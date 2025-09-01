@@ -17,7 +17,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import LanguagePicker from "@/components/LanguagePicker";
 import PhotoAdvertisement from "@/components/PhotoAdvertisement";
 import ShareModal from "@/components/ShareModal";
-import { shareToSocialMedia } from "@/utils/shareUtils";
+
 import { useState, useEffect } from "react";
 import { 
   Pagination,

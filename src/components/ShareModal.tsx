@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { SharePlatform, getUserLocation, getSharePlatforms, shareToStory } from "@/utils/shareUtils";
+import { SharePlatform, getSharePlatforms, shareToStory } from "@/utils/shareUtils";
 import { toast } from "sonner";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Copy, Download } from "lucide-react";
