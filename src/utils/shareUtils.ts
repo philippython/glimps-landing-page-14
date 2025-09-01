@@ -40,11 +40,12 @@ export const shareToStory = async (platform: SharePlatform, mediaUrl: string, fi
     setTimeout(() => {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const encodedUrl = encodeURIComponent(mediaUrl);
 
       if (platform.name === 'Instagram') {
         if (isMobile) {
-          const appUrl = isIOS 
-            ? 'instagram://story-camera' 
+          const appUrl = isIOS
+            ? 'instagram://story-camera'
             : 'intent://story-camera#Intent;package=com.instagram.android;scheme=instagram;end';
           window.location.href = appUrl;
         } else {
@@ -52,12 +53,12 @@ export const shareToStory = async (platform: SharePlatform, mediaUrl: string, fi
         }
       } else if (platform.name === 'VK') {
         if (isMobile) {
-          const appUrl = isIOS 
-            ? 'vk://story' 
-            : 'intent://story#Intent;package=com.vkontakte.android;scheme=vk;end';
+          const appUrl = isIOS
+            ? `vk://vk.com/stories?attachment_url=${encodedUrl}`
+            : `intent://vk.com/stories?attachment_url=${encodedUrl}#Intent;package=com.vkontakte.android;scheme=https;end`;
           window.location.href = appUrl;
         } else {
-          window.open('https://vk.com/stories', '_blank');
+          window.open(`https://vk.com/share.php?url=${encodedUrl}&media=${encodedUrl}&no_parse=1`, '_blank');
         }
       }
     }, 500);
